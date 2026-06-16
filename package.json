@@ -1,0 +1,12 @@
+{
+  "name": "design-system-ci",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @design-system/components",
+    "test": "npm run test -w @design-system/components",
+    "dev": "npm run dev -w @design-system/components"
+  }
+}

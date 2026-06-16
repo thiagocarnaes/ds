@@ -1,0 +1,68 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+const SHELL_INSET = '0.5rem'
+
+const props = defineProps<{
+  collapsed: boolean
+  menuLabel?: string
+  menuWidth: string
+  collapsedWidth?: string
+}>()
+
+const contentWidth = computed(() => `calc(${props.menuWidth} - 2 * ${SHELL_INSET})`)
+
+const collapsedInnerWidth = computed(() =>
+  props.collapsedWidth
+    ? `calc(${props.collapsedWidth} - 2 * ${SHELL_INSET})`
+    : contentWidth.value,
+)
+
+const collapsedOffset = computed(() => {
+  if (!props.collapsed || !props.collapsedWidth) {
+    return '0px'
+  }
+
+  return `max(0px, calc((${collapsedInnerWidth.value} - 2rem) / 2))`
+})
+
+const toggleLeft = computed(() => {
+  if (props.collapsed) {
+    return collapsedOffset.value
+  }
+
+  return `calc(${contentWidth.value} - 2rem)`
+})
+</script>
+
+<template>
+  <div class="w-full px-2 py-2">
+    <div class="relative mb-2 h-8 w-full">
+      <span
+        v-if="menuLabel"
+        class="pointer-events-none absolute left-0 top-1/2 max-w-[calc(100%-2.5rem)] -translate-y-1/2 truncate font-mono text-[8px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
+        :class="collapsed ? 'opacity-0' : 'opacity-100'"
+      >
+        {{ menuLabel }}
+      </span>
+
+      <div
+        class="absolute top-0 flex size-8 items-center justify-center transition-[left] duration-300 ease-in-out"
+        :style="{ left: toggleLeft }"
+      >
+        <slot name="toggle" />
+      </div>
+    </div>
+
+    <div
+      class="transition-transform duration-300 ease-in-out"
+      :style="{
+        width: contentWidth,
+        minWidth: contentWidth,
+        transform: collapsed ? `translateX(${collapsedOffset})` : 'translateX(0)',
+      }"
+    >
+      <slot />
+    </div>
+  </div>
+</template>

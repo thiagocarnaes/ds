@@ -1,0 +1,50 @@
+schema: spec-driven
+
+# Contexto do Projeto
+# Informações apresentadas à IA ao criar qualquer artefato.
+context: |
+  Tecnologias: TypeScript, Vue.js 3, Node.js
+  Padrão de Commits: Conventional Commits
+  Domínio do Negócio: Aplicativo de Lista de Tarefas (TodoList)
+
+  Diretrizes de Qualidade de Código (Boas Práticas):
+  - Código Limpo (Clean Code): Funções pequenas e com responsabilidade única.
+  - Princípios SOLID, DRY e KISS aplicados rigorosamente.
+  - Nomenclatura: Nomes descritivos, completos e significativos em inglês.
+  - Tratamento de Erros: Prever exceções e tratá-las de forma explícita e elegante.
+  - Documentação: Adicionar JSDoc/Docstrings em todas as funções públicas e classes.
+  - Testabilidade: Código projetado para ser facilmente testado via TDD.
+
+# Regras por Artefato
+# Restrições customizadas para comportamentos específicos da IA.
+rules:
+  proposal:
+    # Restrições de Escopo e Tamanho
+    - Manter as propostas com menos de 500 palavras.
+    - Sempre incluir uma seção de "Não-Objetivos" (Non-goals).
+    - Fazer apenas as alterações estritamente necessárias para implementar os requisitos ou corrigir bugs. Evitar refatorações ou otimizações desnecessárias.
+
+    # Validação e Clareza de Requisitos
+    - Sempre questionar e pedir esclarecimentos se os requisitos forem ambíguos, incompletos, contraditórios, impossíveis de testar ou não acionáveis.
+    - Sempre perguntar caso haja qualquer dúvida sobre as regras de negócio.
+
+    # Execução Técnica e Engenharia
+    - Sempre programar utilizando as tecnologias mencionadas no contexto.
+    - Adotar rigorosamente a abordagem TDD (Desenvolvimento Orientado a Testes).
+    - Sempre executar os testes automatizados logo após escrever o código.
+
+    # Integração com o Graphify
+    - Sempre olhar para a pasta do graphify antes de iniciar o trabalho de planejamento de mudanças e criação de tasks para ser mais eficiente e identificar possíveis dependências e impactos das mudanças propostas.
+    - Sempre que finalizar todas as tarefas planejadas, você DEVE executar o comando graphify . no terminal integrado antes de encerrar a tarefa, garantindo a atualização do grafo de conhecimento arquitetural do repositório.
+
+  tasks:
+    - Dividir as tarefas em blocos de no máximo 10 minutos de trabalho.
+    - Manter cada tarefa focada em um único aspecto da implementação para garantir clareza e manutenibilidade.
+    - Criar apenas as tarefas estritamente necessárias para implementar os requisitos ou corrigir bugs.
+    - 'Sempre incluir as seguintes seções em cada tarefa "Definição de Pronto" (Definition of Done), "Instruções de Teste", "Notas", "Dependências", "Prioridade", "Tempo Estimado" e "Status" (ex: A Fazer, Em Progresso, Concluído).'
+    - Todas as mudanças devem ser funcionais e testadas. Não fazer refatorações ou otimizações a menos que sejam necessárias para os requisitos, correção de bugs ou explicitamente solicitadas pelo usuário.
+    - Sempre rodar o comando de build para validar se existe algum erro antes de prosseguir para a próxima tarefa.
+    - Sempre executar os testes automatizados logo após escrever o código para garantir que as mudanças não introduziram regressões ou falhas.
+    - Manter um arquivo de CHANGELOG na raiz do projeto, contendo a descrição clara da mudança, data, versão e autor.
+    - Sempre atualizar este arquivo de CHANGELOG após qualquer modificação na base de código (novas funcionalidades, correções ou refatorações aprovadas).
+    - Sempre rodar o comando graphify . no terminal integrado após finalizar, aplicar ou arquivar qualquer proposta de mudança (change proposal) para garantir a atualização do grafo de conhecimento arquitetural do repositório.

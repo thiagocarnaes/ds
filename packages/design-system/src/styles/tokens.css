@@ -1,0 +1,47 @@
+:root {
+  --ds-color-navy-900: #060d18;
+  --ds-color-navy-800: #0d1b2e;
+  --ds-color-navy-700: #122236;
+  --ds-color-navy-600: #1e3a5a;
+  --ds-color-cyan-500: #00d4ff;
+  --ds-color-cyan-400: #33ddff;
+  --ds-color-blue-600: #2979ff;
+  --ds-color-teal-400: #00e5b0;
+  --ds-color-red-500: #ff3d57;
+  --ds-color-amber-500: #ff8b00;
+  --ds-color-purple-400: #a78bfa;
+  --ds-color-slate-500: #4d6a87;
+  --ds-color-slate-400: #7ba3c8;
+  --ds-color-white: #e8edf5;
+
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-lg: 12px;
+  --ds-radius-xl: 16px;
+
+  --ds-spacing-1: 4px;
+  --ds-spacing-2: 8px;
+  --ds-spacing-3: 12px;
+  --ds-spacing-4: 16px;
+  --ds-spacing-6: 24px;
+  --ds-spacing-8: 32px;
+
+  --ds-font-xs: 10px;
+  --ds-font-sm: 12px;
+  --ds-font-base: 13px;
+  --ds-font-md: 14px;
+  --ds-font-lg: 16px;
+  --ds-font-xl: 20px;
+  --ds-font-2xl: 24px;
+  --ds-font-display: 32px;
+}
+
+:root {
+  --ds-color-surface: #f4f8fc;
+  --ds-color-text: #0b1526;
+}
+
+.dark {
+  --ds-color-surface: var(--ds-color-navy-900);
+  --ds-color-text: var(--ds-color-white);
+}
