@@ -5,8 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build -w @design-system/components",
-    "test": "npm run test -w @design-system/components",
-    "dev": "npm run dev -w @design-system/components"
+    "build": "npm run build -w @tcarnaes/design-system",
+    "test": "npm run test -w @tcarnaes/design-system",
+    "dev": "npm run dev -w @tcarnaes/design-system"
   }
 }
