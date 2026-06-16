@@ -5,6 +5,7 @@ import { resolve } from 'node:path'
 
 export default defineConfig({
   root: 'playground',
+  base: process.env.PAGES_BASE ?? '/',
   server: {
     open: true,
   },

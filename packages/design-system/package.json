@@ -1,6 +1,7 @@
 {
   "name": "@tcarnaes/design-system",
-  "version": "0.1.0",
+  "version": "0.1.2",
+  "description": "Vue 3 design system with tokens, Tailwind CSS 4, light/dark mode, and 50+ components.",
   "type": "module",
   "main": "./dist/design-system.js",
   "module": "./dist/design-system.js",
@@ -13,10 +14,24 @@
     "./styles.css": "./dist/design-system.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
+  "keywords": [
+    "vue",
+    "vue3",
+    "design-system",
+    "components",
+    "tailwindcss",
+    "ui"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite --config vite.playground.config.ts",
+    "build:playground": "vite build --config vite.playground.config.ts",
     "build": "vue-tsc -p tsconfig.build.json --noEmit && vite build && vite build --config vite.playground.config.ts",
     "build:lib": "vue-tsc -p tsconfig.build.json --noEmit && vite build",
     "test": "vitest run",
