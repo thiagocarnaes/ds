@@ -1,5 +1,5 @@
 {
-  "name": "@design-system/components",
+  "name": "@tcarnaes/design-system",
   "version": "0.1.0",
   "type": "module",
   "main": "./dist/design-system.js",
