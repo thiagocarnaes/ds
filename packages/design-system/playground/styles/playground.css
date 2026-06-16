@@ -178,6 +178,42 @@
   border: 1px solid var(--pg-chat-border);
 }
 
+.pg-docs {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.pg-docs-hero {
+  margin-bottom: 0.5rem;
+}
+
+.pg-docs-section {
+  min-width: 0;
+}
+
+.pg-docs-heading {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--pg-text);
+}
+
+.pg-docs-inline {
+  border-radius: 0.25rem;
+  background: var(--pg-nav-active-bg);
+  padding: 0.125rem 0.375rem;
+  font-family: 'DM Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  color: var(--pg-accent);
+}
+
+.pg-docs-tag {
+  background: var(--pg-nav-active-bg);
+  color: var(--pg-text-muted);
+  border: 1px solid var(--pg-border);
+}
+
 .pg-chat-user-bubble {
   background: var(--pg-chat-user-bg);
   color: var(--pg-chat-user-text);

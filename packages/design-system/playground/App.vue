@@ -19,9 +19,10 @@ import MessagesCard from './cards/MessagesCard.vue'
 import ChatPreviewCard from './cards/ChatPreviewCard.vue'
 import ComponentIndexCard from './cards/ComponentIndexCard.vue'
 import LayoutCard from './cards/LayoutCard.vue'
+import DocumentationPage from './views/DocumentationPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
 
-const categories = ['All', 'Foundations', 'Forms', 'Labels', 'Feedback', 'Layout'] as const
+const categories = ['All', 'Docs', 'Foundations', 'Forms', 'Labels', 'Feedback', 'Layout'] as const
 type Category = (typeof categories)[number]
 
 const activeCat = ref<Category>('All')
@@ -75,7 +76,15 @@ function openDrawer(name: string): void {
 }
 
 function scrollToIndex(): void {
-  document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  activeCat.value = 'All'
+  requestAnimationFrame(() => {
+    document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  })
+}
+
+function openDocs(): void {
+  activeCat.value = 'Docs'
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
@@ -136,7 +145,7 @@ function scrollToIndex(): void {
           stable
         </span>
         <a
-          href="https://github.com/thiagocarnaes/Dsci"
+          href="https://github.com/thiagocarnaes/ds"
           target="_blank"
           rel="noopener noreferrer"
           class="pg-text-muted transition-colors hover:text-[var(--pg-accent)]"
@@ -147,8 +156,9 @@ function scrollToIndex(): void {
     </header>
 
     <main class="relative z-10 mx-auto max-w-6xl px-6 py-12">
-      <!-- Hero -->
-      <div class="mb-12">
+      <!-- Hero + grid -->
+      <template v-if="activeCat !== 'Docs'">
+        <div class="mb-12">
         <div class="mb-6 flex items-center gap-2">
           <GlowDot />
           <span class="pg-text-muted font-mono text-[10px] uppercase tracking-widest">v2.0.0 · stable</span>
@@ -179,6 +189,14 @@ function scrollToIndex(): void {
               >
                 Browse components
               </button>
+              <button
+                type="button"
+                class="rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
+                style="border-color: var(--pg-border); color: var(--pg-text)"
+                @click="openDocs"
+              >
+                Install &amp; docs
+              </button>
             </div>
           </div>
 
@@ -202,7 +220,7 @@ function scrollToIndex(): void {
           <StatPill label="Components" :target="53" color="#00D4FF" />
           <StatPill label="Test coverage" :target="94" suffix="%" color="#00E5B0" />
         </div>
-      </div>
+        </div>
 
       <!-- Mobile category nav -->
       <div class="mb-6 flex flex-wrap gap-2 md:hidden">
@@ -249,6 +267,9 @@ function scrollToIndex(): void {
           <component :is="card.component" v-else />
         </div>
       </TransitionGroup>
+      </template>
+
+      <DocumentationPage v-else />
 
       <footer class="pg-border-top mt-12 flex items-center justify-between pt-8">
         <div class="flex items-center gap-2">
