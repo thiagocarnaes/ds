@@ -177,6 +177,47 @@ body {
   gap: 0.75rem;
 }
 
+.pg-header-logo {
+  flex-shrink: 0;
+  height: 2.5rem;
+  width: auto;
+  object-fit: contain;
+}
+
+.pg-hero-headline {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.pg-hero-logo {
+  flex-shrink: 0;
+  height: 5.5rem;
+  width: auto;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .pg-hero-headline {
+    gap: 1.25rem;
+  }
+
+  .pg-hero-logo {
+    height: 6.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pg-hero-headline {
+    gap: 1.5rem;
+  }
+
+  .pg-hero-logo {
+    height: 7.5rem;
+  }
+}
+
 .pg-header-nav {
   display: none;
   min-width: 0;

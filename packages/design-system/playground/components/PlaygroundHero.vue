@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import GlowDot from './GlowDot.vue'
 import StatPill from './StatPill.vue'
+import logoUrl from '../assets/logo.png?url'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { Button } from '@/index'
 import { designSystemLibraryComponentCount, designSystemVersionBadge } from '../designSystemMeta'
@@ -48,12 +49,15 @@ const pillars = [
 
     <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
       <div>
-        <h1 class="mb-5 text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl" style="letter-spacing: -0.02em">
-          <span style="color: var(--pg-text)">{{ t('hero.titleLine1') }}</span><br />
-          <span :style="{ color: 'var(--pg-hero-accent)', textShadow: `0 0 40px var(--pg-hero-glow)` }">
-            {{ t('hero.titleLine2') }}
-          </span>
-        </h1>
+        <div class="pg-hero-headline mb-5">
+          <img :src="logoUrl" alt="" class="pg-hero-logo" />
+          <h1 class="text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl" style="letter-spacing: -0.02em">
+            <span style="color: var(--pg-text)">{{ t('hero.titleLine1') }}</span><br />
+            <span :style="{ color: 'var(--pg-hero-accent)', textShadow: `0 0 40px var(--pg-hero-glow)` }">
+              {{ t('hero.titleLine2') }}
+            </span>
+          </h1>
+        </div>
         <p class="pg-text-subtle max-w-md text-sm leading-[1.8]">
           {{ t('hero.subtitle') }}
         </p>

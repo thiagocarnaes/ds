@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, TransitionGroup } from 'vue'
-import { ArrowUpRight, Moon, Sun, Zap } from 'lucide-vue-next'
+import { ArrowUpRight, Moon, Sun } from 'lucide-vue-next'
+import logoUrl from './assets/logo.png?url'
 import GlowDot from './components/GlowDot.vue'
 import ComponentDrawer from './components/ComponentDrawer.vue'
 import PlaygroundLocaleSelect from './components/PlaygroundLocaleSelect.vue'
@@ -155,12 +156,7 @@ function scrollToPlayground(): void {
     <header class="pg-header sticky top-0 z-40">
       <div class="pg-container pg-header-inner">
         <div class="pg-header-brand">
-          <div
-            class="flex size-7 shrink-0 items-center justify-center rounded-lg"
-            style="background: linear-gradient(135deg, #0052CC, #00D4FF); box-shadow: 0 0 14px var(--pg-accent-glow)"
-          >
-            <Zap :size="14" class="text-white" />
-          </div>
+          
           <div class="min-w-0">
             <span class="block truncate text-sm font-semibold" style="color: var(--pg-text)">{{ t('app.title') }}</span>
             <span class="pg-text-muted font-mono text-[10px]">{{ t('app.versionBadge', { version: designSystemVersionBadge }) }}</span>
