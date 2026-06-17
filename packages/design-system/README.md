@@ -68,7 +68,7 @@ O playground local (`npm run dev`) inclui:
 - **Home** — cards interativos por categoria (forms, layout, feedback, foundations)
 - **Library** — catálogo dos **58 componentes** com descrição, snippet de uso e botão *Abrir playground* quando houver demo
 - **Docs** — instalação, toasts, DataTable, dark mode
-- **28 demos no drawer** — Button, Input, DateInput, FormField, DataTable, Layout, Dialog, etc.
+- **28 demos no drawer** — Button, Input, DateInput, FormField, DataTable, Layout, Dialog, etc.; controles atualizam o snippet **Usage** em tempo real
 - **Showcase** — demos compostos (ex.: AI Chat), não exportados como componente da lib
 - **i18n** — inglês e português (pt-BR)
 
@@ -107,6 +107,8 @@ import { FormField, Input } from '@tcarnaes/design-system'
 |------------|-----|
 | **`Switch`** | Controle pill on/off (`role="switch"`), tamanho `sm` / `md` |
 | **`Toggle`** | Linha de preferência: label + `Switch` (setting row com borda) |
+
+`Input`, `Textarea`, `DateInput` e `Badge` aceitam `:size` (`sm` / `md` / `lg` conforme o componente).
 
 ### DateInput
 
@@ -249,6 +251,47 @@ toast.error('Falha ao salvar.', {
 })
 ```
 
+Variantes: `success` | `error` | `info` | `warning` — fundo semântico opaco com borda na mesma cor.
+
+## Overlay
+
+### Popover e Tooltip
+
+Ambos usam `:variant` (não `appearance`):
+
+| Variant | Visual |
+|---------|--------|
+| `outline` | Fundo sólido (`bg-popover`) com borda neutra — **padrão** |
+| `primary` | Fundo sólido neutro, sem borda |
+| `ghost` | Fundo translúcido com `backdrop-blur` |
+| `danger` | Tinta destructive translúcida, texto claro |
+
+```vue
+<script setup lang="ts">
+import { Button, Popover, Tooltip } from '@tcarnaes/design-system'
+</script>
+
+<template>
+  <Popover :variant="'outline'">
+    <template #trigger>
+      <Button :variant="'outline'">Abrir</Button>
+    </template>
+    <template #content>
+      <p class="mb-2 text-sm font-medium">Ações rápidas</p>
+      <p class="text-xs opacity-80">Conteúdo ancorado ao trigger.</p>
+    </template>
+  </Popover>
+
+  <Tooltip :content="'Dica útil'" :variant="'ghost'" :placement="'top'">
+    <Button :variant="'outline'">Hover</Button>
+  </Tooltip>
+</template>
+```
+
+### Drawer
+
+Painel deslizante com `:placement="'left' | 'right' | 'top' | 'bottom'"` e `:close-on-overlay="false"` opcional.
+
 ## Exemplos por categoria
 
 ### Formulários
@@ -342,13 +385,15 @@ import { AppLayout, Container, Stack } from '@tcarnaes/design-system'
 
 ### Ícones no Button
 
+Variantes: `primary` | `ghost` | `outline` | `destructive` | `link` · tamanhos: `sm` | `md` | `lg`.
+
 ```vue
 <script setup lang="ts">
 import { Button } from '@tcarnaes/design-system'
 </script>
 
 <template>
-  <Button :variant="'primary'" :icon="'zap'">Action</Button>
+  <Button :variant="'primary'" :size="'md'" :icon="'zap'">Action</Button>
 </template>
 ```
 
