@@ -1,6 +1,6 @@
 {
   "name": "@tcarnaes/design-system",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Vue 3 design system with tokens, Tailwind CSS 4, light/dark mode, and 50+ components.",
   "type": "module",
   "main": "./dist/design-system.js",
