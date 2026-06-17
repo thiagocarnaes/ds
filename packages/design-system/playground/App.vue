@@ -2,9 +2,10 @@
 import { computed, ref, TransitionGroup } from 'vue'
 import { ArrowUpRight, Moon, Sun, Zap } from 'lucide-vue-next'
 import GlowDot from './components/GlowDot.vue'
-import StatPill from './components/StatPill.vue'
 import ComponentDrawer from './components/ComponentDrawer.vue'
 import PlaygroundLocaleSelect from './components/PlaygroundLocaleSelect.vue'
+import PlaygroundCategoryNav from './components/PlaygroundCategoryNav.vue'
+import PlaygroundHero from './components/PlaygroundHero.vue'
 import { usePlaygroundTheme } from './composables/usePlaygroundTheme'
 import { providePlaygroundLocale } from './composables/usePlaygroundLocale'
 import { usePlaygroundGrid } from './composables/usePlaygroundGrid'
@@ -27,8 +28,7 @@ import DataTableCard from './cards/DataTableCard.vue'
 import DocumentationPage from './views/DocumentationPage.vue'
 import ComponentsCatalogPage from './views/ComponentsCatalogPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
-import { Button } from '@/index'
-import { designSystemLibraryComponentCount, designSystemVersionBadge } from './designSystemMeta'
+import { designSystemVersionBadge } from './designSystemMeta'
 
 type PlaygroundPage = 'home' | 'docs' | 'catalog'
 
@@ -81,20 +81,9 @@ const hasPlaygroundSection = computed(
   () => activePage.value === 'home' && visibleCards.value.some((card) => card.id === 'index'),
 )
 
-const heroPillars = computed(() => [
-  {
-    id: 'components' as const,
-    color: '#A78BFA',
-    title: t('hero.pillarComponentsTitle', { count: designSystemLibraryComponentCount }),
-    body: t('hero.pillarComponentsBody'),
-  },
-  {
-    id: 'playgrounds' as const,
-    color: '#00E5B0',
-    title: t('hero.pillarPlaygroundsTitle'),
-    body: t('hero.pillarPlaygroundsBody'),
-  },
-])
+const isFullLanding = computed(
+  () => activePage.value === 'home' && activeCat.value === 'all',
+)
 
 function cardGridSpan(card: PlaygroundCard): number {
   let span: number
@@ -144,7 +133,15 @@ function isNavActive(cat: CategoryKey): boolean {
 }
 
 function scrollToPlayground(): void {
-  if (!hasPlaygroundSection.value) return
+  if (!hasPlaygroundSection.value) {
+    setCategory('all')
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      })
+    })
+    return
+  }
   requestAnimationFrame(() => {
     document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   })
@@ -214,6 +211,20 @@ function scrollToPlayground(): void {
     </header>
 
     <main class="pg-container relative z-10 min-w-0 py-8 sm:py-12">
+      <PlaygroundCategoryNav
+        class="mb-6"
+        :categories="CATEGORY_KEYS"
+        :is-active="isNavActive"
+        @select="setCategory"
+      />
+
+      <PlaygroundHero
+        :full-landing="isFullLanding"
+        @browse="openCatalog"
+        @docs="openDocs"
+        @playground="scrollToPlayground"
+      />
+
       <ComponentsCatalogPage
         v-if="activePage === 'catalog'"
         @open-playground="openDrawer"
@@ -221,74 +232,8 @@ function scrollToPlayground(): void {
 
       <DocumentationPage v-else-if="activePage === 'docs'" />
 
-      <template v-else>
-        <div class="mb-12">
-        <div class="mb-6 flex items-center gap-2">
-          <GlowDot />
-          <span class="pg-text-muted font-mono text-[10px] uppercase tracking-widest">{{ t('hero.versionLine', { version: designSystemVersionBadge }) }}</span>
-        </div>
-
-        <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          <div>
-            <h1 class="mb-5 text-3xl font-bold leading-[1.05] sm:text-4xl lg:text-5xl" style="letter-spacing: -0.02em">
-              <span style="color: var(--pg-text)">{{ t('hero.titleLine1') }}</span><br />
-              <span :style="{ color: 'var(--pg-hero-accent)', textShadow: `0 0 40px var(--pg-hero-glow)` }">
-                {{ t('hero.titleLine2') }}
-              </span>
-            </h1>
-            <p class="pg-text-subtle max-w-md text-sm leading-[1.8]">
-              {{ t('hero.subtitle') }}
-            </p>
-            <div class="mt-6 flex flex-wrap items-center gap-3">
-              <Button appearance="primary" @click="openCatalog">
-                {{ t('hero.browseComponents') }}
-              </Button>
-              <Button appearance="outline" @click="openDocs">
-                {{ t('hero.installDocs') }}
-              </Button>
-              <Button v-if="hasPlaygroundSection" appearance="outline" @click="scrollToPlayground">
-                <GlowDot color="#00E5B0" />
-                {{ t('hero.playground') }}
-              </Button>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
-            <div
-              v-for="pillar in heroPillars"
-              :key="pillar.id"
-              class="flex flex-col gap-2 rounded-xl p-4"
-              :style="{ background: pillar.color + '08', border: `1px solid ${pillar.color}15` }"
-            >
-              <div class="flex items-center gap-2">
-                <GlowDot v-if="pillar.id === 'playgrounds'" :color="pillar.color" />
-                <p class="text-xs font-semibold" style="color: var(--pg-pillar-text)">{{ pillar.title }}</p>
-              </div>
-              <p class="pg-text-muted text-[11px] leading-relaxed">{{ pillar.body }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="pg-border-top mt-8 flex flex-wrap gap-4 pt-8">
-          <StatPill :label="t('hero.statComponents')" :target="designSystemLibraryComponentCount" color="#00D4FF" />
-          <StatPill :label="t('hero.statCoverage')" :target="94" suffix="%" color="#00E5B0" />
-        </div>
-        </div>
-
-      <div class="mb-6 flex flex-wrap gap-2 lg:hidden">
-        <button
-          v-for="cat in CATEGORY_KEYS"
-          :key="cat"
-          type="button"
-          class="rounded-lg px-3 py-1.5 text-xs"
-          :class="isNavActive(cat) ? 'bg-primary/15 text-primary' : 'text-muted-foreground'"
-          @click="setCategory(cat)"
-        >
-          {{ t(`categories.${cat}`) }}
-        </button>
-      </div>
-
       <TransitionGroup
+        v-else
         id="bento-grid"
         tag="div"
         name="ds-bento"
@@ -311,7 +256,6 @@ function scrollToPlayground(): void {
           <component :is="card.component" v-else />
         </div>
       </TransitionGroup>
-      </template>
 
       <footer class="pg-border-top mt-12 flex items-center justify-between pt-8">
         <div class="flex items-center gap-2">

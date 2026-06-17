@@ -236,6 +236,22 @@ body {
   box-shadow: 0 0 12px var(--pg-nav-active-shadow);
 }
 
+.pg-mobile-category-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  padding: 0.25rem;
+}
+
+@media (min-width: 1024px) {
+  .pg-mobile-category-nav {
+    display: none;
+  }
+}
+
 .pg-text-muted {
   color: var(--pg-text-muted);
 }
