@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
@@ -10,19 +10,35 @@ const { t, messages } = usePlaygroundLocale()
 const tab = ref<'container' | 'stack' | 'grid'>('stack')
 const stackDirection = ref<'vertical' | 'horizontal'>('vertical')
 const gridCols = ref<1 | 2 | 3>(2)
-const copy = messages.value.layoutPrimitivesPlayground
 
-const code = `<Container class="py-4">
-  <Stack gap="4" direction="vertical">
-    <Input />
-    <Button>Save</Button>
-  </Stack>
-</Container>
+const copy = computed(() => messages.value.layoutPrimitivesPlayground)
 
-<Grid cols="2" gap="4">
-  <Card />
-  <Card />
-</Grid>`
+const stackDirectionOptions = ['vertical', 'horizontal'] as const
+const gridColOptions = [1, 2, 3] as const
+
+const previewKey = computed(() => `${tab.value}-${stackDirection.value}-${gridCols.value}`)
+
+const code = computed(() => {
+  if (tab.value === 'container') {
+    return '<Container class="py-4">\n  <p>Page content</p>\n</Container>'
+  }
+
+  if (tab.value === 'stack') {
+    return [
+      `<Stack gap="3" direction="${stackDirection.value}">`,
+      '  <Input />',
+      '  <Button>Save</Button>',
+      '</Stack>',
+    ].join('\n')
+  }
+
+  return [
+    `<Grid cols="${gridCols.value}" gap="4">`,
+    '  <Card />',
+    '  <Card />',
+    '</Grid>',
+  ].join('\n')
+})
 </script>
 
 <template>
@@ -48,41 +64,50 @@ const code = `<Container class="py-4">
       <template v-else-if="tab === 'stack'">
         <div class="mb-4 flex gap-2">
           <button
-            v-for="item in ['vertical', 'horizontal']"
+            v-for="item in stackDirectionOptions"
             :key="item"
             type="button"
             class="rounded px-2 py-0.5 text-xs"
             :style="playgroundOptionStyle(stackDirection === item)"
-            @click="stackDirection = item as typeof stackDirection"
+            @click="stackDirection = item"
           >
             {{ item }}
           </button>
         </div>
-        <Stack :direction="stackDirection" gap="3">
-          <div class="rounded-md bg-primary/10 px-4 py-2 text-xs text-primary">Item A</div>
-          <div class="rounded-md bg-primary/10 px-4 py-2 text-xs text-primary">Item B</div>
-          <Button appearance="outline" size="sm">{{ copy.action }}</Button>
-        </Stack>
+        <div class="pg-playground-preview rounded-xl p-4">
+          <Stack
+            :key="previewKey"
+            :direction="stackDirection"
+            :align="stackDirection === 'horizontal' ? 'start' : 'stretch'"
+            gap="3"
+          >
+            <div class="rounded-md bg-primary/10 px-4 py-2 text-xs text-primary">Item A</div>
+            <div class="rounded-md bg-primary/10 px-4 py-2 text-xs text-primary">Item B</div>
+            <Button appearance="outline" size="sm">{{ copy.action }}</Button>
+          </Stack>
+        </div>
       </template>
 
       <template v-else>
         <div class="mb-4 flex gap-2">
           <button
-            v-for="item in [1, 2, 3]"
+            v-for="item in gridColOptions"
             :key="item"
             type="button"
             class="rounded px-2 py-0.5 text-xs"
             :style="playgroundOptionStyle(gridCols === item)"
-            @click="gridCols = item as typeof gridCols"
+            @click="gridCols = item"
           >
             {{ item }} cols
           </button>
         </div>
-        <Grid :cols="gridCols">
-          <div v-for="n in gridCols * 2" :key="n" class="rounded-md bg-secondary/60 px-3 py-4 text-center text-xs text-secondary-foreground">
-            {{ n }}
-          </div>
-        </Grid>
+        <div class="pg-playground-preview rounded-xl p-4">
+          <Grid :key="previewKey" :cols="gridCols">
+            <div v-for="n in gridCols * 2" :key="n" class="rounded-md bg-secondary/60 px-3 py-4 text-center text-xs text-secondary-foreground">
+              {{ n }}
+            </div>
+          </Grid>
+        </div>
       </template>
     </div>
     <UsageBlock :code="code" />

@@ -8,43 +8,76 @@ import { FormField, Input } from '@/index'
 
 const { t } = usePlaygroundLocale()
 
+const stateOptions = ['default', 'helper', 'error', 'success'] as const
+type FieldMode = (typeof stateOptions)[number]
+
 const email = ref('ana@acme.io')
 const withIcon = ref(true)
-const mode = ref<'default' | 'helper' | 'error' | 'success'>('default')
+const mode = ref<FieldMode>('default')
 
+const helperText = computed(() => t('inputsPlayground.helpers.emailValid'))
+const errorText = 'Invalid email address'
+
+const showHelper = computed(() => mode.value === 'helper' || mode.value === 'success')
 const showTrailingIcon = computed(() => mode.value === 'success')
 
-const code = computed(
-  () => `<FormField
-  label="Email"
-  required
-  :helper="showHelper ? 'Work email only' : undefined"
-  :error="hasError ? 'Invalid email' : undefined"
-  :success="isValid"
->
-  <template #default="{ id }">
-    <div class="relative">
-      <Mail
-        v-if="withIcon"
-        :size="14"
-        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-      />
-      <Input
-        :id="id"
-        v-model="email"
-        type="email"
-        :class="withIcon ? 'pl-9' : undefined"
-        :success="isValid"
-      />
-      <Check
-        v-if="isValid"
-        :size="14"
-        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-success"
-      />
-    </div>
-  </template>
-</FormField>`,
-)
+const inputPaddingClass = computed(() => {
+  if (withIcon.value && showTrailingIcon.value) return 'pl-9 pr-9'
+  if (withIcon.value) return 'pl-9'
+  if (showTrailingIcon.value) return 'pr-9'
+  return undefined
+})
+
+const code = computed(() => {
+  const lines = ['<FormField', '  label="Email"', '  required']
+
+  if (mode.value === 'helper') {
+    lines.push(`  helper="${helperText.value}"`)
+  } else if (mode.value === 'error') {
+    lines.push(`  error="${errorText}"`)
+  } else if (mode.value === 'success') {
+    lines.push(`  helper="${helperText.value}"`)
+    lines.push('  success')
+  }
+
+  lines.push('>', '  <template #default="{ id }">', '    <div class="relative">')
+
+  if (withIcon.value) {
+    lines.push(
+      '      <Mail',
+      '        :size="14"',
+      '        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"',
+      '      />',
+    )
+  }
+
+  const inputAttrs = [
+    '      <Input',
+    '        :id="id"',
+    '        v-model="email"',
+    '        type="email"',
+  ]
+
+  if (inputPaddingClass.value) {
+    inputAttrs.push(`        class="${inputPaddingClass.value}"`)
+  }
+  if (mode.value === 'error') inputAttrs.push('        error')
+  if (mode.value === 'success') inputAttrs.push('        success')
+  inputAttrs.push('      />')
+  lines.push(...inputAttrs)
+
+  if (showTrailingIcon.value) {
+    lines.push(
+      '      <Check',
+      '        :size="14"',
+      '        class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-success"',
+      '      />',
+    )
+  }
+
+  lines.push('    </div>', '  </template>', '</FormField>')
+  return lines.join('\n')
+})
 </script>
 
 <template>
@@ -79,10 +112,11 @@ const code = computed(
       </div>
 
       <FormField
+        :key="`${mode}-${withIcon}`"
         :label="t('inputsPlayground.fields.email')"
         required
-        :helper="mode === 'helper' ? t('inputsPlayground.helpers.emailValid') : undefined"
-        :error="mode === 'error' ? 'Invalid email address' : undefined"
+        :helper="showHelper ? helperText : undefined"
+        :error="mode === 'error' ? errorText : undefined"
         :success="mode === 'success'"
       >
         <template #default="{ id }">
@@ -97,7 +131,7 @@ const code = computed(
               v-model="email"
               type="email"
               placeholder="you@company.com"
-              :class="withIcon ? (showTrailingIcon ? 'pl-9 pr-9' : 'pl-9') : showTrailingIcon ? 'pr-9' : undefined"
+              :class="inputPaddingClass"
               :error="mode === 'error'"
               :success="mode === 'success'"
             />
@@ -113,12 +147,12 @@ const code = computed(
       <div>
         <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">state</p>
         <button
-          v-for="item in ['default', 'helper', 'error', 'success']"
+          v-for="item in stateOptions"
           :key="item"
           type="button"
-          class="mb-1 block w-full rounded px-2 py-1 text-left text-xs"
+          class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
           :style="playgroundOptionStyle(mode === item)"
-          @click="mode = item as typeof mode"
+          @click="mode = item"
         >
           {{ item }}
         </button>

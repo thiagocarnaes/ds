@@ -308,6 +308,10 @@ export interface PlaygroundMessages {
     openButton: string
     closeAriaLabel: string
     cancel: string
+    controlsTitle: string
+    showCloseButton: string
+    showCancelButton: string
+    showPrimaryButton: string
     titles: {
       confirm: string
       form: string
@@ -448,6 +452,22 @@ export interface PlaygroundMessages {
     subtitle: string
     back: string
     usageHeading: string
+    apiHeading: string
+    propsHeading: string
+    modelsHeading: string
+    slotsHeading: string
+    eventsHeading: string
+    composableHeading: string
+    colName: string
+    colType: string
+    colDefault: string
+    colDescription: string
+    colBindings: string
+    colPayload: string
+    colSignature: string
+    playgroundHint: string
+    navHeading: string
+    selectLabel: string
     openPlayground: string
     descriptions: Record<string, string>
   }

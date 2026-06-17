@@ -38,6 +38,8 @@ export interface DataTableProps {
   rowKey?: string | ((row: Record<string, unknown>, index: number) => string)
   pageSizeOptions?: number[]
   searchable?: boolean
+  showTotalRecords?: boolean
+  showPageSize?: boolean
   searchPlaceholder?: string
   loading?: boolean
   total?: number
@@ -73,6 +75,8 @@ const defaultLabels: Required<DataTableLabels> = {
 const props = withDefaults(defineProps<DataTableProps>(), {
   pageSizeOptions: () => [5, 10, 25, 50],
   searchable: true,
+  showTotalRecords: true,
+  showPageSize: true,
   searchPlaceholder: 'Search…',
   loading: false,
   serverSide: false,
@@ -401,7 +405,10 @@ watch(
     <div class="border-t border-border pt-4">
       <div class="flex flex-col items-center gap-3 text-center lg:flex-row lg:items-center lg:justify-between lg:gap-4 lg:text-left">
         <div class="flex min-w-0 flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-2 lg:items-center lg:justify-start">
-          <p class="flex flex-wrap items-center justify-center gap-x-1 text-sm text-muted-foreground lg:justify-start">
+          <p
+            v-if="showTotalRecords"
+            class="flex flex-wrap items-center justify-center gap-x-1 text-sm text-muted-foreground lg:justify-start"
+          >
             <span>
               <span class="font-medium text-foreground">{{ filteredTotal }}</span>
               {{ filteredTotal === 1 ? resolvedLabels.record : resolvedLabels.records }}
@@ -413,6 +420,7 @@ watch(
             </span>
           </p>
           <PageSizeSelect
+            v-if="showPageSize"
             v-model="pageSize"
             :options="pageSizeOptions"
             :label="resolvedLabels.pageSize"

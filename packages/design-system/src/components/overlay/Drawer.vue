@@ -89,6 +89,21 @@ watch(
   },
 )
 
+watch(
+  () => props.placement,
+  async () => {
+    if (!open.value || !visible.value) {
+      return
+    }
+
+    animated.value = false
+    await nextTick()
+    requestAnimationFrame(() => {
+      animated.value = true
+    })
+  },
+)
+
 onMounted(() => {
   document.addEventListener('keydown', onKeydown)
   if (open.value) {

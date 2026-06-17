@@ -78,6 +78,15 @@ watch(visible, (isVisible) => {
   }
 })
 
+watch(
+  () => props.placement,
+  () => {
+    if (visible.value) {
+      updatePosition()
+    }
+  },
+)
+
 function onViewportChange(): void {
   if (visible.value) {
     updatePosition()

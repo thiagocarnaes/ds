@@ -45,6 +45,27 @@ describe('Drawer', () => {
     expect(document.body.textContent).toContain('Drawer content')
     wrapper.unmount()
   })
+
+  it('updates panel edge when placement changes', async () => {
+    const wrapper = mount(Drawer, {
+      props: { open: true, placement: 'right' },
+      slots: { default: 'Drawer content' },
+      attachTo: document.body,
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
+    const panel = document.body.querySelector('[role="dialog"]')
+    expect(panel?.className).toContain('right-0')
+
+    await wrapper.setProps({ placement: 'bottom' })
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
+    expect(panel?.className).toContain('bottom-0')
+    expect(panel?.className).not.toContain('right-0')
+    wrapper.unmount()
+  })
 })
 
 describe('layout components', () => {
@@ -59,6 +80,15 @@ describe('layout components', () => {
       slots: { default: '<div>A</div><div>B</div>' },
     })
     expect(wrapper.classes().some((c) => c.includes('flex'))).toBe(true)
+  })
+
+  it('Stack switches direction when the prop changes', async () => {
+    const wrapper = mount(Stack, { props: { direction: 'vertical', gap: 4 } })
+    expect(wrapper.classes()).toContain('flex-col')
+
+    await wrapper.setProps({ direction: 'horizontal' })
+    expect(wrapper.classes()).toContain('flex-row')
+    expect(wrapper.classes()).not.toContain('flex-col')
   })
 
   it('Grid applies grid', () => {

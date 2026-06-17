@@ -60,7 +60,6 @@ const inputClasses = computed(() =>
       success: false,
     }),
     'w-full pr-9',
-    props.class,
   ),
 )
 
@@ -93,6 +92,13 @@ watch(
     syncViewFromModel()
   },
   { immediate: true },
+)
+
+watch(
+  () => props.disabled,
+  (isDisabled) => {
+    if (isDisabled) closeCalendar()
+  },
 )
 
 function emitValue(iso: string): void {
@@ -186,7 +192,7 @@ function dayButtonClass(day: { inMonth: boolean; isSelected: boolean; isToday: b
 </script>
 
 <template>
-  <div ref="rootRef" class="relative w-full">
+  <div ref="rootRef" class="relative w-full" :class="props.class">
     <input
       :id="id"
       type="text"
