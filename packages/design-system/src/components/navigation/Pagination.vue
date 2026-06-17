@@ -54,7 +54,7 @@ function goToPage(page: number): void {
 
 function pageButtonClass(isActive: boolean): string {
   return cn(
-    'inline-flex size-9 items-center justify-center rounded-md text-sm font-medium transition-colors',
+    'inline-flex size-8 items-center justify-center rounded-md text-xs font-medium transition-colors sm:size-9 sm:text-sm',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
     isActive
       ? 'bg-primary text-primary-foreground shadow-[0_0_12px_rgba(0,212,255,0.35)]'
@@ -96,7 +96,7 @@ function pageButtonClass(isActive: boolean): string {
       <li v-for="(page, index) in visiblePages" :key="`${page}-${index}`">
         <span
           v-if="page === -1"
-          class="flex size-9 items-center justify-center text-muted-foreground"
+          class="flex size-8 items-center justify-center text-muted-foreground sm:size-9"
           aria-hidden="true"
         >
           …

@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Input from '@/components/form/Input.vue'
+import DateInput from '@/components/form/DateInput.vue'
 import Select from '@/components/form/Select.vue'
 import type {
   DataTableColumn,
   DataTableColumnFilters,
   DataTableDateRangeFilter,
+  DataTableLabels,
 } from './dataTableTypes'
+import { formatDataTableLabel } from './dataTableUtils'
 
 const props = withDefaults(
   defineProps<{
     column: DataTableColumn
     disabled?: boolean
+    labels: Required<DataTableLabels>
+    locale?: string
     layout?: 'inline' | 'popover'
   }>(),
-  { layout: 'inline' },
+  { layout: 'inline', locale: 'en' },
 )
 
 const filters = defineModel<DataTableColumnFilters>({ required: true })
@@ -90,6 +95,18 @@ const enumOptions = computed(() =>
     value: option.value,
   })),
 )
+
+const filterPlaceholder = computed(() =>
+  formatDataTableLabel(props.labels.filterPlaceholder, props.column.label.toLowerCase()),
+)
+
+const filterAriaLabel = computed(() =>
+  formatDataTableLabel(props.labels.filterAriaLabel, props.column.label),
+)
+
+const enumPlaceholder = computed(() =>
+  formatDataTableLabel(props.labels.filterEnumAll, props.column.label.toLowerCase()),
+)
 </script>
 
 <template>
@@ -98,33 +115,33 @@ const enumOptions = computed(() =>
       v-model="textValue"
       size="sm"
       :disabled="disabled"
-      :placeholder="`Filter ${column.label.toLowerCase()}…`"
-      :aria-label="`Filter ${column.label}`"
+      :placeholder="filterPlaceholder"
+      :aria-label="filterAriaLabel"
     />
   </div>
 
   <div
     v-else-if="column.filter === 'date'"
-    :class="layout === 'popover' ? 'flex min-w-[12rem] flex-col gap-2' : 'flex min-w-[12rem] flex-col gap-1.5'"
+    :class="layout === 'popover' ? 'flex w-full min-w-[12rem] flex-col gap-2' : 'flex min-w-[12rem] flex-col gap-1.5'"
   >
-    <label class="flex flex-col gap-1">
-      <span class="text-[11px] text-muted-foreground">From</span>
-      <Input
+    <label class="flex w-full flex-col gap-1">
+      <span class="text-[11px] text-muted-foreground">{{ labels.filterDateFrom }}</span>
+      <DateInput
         v-model="dateFrom"
-        type="date"
         size="sm"
         :disabled="disabled"
-        aria-label="Filter from date"
+        :locale="locale"
+        :aria-label="labels.filterDateFromAriaLabel"
       />
     </label>
-    <label class="flex flex-col gap-1">
-      <span class="text-[11px] text-muted-foreground">To</span>
-      <Input
+    <label class="flex w-full flex-col gap-1">
+      <span class="text-[11px] text-muted-foreground">{{ labels.filterDateTo }}</span>
+      <DateInput
         v-model="dateTo"
-        type="date"
         size="sm"
         :disabled="disabled"
-        aria-label="Filter to date"
+        :locale="locale"
+        :aria-label="labels.filterDateToAriaLabel"
       />
     </label>
   </div>
@@ -136,9 +153,9 @@ const enumOptions = computed(() =>
       multiple
       :searchable="false"
       :disabled="disabled"
-      :placeholder="`All ${column.label.toLowerCase()}`"
+      :placeholder="enumPlaceholder"
       class="w-full"
-      :aria-label="`Filter ${column.label}`"
+      :aria-label="filterAriaLabel"
     />
   </div>
 </template>

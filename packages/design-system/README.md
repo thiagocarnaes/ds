@@ -63,6 +63,81 @@ Ou alterne em runtime:
 document.documentElement.classList.toggle('dark', isDark)
 ```
 
+## Playground
+
+O playground local (`npm run dev`) inclui:
+
+- **Home** — cards interativos por categoria (forms, layout, feedback, foundations)
+- **Library** — catálogo dos **58 componentes** com descrição, snippet de uso e botão *Abrir playground* quando houver demo
+- **Docs** — instalação, toasts, DataTable, dark mode
+- **28 demos no drawer** — Button, Input, DateInput, FormField, DataTable, Layout, Dialog, etc.
+- **Showcase** — demos compostos (ex.: AI Chat), não exportados como componente da lib
+- **i18n** — inglês e português (pt-BR)
+
+Subcomponentes da Library (ex.: `TabPanel`, `AppLayout`, `PageSizeSelect`) abrem o demo do componente pai via mapeamento interno.
+
+## Formulários
+
+### Input com ícone (composição)
+
+`Input` e `FormField` **não** têm prop `icon`. Ícones entram no slot do `FormField` com um wrapper `relative`:
+
+```vue
+<script setup lang="ts">
+import { Mail } from 'lucide-vue-next'
+import { FormField, Input } from '@tcarnaes/design-system'
+</script>
+
+<template>
+  <FormField label="Email" required>
+    <template #default="{ id }">
+      <div class="relative">
+        <Mail
+          :size="14"
+          class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
+        <Input :id="id" v-model="email" type="email" class="pl-9" />
+      </div>
+    </template>
+  </FormField>
+</template>
+```
+
+### Switch vs Toggle
+
+| Componente | Uso |
+|------------|-----|
+| **`Switch`** | Controle pill on/off (`role="switch"`), tamanho `sm` / `md` |
+| **`Toggle`** | Linha de preferência: label + `Switch` (setting row com borda) |
+
+### DateInput
+
+Campo de data com calendário e formato por locale (ex.: `dd/mm/aaaa` em pt-BR):
+
+```vue
+<DateInput v-model="date" locale="pt-BR" />
+```
+
+## Card
+
+Um único componente `Card` com slots — não há `CardHeader` / `CardContent` / `CardFooter` separados:
+
+```vue
+<Card variant="outlined">
+  <template #header>
+    <h3 class="font-semibold">Título</h3>
+  </template>
+
+  Conteúdo principal.
+
+  <template #footer>
+    <Button appearance="primary">Salvar</Button>
+  </template>
+</Card>
+```
+
+Variantes: `elevated` | `outlined` | `flat`.
+
 ## DataTable
 
 Tabela completa com busca global, **multi-sort** (Ctrl+click / ⌘+click), filtros por coluna, paginação e seletor de linhas por página.
@@ -184,6 +259,7 @@ toast.error('Falha ao salvar.', {
 <script setup lang="ts">
 import {
   Checkbox,
+  DateInput,
   FormField,
   Input,
   Select,
@@ -193,6 +269,7 @@ import {
 import { ref } from 'vue'
 
 const name = ref('')
+const date = ref('')
 const role = ref('')
 const terms = ref(false)
 const notifications = ref(true)
@@ -201,6 +278,10 @@ const notifications = ref(true)
 <template>
   <FormField label="Nome" required>
     <Input v-model="name" />
+  </FormField>
+
+  <FormField label="Data">
+    <DateInput v-model="date" locale="pt-BR" />
   </FormField>
 
   <FormField label="Função">
@@ -224,7 +305,7 @@ const notifications = ref(true)
 
 ```vue
 <script setup lang="ts">
-import { Alert, Badge, Progress, Spinner } from '@tcarnaes/design-system'
+import { Alert, Badge, Progress, Skeleton, Spinner } from '@tcarnaes/design-system'
 </script>
 
 <template>
@@ -232,6 +313,7 @@ import { Alert, Badge, Progress, Spinner } from '@tcarnaes/design-system'
   <Alert variant="error" dismissible>Falha na build.</Alert>
   <Badge :value="12" appearance="primary" />
   <Progress :value="72" />
+  <Skeleton class="h-8 w-full" />
   <Spinner aria-label="Carregando" />
   <!-- Sem glow: <Spinner :glow="false" aria-label="Carregando" /> -->
 </template>
@@ -250,7 +332,7 @@ import { AppLayout, Container, Stack } from '@tcarnaes/design-system'
     <template #menu>Menu</template>
     <template #default>
       <Container>
-        <Stack gap="md">
+        <Stack :gap="4">
           <p>Conteúdo principal</p>
         </Stack>
       </Container>
@@ -279,10 +361,10 @@ Mais de 300 ícones disponíveis via `iconography`, `buttonIcons` e `iconography
 | Categoria | Componentes |
 |-----------|-------------|
 | **Actions** | `Button`, `IconButton`, `Link` |
-| **Forms** | `Input`, `Textarea`, `Checkbox`, `Radio`, `RadioGroup`, `Switch`, `Toggle`, `Select`, `Label`, `FormField` |
+| **Forms** | `Input`, `DateInput`, `Textarea`, `Checkbox`, `Radio`, `RadioGroup`, `Switch`, `Toggle`, `Select`, `Label`, `FormField` |
 | **Feedback** | `Alert`, `Badge`, `Spinner`, `Progress`, `Skeleton`, `Toast`, `ToastHost` |
 | **Navigation** | `Tabs`, `TabList`, `Tab`, `TabPanel`, `Breadcrumb`, `BreadcrumbItem`, `Pagination`, `SidebarMenu*` |
-| **Data display** | `Card`, `Divider`, `Avatar`, `AvatarGroup`, `Lozenge`, `Table*`, `DataTable`, `PageSizeSelect`, `List`, `ListItem`, `EmptyState` |
+| **Data display** | `Card`, `Divider`, `Avatar`, `AvatarGroup`, `Lozenge`, `Table*`, `DataTable`, `DataTableColumnFilter*`, `PageSizeSelect`, `List`, `ListItem`, `EmptyState` |
 | **Overlay** | `Modal`, `Dialog`, `Tooltip`, `Popover`, `Drawer` |
 | **Layout** | `Container`, `Stack`, `Grid`, `AppLayout` |
 | **Utils** | `cn`, `useToast`, `buttonVariants`, `iconography` |
@@ -313,7 +395,7 @@ npm install
 npm run dev
 ```
 
-Playground em [http://localhost:5173](http://localhost:5173) com demos interativas de todos os componentes.
+Playground em [http://localhost:5173](http://localhost:5173).
 
 ```bash
 npm run build:lib        # biblioteca → dist/

@@ -20,12 +20,12 @@ const localeValue = computed({
 
 <template>
   <div class="pg-locale-select">
-    <Languages :size="14" class="pg-locale-select__icon shrink-0" aria-hidden="true" />
+    <Languages :size="14" class="pg-locale-select__icon hidden shrink-0 sm:block" aria-hidden="true" />
     <Select
       v-model="localeValue"
       :options="[...LOCALE_OPTIONS]"
       :searchable="false"
-      class="w-[10.5rem] shrink-0"
+      class="w-[7.5rem] shrink-0 sm:w-[10.5rem]"
       :aria-label="t('locale.selectLabel')"
     />
   </div>

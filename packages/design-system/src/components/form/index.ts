@@ -1,4 +1,5 @@
 export { default as Input } from './Input.vue'
+export { default as DateInput } from './DateInput.vue'
 export { default as Textarea } from './Textarea.vue'
 export { default as Checkbox } from './Checkbox.vue'
 export { default as Radio } from './Radio.vue'
@@ -10,6 +11,7 @@ export { default as Label } from './Label.vue'
 export { default as FormField } from './FormField.vue'
 
 export type { InputProps } from './Input.vue'
+export type { DateInputProps } from './DateInput.vue'
 export type { TextareaProps } from './Textarea.vue'
 export type { CheckboxProps } from './Checkbox.vue'
 export type { RadioProps } from './Radio.vue'

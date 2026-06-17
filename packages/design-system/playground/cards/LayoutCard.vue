@@ -99,7 +99,7 @@ const regionShellClass =
         </template>
       </AppLayout>
 
-      <div class="mb-4 grid shrink-0 grid-cols-2 gap-2">
+      <div class="mb-4 grid shrink-0 grid-cols-1 gap-2 sm:grid-cols-2">
         <div
           v-for="region in regions"
           :key="region.id"

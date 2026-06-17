@@ -34,7 +34,7 @@ const selectValue = computed({
 </script>
 
 <template>
-  <div :class="cn('flex items-center gap-2 whitespace-nowrap', props.class)">
+  <div :class="cn('flex items-center justify-center gap-2 whitespace-nowrap lg:justify-start', props.class)">
     <label class="text-sm text-muted-foreground">{{ label }}</label>
     <Select
       v-model="selectValue"

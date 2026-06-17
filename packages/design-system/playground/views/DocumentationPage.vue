@@ -122,12 +122,12 @@ const localizedGroups = computed(() =>
 
 <template>
   <div class="pg-docs">
-    <div class="pg-docs-hero pg-playground-panel rounded-2xl p-6 md:p-8">
+    <div class="pg-docs-hero pg-playground-panel rounded-2xl p-4 sm:p-6 md:p-8">
       <div class="mb-4 flex items-center gap-2">
         <BookOpen :size="16" class="text-primary" />
         <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">{{ t('docs.badge') }}</span>
       </div>
-      <h2 class="mb-2 text-2xl font-bold" style="color: var(--pg-text)">{{ t('docs.title') }}</h2>
+      <h2 class="mb-2 text-xl font-bold sm:text-2xl" style="color: var(--pg-text)">{{ t('docs.title') }}</h2>
       <p class="pg-text-subtle mb-6 max-w-2xl text-sm leading-relaxed">
         {{ t('docs.subtitle') }}
       </p>

@@ -18,7 +18,7 @@ const hovered = ref(false)
 
 <template>
   <div
-    class="pg-play-card flex h-full min-h-0 flex-col overflow-hidden rounded-2xl transition-all duration-300"
+    class="pg-play-card flex h-full min-h-0 min-w-0 max-w-full flex-col overflow-hidden rounded-2xl transition-all duration-300"
     :style="{
       background: 'linear-gradient(145deg, var(--pg-card-from) 0%, var(--pg-card-to) 100%)',
       border: hovered
@@ -32,14 +32,14 @@ const hovered = ref(false)
     @mouseleave="hovered = false"
   >
     <div
-      class="flex shrink-0 items-center justify-between px-5 pb-4 pt-5"
+      class="flex shrink-0 items-center justify-between px-4 pb-3 pt-4 sm:px-5 sm:pb-4 sm:pt-5"
       style="border-bottom: 1px solid var(--pg-card-divider)"
     >
-      <div class="flex items-center gap-2.5">
-        <span :style="{ color: accentColor }">
+      <div class="flex min-w-0 items-center gap-2.5">
+        <span class="shrink-0" :style="{ color: accentColor }">
           <slot name="icon" />
         </span>
-        <span class="pg-text-subtle text-xs font-semibold uppercase tracking-wide">{{ label }}</span>
+        <span class="pg-text-subtle truncate text-xs font-semibold uppercase tracking-wide">{{ label }}</span>
       </div>
       <div class="flex items-center gap-2">
         <span
@@ -53,7 +53,7 @@ const hovered = ref(false)
       </div>
     </div>
     <div
-      class="playground-scroll min-h-0 flex-1 overflow-y-auto p-5"
+      class="playground-scroll min-h-0 flex-1 overflow-x-auto overflow-y-auto p-4 sm:p-5"
       :class="fillHeight ? 'flex flex-col' : undefined"
     >
       <slot />

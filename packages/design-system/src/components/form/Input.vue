@@ -13,6 +13,7 @@ export interface InputProps extends /* @vue-ignore */ FormInputVariants {
   success?: boolean
   message?: string
   id?: string
+  lang?: string
   class?: string
 }
 
@@ -55,6 +56,7 @@ function onInput(event: Event): void {
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :lang="lang"
       :class="classes"
       :aria-invalid="error || undefined"
       :aria-describedby="error && message ? `${id}-error` : undefined"

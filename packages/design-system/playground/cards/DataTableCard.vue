@@ -12,7 +12,7 @@ import { fetchUsers, mockUsers, type UserRow } from '../data/mockUsers'
 
 type DataMode = 'client' | 'api'
 
-const { t } = usePlaygroundLocale()
+const { t, locale } = usePlaygroundLocale()
 const userTableColumns = useUserTableColumns()
 const dataTableLabels = useDataTableLabels()
 const { formatStatus } = useStatusLabel()
@@ -80,9 +80,9 @@ function setMode(next: DataMode): void {
     <template #icon><Table2 :size="14" /></template>
 
     <div class="flex min-h-0 flex-1 flex-col gap-4">
-      <div class="flex flex-wrap items-start justify-between gap-3">
+      <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between">
         <DataTablePlaygroundHints
-          class="min-w-0 flex-1"
+          class="min-w-0 w-full flex-1"
           :sort-stack="sortStack"
           :column-filters="columnFilters"
         />
@@ -133,6 +133,7 @@ function setMode(next: DataMode): void {
         :empty-title="dataTableLabels.emptyTitle"
         :empty-description="dataTableLabels.emptyDescription"
         :labels="dataTableLabels"
+        :locale="locale"
         class="min-h-0 flex-1"
         @request="loadFromApi"
       >

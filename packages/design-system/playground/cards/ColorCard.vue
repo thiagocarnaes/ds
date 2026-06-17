@@ -23,7 +23,7 @@ async function copyHex(hex: string): Promise<void> {
 <template>
   <PlayCard :label="t('cards.color.label')" accent-color="#2979FF" :tag="t('cards.color.tag')">
     <template #icon><Palette :size="14" /></template>
-    <div class="grid grid-cols-4 gap-3">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
       <button
         v-for="color in palette"
         :key="color.token"

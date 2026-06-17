@@ -14,6 +14,7 @@ import type { DataTableColumn } from '@/components/data-display/dataTableTypes'
 import {
   applyColumnFilters,
   filterDataTableRows,
+  formatCellValue,
   paginateDataTableRows,
   sortDataTableRows,
   sortDataTableRowsMulti,
@@ -151,6 +152,12 @@ describe('dataTableUtils', () => {
       joined: { from: '2026-03-01', to: '2026-05-31' },
     })
     expect(dateFiltered.map((row) => row.name)).toEqual(['Bruno', 'Carla', 'Diego'])
+  })
+
+  it('formats date column values by locale', () => {
+    const column = sampleColumns.find((item) => item.key === 'joined')!
+    expect(formatCellValue('2026-06-15', { locale: 'en', column })).toBe('06/15/2026')
+    expect(formatCellValue('2026-06-15', { locale: 'pt-BR', column })).toBe('15/06/2026')
   })
 })
 

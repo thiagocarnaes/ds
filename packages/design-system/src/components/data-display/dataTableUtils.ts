@@ -13,8 +13,33 @@ export function getCellValue(row: Record<string, unknown>, key: string): unknown
   }, row)
 }
 
-export function formatCellValue(value: unknown): string {
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+
+export interface FormatCellValueOptions {
+  locale?: string
+  column?: Pick<DataTableColumn, 'filter'>
+}
+
+export function formatDataTableLabel(template: string, columnLabel: string): string {
+  return template.replaceAll('{column}', columnLabel)
+}
+
+export function formatCellValue(value: unknown, options?: FormatCellValueOptions): string {
   if (value == null) return ''
+  if (
+    typeof value === 'string' &&
+    options?.column?.filter === 'date' &&
+    ISO_DATE.test(value)
+  ) {
+    const [year, month, day] = value.split('-').map(Number)
+    const date = new Date(year, month - 1, day)
+    const intlLocale = options.locale === 'pt-BR' ? 'pt-BR' : 'en-US'
+    return new Intl.DateTimeFormat(intlLocale, {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    }).format(date)
+  }
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value)
   }

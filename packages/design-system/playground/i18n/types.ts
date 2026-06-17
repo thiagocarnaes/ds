@@ -2,6 +2,7 @@ export type PlaygroundLocale = 'en' | 'pt-BR'
 
 export type CategoryKey =
   | 'all'
+  | 'catalog'
   | 'docs'
   | 'foundations'
   | 'forms'
@@ -47,6 +48,7 @@ export interface PlaygroundMessages {
     titleLine2: string
     subtitle: string
     browseComponents: string
+    playground: string
     installDocs: string
     pillarComponentsTitle: string
     pillarComponentsBody: string
@@ -81,6 +83,7 @@ export interface PlaygroundMessages {
     }
   }
   componentIndex: {
+    showcaseTitle: string
     items: Record<
       string,
       { count: string; category: CategoryKey }
@@ -136,6 +139,32 @@ export interface PlaygroundMessages {
       profile: string
       team: string
     }
+  }
+  dialogPlayground: {
+    open: string
+    title: string
+    description: string
+    body: string
+    cancel: string
+    confirm: string
+  }
+  overlayDrawerPlayground: {
+    open: string
+    title: string
+    body: string
+  }
+  tooltipPlayground: {
+    trigger: string
+    hint: string
+  }
+  popoverPlayground: {
+    trigger: string
+    title: string
+    body: string
+  }
+  layoutPrimitivesPlayground: {
+    containerHint: string
+    action: string
   }
   inputsPlayground: {
     modeWithIcon: string
@@ -362,6 +391,15 @@ export interface PlaygroundMessages {
       emptyTitle: string
       emptyDescription: string
       loadingText: string
+      filterTitle: string
+      filterPlaceholder: string
+      filterAriaLabel: string
+      filterClear: string
+      filterDateFrom: string
+      filterDateTo: string
+      filterDateFromAriaLabel: string
+      filterDateToAriaLabel: string
+      filterEnumAll: string
     }
   }
   drawer: {
@@ -403,5 +441,14 @@ export interface PlaygroundMessages {
     dataTableBodyColumnFilters: string
     exportedTitle: string
     groupCategories: Record<string, string>
+  }
+  componentCatalog: {
+    badge: string
+    title: string
+    subtitle: string
+    back: string
+    usageHeading: string
+    openPlayground: string
+    descriptions: Record<string, string>
   }
 }

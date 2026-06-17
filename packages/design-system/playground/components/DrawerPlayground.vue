@@ -64,8 +64,10 @@ import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { useDataTableLabels, useStatusLabel, useUserTableColumns } from '../composables/useUserTableColumns'
 import DataTablePlaygroundHints from './DataTablePlaygroundHints.vue'
 import { resolveChatReply } from '../utils/chatPlayground'
+import { getPlaygroundDemoComponent } from '../demos/registry'
 
 const props = defineProps<{ name: string }>()
+const externalDemo = computed(() => getPlaygroundDemoComponent(props.name))
 const { t, messages, locale } = usePlaygroundLocale()
 const userTableColumns = useUserTableColumns()
 const dataTableLabels = useDataTableLabels()
@@ -579,7 +581,7 @@ function optionStyle(active: boolean) {
             {{ t('buttonPlayground.previewAction') }}
           </Button>
         </div>
-        <div class="grid grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.appearanceLabel') }}</p>
             <button
@@ -777,8 +779,8 @@ function optionStyle(active: boolean) {
           aria-hidden="true"
         />
 
-        <div class="flex items-center justify-between gap-4 overflow-x-auto border-t border-border pt-4">
-          <div class="flex shrink-0 items-center gap-4 whitespace-nowrap">
+        <div class="pg-table-footer">
+          <div class="pg-table-footer__meta">
             <p class="text-sm text-muted-foreground">
               <span class="font-medium text-foreground">{{ pgTotalRecords }}</span>
               {{ pgTotalRecords === 1 ? dataTableLabels.record : dataTableLabels.records }}
@@ -794,12 +796,14 @@ function optionStyle(active: boolean) {
             />
           </div>
 
-          <Pagination
-            v-model:current-page="pgCurrentPage"
-            :total="pgTotalRecords"
-            :page-size="pgPageSize"
-            class="shrink-0"
-          />
+          <div class="pg-table-footer__actions">
+            <Pagination
+              v-model:current-page="pgCurrentPage"
+              :total="pgTotalRecords"
+              :page-size="pgPageSize"
+              class="shrink-0"
+            />
+          </div>
         </div>
 
         <div>
@@ -873,6 +877,7 @@ function optionStyle(active: boolean) {
           :empty-title="dataTableLabels.emptyTitle"
           :empty-description="dataTableLabels.emptyDescription"
           :labels="dataTableLabels"
+          :locale="locale"
           @request="loadDrawerTable"
         >
           <template #cell-status="{ value }">
@@ -1012,7 +1017,7 @@ function optionStyle(active: boolean) {
         >
           {{ alertMessages[alertVariant] }}
         </Alert>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">variant</p>
             <button
@@ -1049,7 +1054,7 @@ function optionStyle(active: boolean) {
         >
           {{ alertMessages[toastVariant] }}
         </Toast>
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">variant</p>
             <button
@@ -1202,7 +1207,7 @@ function optionStyle(active: boolean) {
           <strong class="text-[#E8EDF5]">AppLayout</strong> {{ t('layoutPlayground.introLead') }}
           {{ t('layoutPlayground.introBody') }}
         </p>
-        <div class="grid grid-cols-2 gap-2 text-[10px]">
+        <div class="grid grid-cols-1 gap-2 text-[10px] sm:grid-cols-2">
           <div class="rounded-md px-2 py-1.5" style="background: rgba(0,212,255,0.08); color: #00D4FF">
             <span class="font-mono uppercase">{{ t('layoutPlayground.slots.header') }}</span>
           </div>
@@ -1379,7 +1384,7 @@ function optionStyle(active: boolean) {
           </template>
         </AppLayout>
 
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('layoutPlayground.regionsTitle') }}</p>
             <button
@@ -1455,6 +1460,9 @@ function optionStyle(active: boolean) {
       </div>
     </template>
 
+    <!-- External registry demos -->
+    <component :is="externalDemo" v-else-if="externalDemo" />
+
     <!-- Fallback -->
     <template v-else>
       <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
@@ -1463,6 +1471,6 @@ function optionStyle(active: boolean) {
       </div>
     </template>
 
-    <UsageBlock :code="codeSnippet" />
+    <UsageBlock v-if="!externalDemo" :code="codeSnippet" />
   </div>
 </template>

@@ -50,7 +50,7 @@ const withIcon = ref(true)
         {{ t('inputsPlayground.modePlain') }}
       </button>
     </div>
-    <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+    <div class="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2">
       <FormField :label="t('inputsPlayground.fields.fullName')">
         <template #default="{ id }">
           <div class="relative">

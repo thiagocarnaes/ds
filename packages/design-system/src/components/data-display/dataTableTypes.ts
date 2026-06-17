@@ -51,3 +51,23 @@ export interface DataTableRequestParams {
 }
 
 export type DataTableRowKey<T> = keyof T & string | ((row: T, index: number) => string)
+
+export interface DataTableLabels {
+  record?: string
+  records?: string
+  page?: string
+  pages?: string
+  pageSize?: string
+  searchAriaLabel?: string
+  loadingAriaLabel?: string
+  loadingText?: string
+  filterTitle?: string
+  filterPlaceholder?: string
+  filterAriaLabel?: string
+  filterClear?: string
+  filterDateFrom?: string
+  filterDateTo?: string
+  filterDateFromAriaLabel?: string
+  filterDateToAriaLabel?: string
+  filterEnumAll?: string
+}

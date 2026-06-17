@@ -1,8 +1,12 @@
 import type { PlaygroundMessages } from './types'
+import {
+  componentCatalogDescriptionsEn,
+} from './componentCatalogDescriptions'
 
 export const en: PlaygroundMessages = {
   categories: {
     all: 'All',
+    catalog: 'Library',
     docs: 'Docs',
     foundations: 'Foundations',
     forms: 'Forms',
@@ -12,7 +16,7 @@ export const en: PlaygroundMessages = {
   },
   app: {
     title: 'Design System',
-    versionBadge: 'v2.0.0',
+    versionBadge: '{version}',
     stable: 'stable',
     footer: 'All systems operational',
   },
@@ -30,14 +34,15 @@ export const en: PlaygroundMessages = {
     selectLabel: 'Language',
   },
   hero: {
-    versionLine: 'v2.0.0 · stable',
+    versionLine: '{version} · stable',
     titleLine1: 'One system.',
     titleLine2: 'Every team.',
     subtitle:
       'A shared foundation for designers and engineers — accessible Vue 3 components and live playgrounds for every team.',
     browseComponents: 'Browse components',
+    playground: 'Playground',
     installDocs: 'Install & docs',
-    pillarComponentsTitle: '53 Components',
+    pillarComponentsTitle: '{count} Components',
     pillarComponentsBody: 'Forms, labels, feedback, layout — interactive and accessible.',
     pillarPlaygroundsTitle: 'Live Playgrounds',
     pillarPlaygroundsBody: 'Every card is a sandbox. Change props and see updates instantly.',
@@ -61,7 +66,7 @@ export const en: PlaygroundMessages = {
     datatable: { label: 'DataTable', tag: 'multi-sort · filters' },
     index: {
       titleByCategory: {
-        all: 'All Components',
+        all: 'Playgrounds ({count})',
         forms: 'Forms Components',
         labels: 'Labels Components',
         feedback: 'Feedback Components',
@@ -70,8 +75,14 @@ export const en: PlaygroundMessages = {
     },
   },
   componentIndex: {
+    showcaseTitle: 'Showcase',
     items: {
       Button: { count: '6 variants', category: 'forms' },
+      Input: { count: '4 states', category: 'forms' },
+      DateInput: { count: 'locale', category: 'forms' },
+      Switch: { count: 'on/off', category: 'forms' },
+      RadioGroup: { count: 'exclusive', category: 'forms' },
+      FormField: { count: 'label · error', category: 'forms' },
       Toggle: { count: 'binary', category: 'forms' },
       Checkbox: { count: '3 states', category: 'forms' },
       Select: { count: 'filterable', category: 'forms' },
@@ -83,12 +94,45 @@ export const en: PlaygroundMessages = {
       Pagination: { count: 'numbered', category: 'layout' },
       DataTable: { count: 'multi-sort · filters', category: 'layout' },
       Layout: { count: 'collapsible', category: 'layout' },
+      'Layout Primitives': { count: 'container · stack · grid', category: 'layout' },
       Modal: { count: 'overlay', category: 'feedback' },
+      Dialog: { count: 'confirm', category: 'feedback' },
+      Drawer: { count: '4 sides', category: 'feedback' },
+      Tooltip: { count: '4 placements', category: 'feedback' },
+      Popover: { count: 'click', category: 'feedback' },
       Spinner: { count: '3 sizes', category: 'feedback' },
+      Progress: { count: 'determinate', category: 'feedback' },
+      Skeleton: { count: 'loading', category: 'feedback' },
       Alert: { count: '4 variants', category: 'feedback' },
       Toast: { count: 'auto-dismiss', category: 'feedback' },
       'AI Chat': { count: 'conversational', category: 'feedback' },
     },
+  },
+  dialogPlayground: {
+    open: 'Open dialog',
+    title: 'Confirm action',
+    description: 'This action cannot be undone.',
+    body: 'Are you sure you want to continue?',
+    cancel: 'Cancel',
+    confirm: 'Confirm',
+  },
+  overlayDrawerPlayground: {
+    open: 'Open drawer',
+    title: 'Details',
+    body: 'Secondary panel content. Slides in from the selected edge.',
+  },
+  tooltipPlayground: {
+    trigger: 'Hover me',
+    hint: 'Helpful hint',
+  },
+  popoverPlayground: {
+    trigger: 'Open popover',
+    title: 'Quick actions',
+    body: 'Popover content anchored to the trigger.',
+  },
+  layoutPrimitivesPlayground: {
+    containerHint: 'Container centers content with responsive max-width.',
+    action: 'Action',
   },
   layoutPlayground: {
     description:
@@ -423,6 +467,15 @@ export const en: PlaygroundMessages = {
       emptyTitle: 'No results',
       emptyDescription: 'Try adjusting your search or filters.',
       loadingText: 'Loading data…',
+      filterTitle: 'Filter {column}',
+      filterPlaceholder: 'Filter {column}…',
+      filterAriaLabel: 'Filter {column}',
+      filterClear: 'Clear',
+      filterDateFrom: 'From',
+      filterDateTo: 'To',
+      filterDateFromAriaLabel: 'Filter from date',
+      filterDateToAriaLabel: 'Filter to date',
+      filterEnumAll: 'All {column}',
     },
   },
   drawer: {
@@ -431,6 +484,11 @@ export const en: PlaygroundMessages = {
     previewFallback: '{name} preview',
     descriptions: {
       Button: 'Triggers an event or action. Use appearance to communicate hierarchy.',
+      Input: 'Text field with error, success, and disabled states.',
+      DateInput: 'Date picker with locale-aware display and calendar popover.',
+      Switch: 'Compact on/off control for settings and toggles.',
+      RadioGroup: 'Exclusive selection from a short list of options.',
+      FormField: 'Wraps inputs with label, helper text, and validation messages.',
       Toggle: 'An on/off switch for binary settings. Action takes immediate effect.',
       Checkbox: 'Allows multiple concurrent selections. Supports indeterminate state.',
       Select: 'Single or multi-select with search filtering from a dropdown list.',
@@ -443,11 +501,18 @@ export const en: PlaygroundMessages = {
       DataTable:
         'Full datatable with Ctrl+click multi-sort, column filter popovers, pagination, and client or server-side data.',
       Layout: 'Application shell with collapsible header, menu, content, and footer regions.',
+      'Layout Primitives': 'Container, Stack, and Grid for page structure and spacing.',
       Modal: 'Presents content in an overlay requiring interaction.',
+      Dialog: 'Modal dialog with title, description, and footer actions.',
+      Drawer: 'Slide-in panel from any edge for secondary content.',
+      Tooltip: 'Contextual hint on hover or focus.',
+      Popover: 'Click-triggered floating content anchored to a control.',
       Spinner: 'Animated indicator while content or data is being fetched.',
+      Progress: 'Determinate or indeterminate progress bar.',
+      Skeleton: 'Placeholder shapes while content is loading.',
       Alert: 'Inline feedback banner that stays in the page layout.',
       Toast: 'Transient notification that auto-dismisses. Use for quick action feedback.',
-      'AI Chat': 'Conversational interface with streaming-style responses and suggestion chips.',
+      'AI Chat': 'Composite showcase — conversational UI with suggestions (not a library export).',
     },
   },
   usage: {
@@ -493,5 +558,15 @@ export const en: PlaygroundMessages = {
       Layout: 'Layout',
       Utils: 'Utils',
     },
+  },
+  componentCatalog: {
+    badge: 'Component library',
+    title: '{count} components',
+    subtitle:
+      'Full reference of exported Vue components with descriptions and copy-ready usage snippets.',
+    back: 'Back to playground',
+    usageHeading: 'How to use',
+    openPlayground: 'Open playground',
+    descriptions: componentCatalogDescriptionsEn,
   },
 }

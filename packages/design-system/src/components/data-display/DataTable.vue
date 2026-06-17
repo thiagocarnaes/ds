@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { ArrowDown, ArrowUp, ArrowUpDown, Search } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 import Input from '@/components/form/Input.vue'
@@ -16,6 +16,7 @@ import DataTableColumnFilterMenu from './DataTableColumnFilterMenu.vue'
 import type {
   DataTableColumn,
   DataTableColumnFilters,
+  DataTableLabels,
   DataTableRequestParams,
   DataTableSortEntry,
   SortDirection,
@@ -29,16 +30,7 @@ import {
   sortDataTableRowsMulti,
 } from './dataTableUtils'
 
-export interface DataTableLabels {
-  record?: string
-  records?: string
-  page?: string
-  pages?: string
-  pageSize?: string
-  searchAriaLabel?: string
-  loadingAriaLabel?: string
-  loadingText?: string
-}
+export type { DataTableLabels } from './dataTableTypes'
 
 export interface DataTableProps {
   columns: DataTableColumn[]
@@ -54,6 +46,7 @@ export interface DataTableProps {
   emptyTitle?: string
   emptyDescription?: string
   labels?: DataTableLabels
+  locale?: string
   class?: string
 }
 
@@ -66,6 +59,15 @@ const defaultLabels: Required<DataTableLabels> = {
   searchAriaLabel: 'Search table',
   loadingAriaLabel: 'Loading table data',
   loadingText: 'Loading data…',
+  filterTitle: 'Filter {column}',
+  filterPlaceholder: 'Filter {column}…',
+  filterAriaLabel: 'Filter {column}',
+  filterClear: 'Clear',
+  filterDateFrom: 'From',
+  filterDateTo: 'To',
+  filterDateFromAriaLabel: 'Filter from date',
+  filterDateToAriaLabel: 'Filter to date',
+  filterEnumAll: 'All {column}',
 }
 
 const props = withDefaults(defineProps<DataTableProps>(), {
@@ -77,6 +79,7 @@ const props = withDefaults(defineProps<DataTableProps>(), {
   striped: true,
   emptyTitle: 'No results',
   emptyDescription: 'Try adjusting your search or filters.',
+  locale: 'en',
 })
 
 const resolvedLabels = computed(() => ({
@@ -95,6 +98,19 @@ const sortDirection = defineModel<SortDirection>('sortDirection', { default: nul
 const emit = defineEmits<{
   request: [params: DataTableRequestParams]
 }>()
+
+const openFilterColumnKey = ref<string | null>(null)
+
+function setFilterMenuOpen(columnKey: string, isOpen: boolean): void {
+  openFilterColumnKey.value = isOpen ? columnKey : null
+}
+
+function displayCellValue(row: Record<string, unknown>, column: DataTableColumn): string {
+  return formatCellValue(getCellValue(row, column.key), {
+    locale: props.locale,
+    column,
+  })
+}
 
 const clientFilteredRows = computed(() => {
   if (props.serverSide) return props.rows
@@ -328,6 +344,10 @@ watch(
                   v-model="columnFilters"
                   :column="column"
                   :disabled="loading"
+                  :labels="resolvedLabels"
+                  :locale="locale"
+                  :open="openFilterColumnKey === column.key"
+                  @update:open="setFilterMenuOpen(column.key, $event)"
                 />
               </div>
             </th>
@@ -370,7 +390,7 @@ watch(
                 :value="getCellValue(row, column.key)"
                 :index="rowIndex"
               >
-                {{ formatCellValue(getCellValue(row, column.key)) }}
+                {{ displayCellValue(row, column) }}
               </slot>
             </TableCell>
           </TableRow>
@@ -378,38 +398,44 @@ watch(
       </Table>
     </div>
 
-    <div class="flex items-center justify-between gap-4 overflow-x-auto border-t border-border pt-4">
-      <div class="flex shrink-0 items-center gap-4 whitespace-nowrap">
-        <p class="text-sm text-muted-foreground">
-          <span class="font-medium text-foreground">{{ filteredTotal }}</span>
-          {{ filteredTotal === 1 ? resolvedLabels.record : resolvedLabels.records }}
-          ·
-          <span class="font-medium text-foreground">{{ totalPages }}</span>
-          {{ totalPages === 1 ? resolvedLabels.page : resolvedLabels.pages }}
-        </p>
-        <PageSizeSelect
-          v-model="pageSize"
-          :options="pageSizeOptions"
-          :label="resolvedLabels.pageSize"
-          :disabled="loading"
-          class="shrink-0"
-        />
-      </div>
+    <div class="border-t border-border pt-4">
+      <div class="flex flex-col items-center gap-3 text-center lg:flex-row lg:items-center lg:justify-between lg:gap-4 lg:text-left">
+        <div class="flex min-w-0 flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-4 sm:gap-y-2 lg:items-center lg:justify-start">
+          <p class="flex flex-wrap items-center justify-center gap-x-1 text-sm text-muted-foreground lg:justify-start">
+            <span>
+              <span class="font-medium text-foreground">{{ filteredTotal }}</span>
+              {{ filteredTotal === 1 ? resolvedLabels.record : resolvedLabels.records }}
+            </span>
+            <span aria-hidden="true">·</span>
+            <span>
+              <span class="font-medium text-foreground">{{ totalPages }}</span>
+              {{ totalPages === 1 ? resolvedLabels.page : resolvedLabels.pages }}
+            </span>
+          </p>
+          <PageSizeSelect
+            v-model="pageSize"
+            :options="pageSizeOptions"
+            :label="resolvedLabels.pageSize"
+            :disabled="loading"
+            class="shrink-0"
+          />
+        </div>
 
-      <div class="flex shrink-0 items-center gap-3">
-        <Spinner
-          v-if="loading"
-          size="sm"
-          :glow="false"
-          class="shrink-0"
-          :aria-label="resolvedLabels.loadingAriaLabel"
-        />
-        <Pagination
-          v-model:current-page="currentPage"
-          :total="filteredTotal"
-          :page-size="pageSize"
-          class="shrink-0"
-        />
+        <div class="flex min-w-0 items-center justify-center gap-3 overflow-x-auto pb-0.5 lg:justify-end">
+          <Spinner
+            v-if="loading"
+            size="sm"
+            :glow="false"
+            class="shrink-0"
+            :aria-label="resolvedLabels.loadingAriaLabel"
+          />
+          <Pagination
+            v-model:current-page="currentPage"
+            :total="filteredTotal"
+            :page-size="pageSize"
+            class="min-w-max shrink-0"
+          />
+        </div>
       </div>
     </div>
   </div>

@@ -49,7 +49,7 @@ function optionStyle(active: boolean) {
   <PlayCard :label="t('cards.button.label')" accent-color="#00D4FF" :tag="t('cards.button.tag')">
     <template #icon><Zap :size="14" /></template>
     <div class="flex flex-col gap-3">
-      <div class="pg-playground-preview flex h-16 items-center justify-center rounded-xl">
+      <div class="pg-playground-preview flex items-center justify-center rounded-xl">
         <Button
           :appearance="appearance === 'destructive' ? 'danger' : appearance === 'default' ? 'primary' : appearance"
           :size="size"
@@ -60,7 +60,7 @@ function optionStyle(active: boolean) {
           {{ t('buttonPlayground.previewAction') }}
         </Button>
       </div>
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <div class="min-w-0">
           <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
             {{ t('buttonPlayground.appearanceLabel') }}

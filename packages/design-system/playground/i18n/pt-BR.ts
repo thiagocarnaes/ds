@@ -1,8 +1,12 @@
 import type { PlaygroundMessages } from './types'
+import {
+  componentCatalogDescriptionsPtBR,
+} from './componentCatalogDescriptions'
 
 export const ptBR: PlaygroundMessages = {
   categories: {
     all: 'Todos',
+    catalog: 'Biblioteca',
     docs: 'Docs',
     foundations: 'Fundamentos',
     forms: 'Formulários',
@@ -12,7 +16,7 @@ export const ptBR: PlaygroundMessages = {
   },
   app: {
     title: 'Design System',
-    versionBadge: 'v2.0.0',
+    versionBadge: '{version}',
     stable: 'estável',
     footer: 'Todos os sistemas operacionais',
   },
@@ -30,14 +34,15 @@ export const ptBR: PlaygroundMessages = {
     selectLabel: 'Idioma',
   },
   hero: {
-    versionLine: 'v2.0.0 · estável',
+    versionLine: '{version} · estável',
     titleLine1: 'Um sistema.',
     titleLine2: 'Toda equipe.',
     subtitle:
       'Uma base compartilhada para designers e engenheiros — componentes Vue 3 acessíveis e playgrounds ao vivo para cada equipe.',
     browseComponents: 'Explorar componentes',
+    playground: 'Playground',
     installDocs: 'Instalar e docs',
-    pillarComponentsTitle: '53 componentes',
+    pillarComponentsTitle: '{count} componentes',
     pillarComponentsBody: 'Formulários, rótulos, feedback, layout — interativos e acessíveis.',
     pillarPlaygroundsTitle: 'Playgrounds ao vivo',
     pillarPlaygroundsBody: 'Cada card é um sandbox. Altere props e veja as mudanças na hora.',
@@ -61,7 +66,7 @@ export const ptBR: PlaygroundMessages = {
     datatable: { label: 'DataTable', tag: 'multi-sort · filtros' },
     index: {
       titleByCategory: {
-        all: 'Todos os componentes',
+        all: 'Playgrounds ({count})',
         forms: 'Componentes de formulários',
         labels: 'Componentes de rótulos',
         feedback: 'Componentes de feedback',
@@ -70,8 +75,14 @@ export const ptBR: PlaygroundMessages = {
     },
   },
   componentIndex: {
+    showcaseTitle: 'Showcase',
     items: {
       Button: { count: '6 variantes', category: 'forms' },
+      Input: { count: '4 estados', category: 'forms' },
+      DateInput: { count: 'locale', category: 'forms' },
+      Switch: { count: 'on/off', category: 'forms' },
+      RadioGroup: { count: 'exclusivo', category: 'forms' },
+      FormField: { count: 'label · erro', category: 'forms' },
       Toggle: { count: 'binário', category: 'forms' },
       Checkbox: { count: '3 estados', category: 'forms' },
       Select: { count: 'filtrável', category: 'forms' },
@@ -83,12 +94,45 @@ export const ptBR: PlaygroundMessages = {
       Pagination: { count: 'numerada', category: 'layout' },
       DataTable: { count: 'multi-sort · filtros', category: 'layout' },
       Layout: { count: 'retrátil', category: 'layout' },
+      'Layout Primitives': { count: 'container · stack · grid', category: 'layout' },
       Modal: { count: 'overlay', category: 'feedback' },
+      Dialog: { count: 'confirmar', category: 'feedback' },
+      Drawer: { count: '4 lados', category: 'feedback' },
+      Tooltip: { count: '4 posições', category: 'feedback' },
+      Popover: { count: 'click', category: 'feedback' },
       Spinner: { count: '3 tamanhos', category: 'feedback' },
+      Progress: { count: 'determinado', category: 'feedback' },
+      Skeleton: { count: 'loading', category: 'feedback' },
       Alert: { count: '4 variantes', category: 'feedback' },
       Toast: { count: 'auto-dismiss', category: 'feedback' },
       'AI Chat': { count: 'conversacional', category: 'feedback' },
     },
+  },
+  dialogPlayground: {
+    open: 'Abrir dialog',
+    title: 'Confirmar ação',
+    description: 'Esta ação não pode ser desfeita.',
+    body: 'Tem certeza que deseja continuar?',
+    cancel: 'Cancelar',
+    confirm: 'Confirmar',
+  },
+  overlayDrawerPlayground: {
+    open: 'Abrir drawer',
+    title: 'Detalhes',
+    body: 'Conteúdo secundário. Desliza a partir da borda selecionada.',
+  },
+  tooltipPlayground: {
+    trigger: 'Passe o mouse',
+    hint: 'Dica útil',
+  },
+  popoverPlayground: {
+    trigger: 'Abrir popover',
+    title: 'Ações rápidas',
+    body: 'Conteúdo flutuante ancorado ao gatilho.',
+  },
+  layoutPrimitivesPlayground: {
+    containerHint: 'Container centraliza o conteúdo com largura máxima responsiva.',
+    action: 'Ação',
   },
   layoutPlayground: {
     description:
@@ -423,6 +467,15 @@ export const ptBR: PlaygroundMessages = {
       emptyTitle: 'Nenhum resultado',
       emptyDescription: 'Tente ajustar a busca ou os filtros.',
       loadingText: 'Carregando dados…',
+      filterTitle: 'Filtrar {column}',
+      filterPlaceholder: 'Filtrar {column}…',
+      filterAriaLabel: 'Filtrar {column}',
+      filterClear: 'Limpar',
+      filterDateFrom: 'De',
+      filterDateTo: 'Até',
+      filterDateFromAriaLabel: 'Filtrar data inicial',
+      filterDateToAriaLabel: 'Filtrar data final',
+      filterEnumAll: 'Todos {column}',
     },
   },
   drawer: {
@@ -431,6 +484,11 @@ export const ptBR: PlaygroundMessages = {
     previewFallback: 'Preview de {name}',
     descriptions: {
       Button: 'Dispara um evento ou ação. Use appearance para comunicar hierarquia.',
+      Input: 'Campo de texto com estados de erro, sucesso e desabilitado.',
+      DateInput: 'Seletor de data com exibição por locale e calendário.',
+      Switch: 'Controle compacto liga/desliga para configurações.',
+      RadioGroup: 'Seleção exclusiva entre opções curtas.',
+      FormField: 'Envolve inputs com label, texto de ajuda e validação.',
       Toggle: 'Interruptor liga/desliga para configurações binárias. A ação é imediata.',
       Checkbox: 'Permite múltiplas seleções simultâneas. Suporta estado indeterminado.',
       Select: 'Seleção única ou múltipla com filtro de busca em lista suspensa.',
@@ -443,11 +501,18 @@ export const ptBR: PlaygroundMessages = {
       DataTable:
         'Tabela completa com multi-sort (Ctrl+clique), filtros por coluna, paginação e dados client-side ou server-side.',
       Layout: 'Shell de aplicação com header, menu, conteúdo e footer retráteis.',
+      'Layout Primitives': 'Container, Stack e Grid para estrutura e espaçamento.',
       Modal: 'Apresenta conteúdo em overlay que exige interação.',
+      Dialog: 'Dialog modal com título, descrição e ações no rodapé.',
+      Drawer: 'Painel deslizante de qualquer borda para conteúdo secundário.',
+      Tooltip: 'Dica contextual no hover ou foco.',
+      Popover: 'Conteúdo flutuante ao clicar, ancorado ao gatilho.',
       Spinner: 'Indicador animado enquanto conteúdo ou dados são carregados.',
+      Progress: 'Barra de progresso determinada ou indeterminada.',
+      Skeleton: 'Placeholders enquanto o conteúdo carrega.',
       Alert: 'Banner de feedback inline que permanece no layout da página.',
       Toast: 'Notificação transitória que fecha sozinha. Use para feedback rápido de ações.',
-      'AI Chat': 'Interface conversacional com respostas em estilo streaming e chips de sugestão.',
+      'AI Chat': 'Showcase composto — UI conversacional com sugestões (não exportado na lib).',
     },
   },
   usage: {
@@ -493,5 +558,15 @@ export const ptBR: PlaygroundMessages = {
       Layout: 'Layout',
       Utils: 'Utilitários',
     },
+  },
+  componentCatalog: {
+    badge: 'Biblioteca de componentes',
+    title: '{count} componentes',
+    subtitle:
+      'Referência completa dos componentes Vue exportados, com descrição e exemplos prontos para copiar.',
+    back: 'Voltar ao playground',
+    usageHeading: 'Como utilizar',
+    openPlayground: 'Abrir playground',
+    descriptions: componentCatalogDescriptionsPtBR,
   },
 }

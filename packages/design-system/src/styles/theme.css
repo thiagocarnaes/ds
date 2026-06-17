@@ -24,6 +24,10 @@
   --switch-background: #a8bdd4;
   --ring: #0097b8;
   --radius: 0.5rem;
+  --primary-shadow: 0 0 12px rgba(0, 151, 184, 0.22);
+  --primary-shadow-hover: 0 0 24px rgba(0, 151, 184, 0.42), 0 0 48px rgba(0, 151, 184, 0.2);
+  --destructive-shadow: 0 0 12px rgba(217, 45, 68, 0.22);
+  --destructive-shadow-hover: 0 0 24px rgba(217, 45, 68, 0.42), 0 0 48px rgba(217, 45, 68, 0.2);
   --success: #008f6b;
   --warning: #c96a00;
 }
@@ -50,6 +54,10 @@
   --input-background: #122236;
   --switch-background: #1e3a5a;
   --ring: #00d4ff;
+  --primary-shadow: 0 0 12px rgba(0, 212, 255, 0.18);
+  --primary-shadow-hover: 0 0 28px rgba(0, 212, 255, 0.52), 0 0 56px rgba(0, 212, 255, 0.24);
+  --destructive-shadow: 0 0 12px rgba(255, 61, 87, 0.18);
+  --destructive-shadow-hover: 0 0 28px rgba(255, 61, 87, 0.52), 0 0 56px rgba(255, 61, 87, 0.24);
   --success: #00e5b0;
   --warning: #ff8b00;
 }
@@ -93,6 +101,10 @@
   --shadow-sm: 0 1px 2px rgba(11, 21, 38, 0.06);
   --shadow-md: 0 4px 12px rgba(11, 21, 38, 0.08);
   --shadow-lg: 0 8px 24px rgba(11, 21, 38, 0.1);
+  --shadow-primary: var(--primary-shadow);
+  --shadow-primary-hover: var(--primary-shadow-hover);
+  --shadow-destructive: var(--destructive-shadow);
+  --shadow-destructive-hover: var(--destructive-shadow-hover);
 }
 
 .dark {

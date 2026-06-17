@@ -31,7 +31,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
         @click="open = false"
       />
       <aside
-        class="ds-slide-in absolute right-0 top-0 flex h-full w-1/2 flex-col overflow-hidden"
+        class="pg-drawer-aside ds-slide-in absolute right-0 top-0 flex h-full flex-col overflow-hidden"
         :style="{
           background: 'var(--pg-drawer-bg)',
           borderLeft: '1px solid var(--pg-drawer-border)',
@@ -39,10 +39,10 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
         }"
       >
         <div
-          class="flex shrink-0 items-center justify-between px-6 py-5"
+          class="flex shrink-0 items-start justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5"
           style="border-bottom: 1px solid var(--pg-border)"
         >
-          <div>
+          <div class="min-w-0 flex-1 pr-2">
             <div class="mb-0.5 flex items-center gap-2">
               <GlowDot />
               <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">{{ t('drawer.component') }}</span>
@@ -60,7 +60,7 @@ onUnmounted(() => document.removeEventListener('keydown', onKeydown))
             <X :size="16" />
           </button>
         </div>
-        <div class="playground-scroll flex-1 overflow-y-auto overflow-x-hidden px-6 py-6">
+        <div class="playground-scroll flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 sm:px-6 sm:py-6">
           <DrawerPlayground :name="name" />
         </div>
       </aside>
