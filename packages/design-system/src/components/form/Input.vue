@@ -5,6 +5,7 @@ import { formInputVariants, type FormInputVariants } from './formInputVariants'
 
 export interface InputProps extends /* @vue-ignore */ FormInputVariants {
   modelValue?: string
+  type?: 'text' | 'email' | 'password' | 'search' | 'date'
   placeholder?: string
   disabled?: boolean
   readonly?: boolean
@@ -17,6 +18,7 @@ export interface InputProps extends /* @vue-ignore */ FormInputVariants {
 
 const props = withDefaults(defineProps<InputProps>(), {
   modelValue: '',
+  type: 'text',
   disabled: false,
   readonly: false,
   error: false,
@@ -48,7 +50,7 @@ function onInput(event: Event): void {
   <div class="w-full">
     <input
       :id="id"
-      type="text"
+      :type="type"
       :value="modelValue"
       :placeholder="placeholder"
       :disabled="disabled"

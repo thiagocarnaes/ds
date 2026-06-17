@@ -68,9 +68,20 @@ function pageButtonClass(isActive: boolean): string {
     v-if="showPagination"
     role="navigation"
     aria-label="pagination"
-    :class="cn('mx-auto flex w-full justify-center', props.class)"
+    :class="cn('flex w-auto items-center', props.class)"
   >
     <ul class="flex flex-row items-center gap-1">
+      <li>
+        <button
+          type="button"
+          :class="pageButtonClass(false)"
+          :disabled="currentPage <= 1"
+          aria-label="Go to first page"
+          @click="goToPage(1)"
+        >
+          «
+        </button>
+      </li>
       <li>
         <button
           type="button"
@@ -110,6 +121,17 @@ function pageButtonClass(isActive: boolean): string {
           @click="goToPage(currentPage + 1)"
         >
           ›
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
+          :class="pageButtonClass(false)"
+          :disabled="currentPage >= totalPages"
+          aria-label="Go to last page"
+          @click="goToPage(totalPages)"
+        >
+          »
         </button>
       </li>
     </ul>

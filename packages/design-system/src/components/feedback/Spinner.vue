@@ -7,13 +7,15 @@ export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg'
 export interface SpinnerProps {
   size?: SpinnerSize
   color?: string
+  glow?: boolean
   ariaLabel?: string
   class?: string
 }
 
 const props = withDefaults(defineProps<SpinnerProps>(), {
   size: 'md',
-  color: '#00D4FF',
+  color: 'var(--primary)',
+  glow: true,
   ariaLabel: 'Loading',
 })
 
@@ -25,9 +27,9 @@ const sizeClasses: Record<SpinnerSize, string> = {
 }
 
 const spinnerStyle = computed(() => ({
-  borderColor: 'rgba(255,255,255,0.08)',
+  borderColor: 'color-mix(in srgb, var(--foreground) 12%, transparent)',
   borderTopColor: props.color,
-  boxShadow: `0 0 12px ${props.color}40`,
+  ...(props.glow ? { boxShadow: `0 0 12px color-mix(in srgb, ${props.color} 25%, transparent)` } : {}),
 }))
 </script>
 

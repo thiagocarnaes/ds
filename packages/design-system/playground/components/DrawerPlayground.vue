@@ -32,6 +32,7 @@ import {
   Lozenge,
   Modal,
   Pagination,
+  DataTable,
   Select,
   SidebarMenu,
   SidebarMenuGroup,
@@ -52,6 +53,14 @@ import {
   type ButtonIconName,
   type ToastPosition,
 } from '@/index'
+import type { DataTableColumnFilters, DataTableSortEntry } from '@/components/data-display/dataTableTypes'
+import {
+  fetchUsers,
+  mockUsers,
+  userTableColumns,
+  type UserRow,
+} from '../data/mockUsers'
+import DataTablePlaygroundHints from './DataTablePlaygroundHints.vue'
 
 const props = defineProps<{ name: string }>()
 
@@ -199,6 +208,48 @@ const lozengeBold = ref(false)
 const breadcrumbDepth = ref(3)
 const totalPages = ref(8)
 const currentPage = ref(3)
+const dtSearch = ref('')
+const dtPage = ref(1)
+const dtPageSize = ref(5)
+const dtMode = ref<'client' | 'api'>('api')
+const dtSortStack = ref<DataTableSortEntry[]>([])
+const dtColumnFilters = ref<DataTableColumnFilters>({})
+const dtLoading = ref(false)
+const dtRows = ref<UserRow[]>([])
+const dtTotal = ref(0)
+
+async function loadDrawerTable(): Promise<void> {
+  dtLoading.value = true
+  try {
+    const result = await fetchUsers({
+      page: dtPage.value,
+      pageSize: dtPageSize.value,
+      search: dtSearch.value,
+      sortStack: dtSortStack.value,
+      columnFilters: dtColumnFilters.value,
+      sortKey: dtSortStack.value[0]?.key ?? null,
+      sortDirection: dtSortStack.value[0]?.direction ?? null,
+    })
+    dtRows.value = result.rows
+    dtTotal.value = result.total
+  } finally {
+    dtLoading.value = false
+  }
+}
+
+watch([dtMode, dtPage, dtPageSize, dtSearch, dtSortStack, dtColumnFilters], () => {
+  if (dtMode.value === 'api') void loadDrawerTable()
+}, { immediate: true, deep: true })
+
+function setDrawerTableMode(next: 'client' | 'api'): void {
+  if (dtMode.value === next) return
+  dtMode.value = next
+  dtSearch.value = ''
+  dtPage.value = 1
+  dtSortStack.value = []
+  dtColumnFilters.value = {}
+}
+
 const spinnerColor = ref('#00D4FF')
 const activeTab = ref('overview')
 
@@ -400,6 +451,42 @@ ${breadcrumbItems
   :page-size="10"
   :current-page="${currentPage.value}"
 />`,
+    DataTable: `const columns = [
+  { key: 'name', label: 'Name', sortable: true, filter: 'text' },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    filter: 'enum',
+    filterOptions: [
+      { label: 'Active', value: 'active' },
+      { label: 'Inactive', value: 'inactive' },
+    ],
+  },
+  { key: 'lastLogin', label: 'Last login', sortable: true, filter: 'date' },
+]
+
+<DataTable
+  v-model:search="search"
+  v-model:current-page="page"
+  v-model:page-size="pageSize"
+  v-model:sort-stack="sortStack"
+  v-model:column-filters="columnFilters"
+  :columns="columns"
+  :rows="rows"
+  server-side
+  :total="total"
+  :loading="loading"
+  row-key="id"
+  @request="fetchRows"
+>
+  <template #cell-status="{ value }">
+    <Lozenge appearance="success">{{ value }}</Lozenge>
+  </template>
+</DataTable>
+
+// Click header → single sort. Ctrl+click → multi-sort.
+// Filter icon in header → text / date range / enum popover.`,
     Spinner: `<Spinner
   size="md"
   color="${spinnerColor.value}"
@@ -690,6 +777,73 @@ function optionStyle(active: boolean) {
             <p class="font-mono text-lg"><span class="text-primary">{{ currentPage }}</span> / {{ totalPages }}</p>
           </div>
         </div>
+      </div>
+    </template>
+
+    <!-- DataTable -->
+    <template v-else-if="name === 'DataTable'">
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
+        <DataTablePlaygroundHints
+          :sort-stack="dtSortStack"
+          :column-filters="dtColumnFilters"
+        />
+
+        <div
+          class="inline-flex rounded-lg p-0.5"
+          style="background: var(--pg-nav-active-bg); border: 1px solid var(--pg-card-border)"
+        >
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors"
+            :style="
+              dtMode === 'client'
+                ? { background: '#2979FF22', color: '#2979FF' }
+                : { color: 'var(--pg-text-muted)' }
+            "
+            @click="setDrawerTableMode('client')"
+          >
+            Client
+          </button>
+          <button
+            type="button"
+            class="rounded-md px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider transition-colors"
+            :style="
+              dtMode === 'api'
+                ? { background: '#2979FF22', color: '#2979FF' }
+                : { color: 'var(--pg-text-muted)' }
+            "
+            @click="setDrawerTableMode('api')"
+          >
+            Mock API
+          </button>
+        </div>
+
+        <DataTable
+          v-model:search="dtSearch"
+          v-model:current-page="dtPage"
+          v-model:page-size="dtPageSize"
+          v-model:sort-stack="dtSortStack"
+          v-model:column-filters="dtColumnFilters"
+          :columns="userTableColumns"
+          :rows="dtMode === 'client' ? mockUsers : dtRows"
+          :server-side="dtMode === 'api'"
+          :total="dtMode === 'api' ? dtTotal : undefined"
+          :loading="dtMode === 'api' && dtLoading"
+          row-key="id"
+          search-placeholder="Filter users…"
+          @request="loadDrawerTable"
+        >
+          <template #cell-status="{ value }">
+            <Lozenge
+              :appearance="
+                value === 'active' ? 'success' : value === 'pending' ? 'warning' : 'default'
+              "
+            >
+              {{ value }}
+            </Lozenge>
+          </template>
+        </DataTable>
       </div>
     </template>
 

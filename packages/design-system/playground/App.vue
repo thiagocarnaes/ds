@@ -19,6 +19,7 @@ import MessagesCard from './cards/MessagesCard.vue'
 import ChatPreviewCard from './cards/ChatPreviewCard.vue'
 import ComponentIndexCard from './cards/ComponentIndexCard.vue'
 import LayoutCard from './cards/LayoutCard.vue'
+import DataTableCard from './cards/DataTableCard.vue'
 import DocumentationPage from './views/DocumentationPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
 
@@ -44,6 +45,7 @@ const cards = [
   { id: 'messages', cats: ['Feedback'], span: 1, component: MessagesCard },
   { id: 'chat', cats: ['Feedback'], span: 4, component: ChatPreviewCard },
   { id: 'layout', cats: ['Layout'], span: 3, component: LayoutCard, tall: true },
+  { id: 'datatable', cats: ['Layout'], span: 4, component: DataTableCard, tall: true },
   { id: 'index', cats: ['Layout'], span: 3, component: ComponentIndexCard, tall: true },
 ] as const
 
@@ -57,14 +59,14 @@ const visibleCards = computed(() =>
 
 function cardGridSpan(card: PlaygroundCard): number {
   if (activeCat.value === 'All') {
-    if (card.id === 'inputs' || card.id === 'icons' || card.id === 'color' || card.id === 'chat') return 4
+    if (card.id === 'inputs' || card.id === 'icons' || card.id === 'color' || card.id === 'chat' || card.id === 'datatable') return 4
     if (card.id === 'button' || card.id === 'controls') return 2
     if (card.id === 'loading' || card.id === 'messages') return 2
     return Math.min(Math.ceil((card.span / 3) * 4), 4)
   }
 
   const maxCols = 2
-  if (card.id === 'inputs' || card.id === 'icons' || card.id === 'color' || card.id === 'chat') {
+  if (card.id === 'inputs' || card.id === 'icons' || card.id === 'color' || card.id === 'chat' || card.id === 'datatable') {
     return maxCols
   }
   return Math.min(card.span, maxCols)
@@ -263,6 +265,10 @@ function openDocs(): void {
           <LayoutCard
             v-else-if="card.id === 'layout'"
             @open="openDrawer('Layout')"
+          />
+          <DataTableCard
+            v-else-if="card.id === 'datatable'"
+            @open="openDrawer('DataTable')"
           />
           <component :is="card.component" v-else />
         </div>

@@ -44,6 +44,47 @@ function onSave() {
 
 const darkMode = `document.documentElement.classList.toggle('dark', isDark)`
 
+const dataTableUsage = `<script setup lang="ts">
+import { DataTable, Lozenge } from '${PACKAGE}'
+import type { DataTableColumn, DataTableColumnFilters, DataTableSortEntry } from '${PACKAGE}'
+import { ref } from 'vue'
+
+const columns: DataTableColumn[] = [
+  { key: 'name', label: 'Name', sortable: true, filter: 'text' },
+  {
+    key: 'status',
+    label: 'Status',
+    sortable: true,
+    filter: 'enum',
+    filterOptions: [
+      { label: 'Active', value: 'active' },
+      { label: 'Inactive', value: 'inactive' },
+    ],
+  },
+  { key: 'createdAt', label: 'Created', sortable: true, filter: 'date' },
+]
+
+const rows = ref([{ id: '1', name: 'Ana', status: 'active', createdAt: '2026-06-01' }])
+const sortStack = ref<DataTableSortEntry[]>([])
+const columnFilters = ref<DataTableColumnFilters>({})
+<\/script>
+
+<template>
+  <DataTable
+    v-model:sort-stack="sortStack"
+    v-model:column-filters="columnFilters"
+    :columns="columns"
+    :rows="rows"
+    row-key="id"
+  >
+    <template #cell-status="{ value }">
+      <Lozenge appearance="success">{{ value }}</Lozenge>
+    </template>
+  </DataTable>
+</template>
+
+<!-- Click header: single sort. Ctrl+click: multi-sort. Filter icon: column popover. -->`
+
 const componentGroups = [
   {
     category: 'Actions',
@@ -63,7 +104,7 @@ const componentGroups = [
   },
   {
     category: 'Data display',
-    items: ['Card', 'Divider', 'Avatar', 'AvatarGroup', 'Lozenge', 'Table*', 'List', 'ListItem', 'EmptyState'],
+    items: ['Card', 'Divider', 'Avatar', 'AvatarGroup', 'Lozenge', 'Table*', 'DataTable', 'DataTableColumnFilterMenu', 'PageSizeSelect', 'List', 'ListItem', 'EmptyState'],
   },
   {
     category: 'Overlay',
@@ -167,6 +208,17 @@ const componentGroups = [
         <code class="pg-docs-inline">&lt;html&gt;</code> to switch semantic tokens.
       </p>
       <UsageBlock :code="darkMode" />
+    </section>
+
+    <section class="pg-docs-section">
+      <h3 class="pg-docs-heading">DataTable</h3>
+      <p class="pg-text-subtle mb-3 text-sm">
+        Configure columns with <code class="pg-docs-inline">filter: 'text' | 'date' | 'enum'</code>,
+        use <code class="pg-docs-inline">v-model:sort-stack</code> for multi-sort (Ctrl+click in UI),
+        and <code class="pg-docs-inline">v-model:column-filters</code> for per-column filters opened
+        from the header icon.
+      </p>
+      <UsageBlock :code="dataTableUsage" />
     </section>
 
     <section class="pg-docs-section">

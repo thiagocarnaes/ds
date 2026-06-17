@@ -7,7 +7,7 @@ import DrawerPlayground from './DrawerPlayground.vue'
 const props = defineProps<{ name: string | null }>()
 const open = defineModel<boolean>('open', { default: false })
 
-const isWidePreview = computed(() => props.name === 'Layout')
+const isWidePreview = computed(() => props.name === 'Layout' || props.name === 'DataTable')
 
 const descriptions: Record<string, string> = {
   Button: 'Triggers an event or action. Use appearance to communicate hierarchy.',
@@ -20,6 +20,7 @@ const descriptions: Record<string, string> = {
   Tabs: 'Groups related content on the same page with switchable panels.',
   Breadcrumbs: 'Shows the user their location within the site hierarchy.',
   Pagination: 'Divides content into pages and lets users navigate between them.',
+  DataTable: 'Full datatable with Ctrl+click multi-sort, column filter popovers, pagination, and client or server-side data.',
   Layout: 'Application shell with collapsible header, menu, content, and footer regions.',
   Modal: 'Presents content in an overlay requiring interaction.',
   Spinner: 'Animated indicator while content or data is being fetched.',

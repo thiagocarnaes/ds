@@ -8,6 +8,23 @@ export { default as TableHead } from './TableHead.vue'
 export { default as TableBody } from './TableBody.vue'
 export { default as TableRow } from './TableRow.vue'
 export { default as TableCell } from './TableCell.vue'
+export { default as DataTable } from './DataTable.vue'
+export { default as DataTableColumnFilter } from './DataTableColumnFilter.vue'
+export { default as DataTableColumnFilterMenu } from './DataTableColumnFilterMenu.vue'
+export { default as PageSizeSelect } from './PageSizeSelect.vue'
 export { default as List } from './List.vue'
 export { default as ListItem } from './ListItem.vue'
 export { default as EmptyState } from './EmptyState.vue'
+export type {
+  DataTableColumn,
+  DataTableColumnFilterValue,
+  DataTableColumnFilters,
+  DataTableDateRangeFilter,
+  DataTableFilterOption,
+  DataTableFilterType,
+  DataTableRequestParams,
+  DataTableRowKey,
+  DataTableSortEntry,
+  DataTableSortState,
+  SortDirection,
+} from './dataTableTypes'

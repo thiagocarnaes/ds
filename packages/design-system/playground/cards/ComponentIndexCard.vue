@@ -17,6 +17,7 @@ const components = [
   { name: 'Tabs', count: 'horizontal', category: 'Layout' },
   { name: 'Breadcrumbs', count: 'nestable', category: 'Layout' },
   { name: 'Pagination', count: 'numbered', category: 'Layout' },
+  { name: 'DataTable', count: 'multi-sort · filters', category: 'Layout' },
   { name: 'Layout', count: 'collapsible', category: 'Layout' },
   { name: 'Modal', count: 'overlay', category: 'Feedback' },
   { name: 'Spinner', count: '3 sizes', category: 'Feedback' },

@@ -59,6 +59,19 @@ describe('Pagination', () => {
     await page2!.trigger('click')
     expect(wrapper.emitted('update:currentPage')?.[0]).toEqual([2])
   })
+
+  it('jumps to first and last page', async () => {
+    const wrapper = mount(Pagination, {
+      props: { total: 100, pageSize: 10, currentPage: 5 },
+    })
+
+    await wrapper.find('[aria-label="Go to first page"]').trigger('click')
+    expect(wrapper.emitted('update:currentPage')?.[0]).toEqual([1])
+
+    await wrapper.setProps({ currentPage: 5 })
+    await wrapper.find('[aria-label="Go to last page"]').trigger('click')
+    expect(wrapper.emitted('update:currentPage')?.[1]).toEqual([10])
+  })
 })
 
 describe('SidebarMenu', () => {

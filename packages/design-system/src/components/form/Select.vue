@@ -164,7 +164,7 @@ onUnmounted(() => {
       "
       @click="toggleOpen"
     >
-      <Search :size="14" class="shrink-0 text-muted-foreground" />
+      <Search v-if="searchable" :size="14" class="shrink-0 text-muted-foreground" />
 
       <div class="flex min-w-0 flex-1 flex-wrap items-center gap-1.5">
         <template v-if="multiple">

@@ -2,6 +2,7 @@
 import { cn } from '@/lib/utils'
 
 export interface TableCellProps {
+  colspan?: number
   class?: string
 }
 
@@ -10,6 +11,7 @@ const props = defineProps<TableCellProps>()
 
 <template>
   <td
+    :colspan="colspan"
     :class="
       cn('p-4 align-middle text-foreground [&:has([role=checkbox])]:pr-0', props.class)
     "
