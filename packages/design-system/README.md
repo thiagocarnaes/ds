@@ -2,8 +2,6 @@
 
 Biblioteca de componentes **Vue 3** com design tokens, Tailwind CSS 4 e suporte a **light/dark mode**.
 
-Inspirada no [Dsci](https://github.com/thiagocarnaes/Dsci) e no design system do Figma.
-
 - **npm:** [`@tcarnaes/design-system`](https://www.npmjs.com/package/@tcarnaes/design-system)
 - **Repositório:** [github.com/thiagocarnaes/ds](https://github.com/thiagocarnaes/ds)
 - **Playground:** [thiagocarnaes.github.io/ds](https://thiagocarnaes.github.io/ds/)
