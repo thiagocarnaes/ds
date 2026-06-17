@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, useAttrs } from 'vue'
 import { cn } from '@/lib/utils'
 
 export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg'
@@ -12,11 +12,22 @@ export interface SpinnerProps {
   class?: string
 }
 
+defineOptions({ inheritAttrs: false })
+
 const props = withDefaults(defineProps<SpinnerProps>(), {
   size: 'md',
   color: 'var(--primary)',
   glow: true,
   ariaLabel: 'Loading',
+})
+
+const attrs = useAttrs()
+
+/** Vue does not map aria-label on components to ariaLabel — read attrs explicitly. */
+const resolvedAriaLabel = computed(() => {
+  const fromAttr = attrs['aria-label']
+  if (typeof fromAttr === 'string' && fromAttr.length > 0) return fromAttr
+  return props.ariaLabel
 })
 
 const sizeClasses: Record<SpinnerSize, string> = {
@@ -36,7 +47,7 @@ const spinnerStyle = computed(() => ({
 <template>
   <span
     role="status"
-    :aria-label="ariaLabel"
+    :aria-label="resolvedAriaLabel"
     :class="cn('inline-flex animate-spin rounded-full', sizeClasses[size], props.class)"
     :style="spinnerStyle"
   />

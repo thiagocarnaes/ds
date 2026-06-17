@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { templateBooleanAttr, templateStringAttr } from '../utils/propTemplateName'
 import { Radio, RadioGroup, Switch } from '@/index'
 
 const { t } = usePlaygroundLocale()
@@ -16,13 +17,13 @@ const options = [
 ]
 
 const code = computed(() => {
-  const attrs = ['v-model="plan"', 'name="plan"']
-  if (disabled.value) attrs.push('disabled')
+  const attrs = ['v-model="plan"', templateStringAttr('name', 'plan')]
+  if (disabled.value) attrs.push(templateBooleanAttr('disabled', true))
 
   const lines = [`<RadioGroup ${attrs.join(' ')}>`]
 
   for (const option of options) {
-    lines.push(`  <Radio value="${option.value}">${option.label}</Radio>`)
+    lines.push(`  <Radio ${templateStringAttr('value', option.value)}>${option.label}</Radio>`)
   }
 
   lines.push('</RadioGroup>')

@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
 import { Switch, Toggle } from '@/index'
 
@@ -20,12 +21,12 @@ const currentLabel = computed(() => toggleLabels.value[labelKey.value])
 const code = computed(() => {
   const lines = [
     '<Toggle',
-    `  v-model="enabled"`,
-    `  label="${currentLabel.value}"`,
+    '  v-model="enabled"',
+    `  ${playgroundSnippetAttr('label', currentLabel.value)}`,
   ]
 
   if (disabled.value) {
-    lines.push('  disabled')
+    lines.push(`  ${templateBooleanAttr('disabled', true)}`)
   }
 
   lines.push('/>')

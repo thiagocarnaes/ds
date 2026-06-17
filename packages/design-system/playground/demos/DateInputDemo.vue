@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
 import { DateInput, Switch } from '@/index'
 
@@ -18,11 +19,11 @@ const code = computed(() => {
   const lines = [
     '<DateInput',
     '  v-model="date"',
-    `  locale="${dateLocale.value}"`,
+    `  ${playgroundSnippetAttr('locale', dateLocale.value)}`,
   ]
 
   if (disabled.value) {
-    lines.push('  disabled')
+    lines.push(`  ${templateBooleanAttr('disabled', true)}`)
   }
 
   lines.push('/>')

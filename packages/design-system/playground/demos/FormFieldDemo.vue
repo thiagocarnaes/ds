@@ -3,8 +3,9 @@ import { computed, ref } from 'vue'
 import { Check, Mail } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr, templateStringAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
-import { FormField, Input } from '@/index'
+import { FormField, Input, Switch } from '@/index'
 
 const { t } = usePlaygroundLocale()
 
@@ -12,7 +13,9 @@ const stateOptions = ['default', 'helper', 'error', 'success'] as const
 type FieldMode = (typeof stateOptions)[number]
 
 const email = ref('ana@acme.io')
+const fieldLabel = ref('Email')
 const withIcon = ref(true)
+const required = ref(true)
 const mode = ref<FieldMode>('default')
 
 const helperText = computed(() => t('inputsPlayground.helpers.emailValid'))
@@ -29,15 +32,17 @@ const inputPaddingClass = computed(() => {
 })
 
 const code = computed(() => {
-  const lines = ['<FormField', '  label="Email"', '  required']
+  const lines = ['<FormField', `  ${playgroundSnippetAttr('label', fieldLabel.value)}`]
+
+  if (required.value) lines.push(`  ${templateBooleanAttr('required', true)}`)
 
   if (mode.value === 'helper') {
-    lines.push(`  helper="${helperText.value}"`)
+    lines.push(`  ${playgroundSnippetAttr('helper', helperText.value)}`)
   } else if (mode.value === 'error') {
-    lines.push(`  error="${errorText}"`)
+    lines.push(`  ${templateStringAttr('error', errorText)}`)
   } else if (mode.value === 'success') {
-    lines.push(`  helper="${helperText.value}"`)
-    lines.push('  success')
+    lines.push(`  ${playgroundSnippetAttr('helper', helperText.value)}`)
+    lines.push(`  ${templateBooleanAttr('success', true)}`)
   }
 
   lines.push('>', '  <template #default="{ id }">', '    <div class="relative">')
@@ -55,14 +60,14 @@ const code = computed(() => {
     '      <Input',
     '        :id="id"',
     '        v-model="email"',
-    '        type="email"',
+    `        ${templateStringAttr('type', 'email')}`,
   ]
 
   if (inputPaddingClass.value) {
     inputAttrs.push(`        class="${inputPaddingClass.value}"`)
   }
-  if (mode.value === 'error') inputAttrs.push('        error')
-  if (mode.value === 'success') inputAttrs.push('        success')
+  if (mode.value === 'error') inputAttrs.push(`        ${templateBooleanAttr('error', true)}`)
+  if (mode.value === 'success') inputAttrs.push(`        ${templateBooleanAttr('success', true)}`)
   inputAttrs.push('      />')
   lines.push(...inputAttrs)
 
@@ -112,9 +117,9 @@ const code = computed(() => {
       </div>
 
       <FormField
-        :key="`${mode}-${withIcon}`"
-        :label="t('inputsPlayground.fields.email')"
-        required
+        :key="`${mode}-${withIcon}-${required}-${fieldLabel}`"
+        :label="fieldLabel"
+        :required="required"
         :helper="showHelper ? helperText : undefined"
         :error="mode === 'error' ? errorText : undefined"
         :success="mode === 'success'"
@@ -145,6 +150,15 @@ const code = computed(() => {
       </FormField>
 
       <div>
+        <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">label</label>
+        <input
+          v-model="fieldLabel"
+          type="text"
+          class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+        />
+      </div>
+
+      <div>
         <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">state</p>
         <button
           v-for="item in stateOptions"
@@ -157,6 +171,11 @@ const code = computed(() => {
           {{ item }}
         </button>
       </div>
+
+      <label class="flex cursor-pointer items-center gap-2 text-xs text-[#4D6A87]">
+        <Switch v-model="required" size="sm" />
+        required
+      </label>
     </div>
     <UsageBlock :code="code" />
   </div>

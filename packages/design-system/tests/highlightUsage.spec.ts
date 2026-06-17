@@ -9,7 +9,7 @@ describe('highlightUsage', () => {
   @request="fetchRows"
 >
   <template #cell-status="{ value }">
-    <Lozenge appearance="success">{{ value }}</Lozenge>
+    <Lozenge variant="success">{{ value }}</Lozenge>
   </template>
 </DataTable>`
 

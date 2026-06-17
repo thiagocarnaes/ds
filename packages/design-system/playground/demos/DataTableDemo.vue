@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
+import DataTablePlaygroundControls from '../components/DataTablePlaygroundControls.vue'
 import DataTablePlaygroundHints from '../components/DataTablePlaygroundHints.vue'
 import {
   fetchUsers,
@@ -9,7 +10,8 @@ import {
 } from '../data/mockUsers'
 import { useDataTableLabels, useStatusLabel, useUserTableColumns } from '../composables/useUserTableColumns'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
-import { DataTable, Lozenge, Switch } from '@/index'
+import { playgroundSnippetAttr, templateBooleanAttr, templateBoundAttr, templateStringAttr } from '../utils/propTemplateName'
+import { Badge, Button, DataTable, Lozenge } from '@/index'
 import type { DataTableColumn, DataTableColumnFilters, DataTableSortEntry } from '@/components/data-display/dataTableTypes'
 
 const { locale, t } = usePlaygroundLocale()
@@ -32,6 +34,30 @@ const showSort = ref(true)
 const showColumnFilter = ref(true)
 const showTotalRecords = ref(true)
 const showPageSize = ref(true)
+const striped = ref(true)
+const forceLoading = ref(false)
+const showToolbar = ref(false)
+const forceEmpty = ref(false)
+const pageSizePreset = ref<'default' | 'compact'>('default')
+const searchPlaceholder = ref('')
+const emptyTitle = ref('')
+const emptyDescription = ref('')
+
+const pageSizeOptions = computed(() =>
+  pageSizePreset.value === 'default' ? [5, 10, 25, 50] : [3, 5, 10],
+)
+
+const resolvedSearchPlaceholder = computed(
+  () => searchPlaceholder.value || t('dataTable.searchPlaceholder'),
+)
+
+const resolvedEmptyTitle = computed(
+  () => emptyTitle.value || dataTableLabels.value.emptyTitle,
+)
+
+const resolvedEmptyDescription = computed(
+  () => emptyDescription.value || dataTableLabels.value.emptyDescription,
+)
 
 const tableColumns = computed<DataTableColumn[]>(() =>
   userTableColumns.value.map((column) => ({
@@ -41,6 +67,11 @@ const tableColumns = computed<DataTableColumn[]>(() =>
     filterOptions: showColumnFilter.value ? column.filterOptions : undefined,
   })),
 )
+
+const tableRows = computed(() => {
+  if (forceEmpty.value) return []
+  return mode.value === 'client' ? mockUsers : rows.value
+})
 
 async function loadTable(): Promise<void> {
   loading.value = true
@@ -75,6 +106,10 @@ watch(showColumnFilter, (enabled) => {
 
 watch(showSearch, (enabled) => {
   if (!enabled) search.value = ''
+})
+
+watch(pageSizePreset, () => {
+  pageSize.value = pageSizeOptions.value[0] ?? 5
 })
 
 function setMode(next: 'client' | 'api'): void {
@@ -113,25 +148,53 @@ const code = computed(() => {
     '  v-model:column-filters="columnFilters"',
     '  :columns="columns"',
     '  :rows="rows"',
-    '  row-key="id"',
+    `  ${templateStringAttr('rowKey', 'id')}`,
+    `  ${templateBoundAttr('pageSizeOptions', `[${pageSizeOptions.value.join(', ')}]`)}`,
+    `  ${playgroundSnippetAttr('searchPlaceholder', resolvedSearchPlaceholder.value)}`,
+    `  ${playgroundSnippetAttr('emptyTitle', resolvedEmptyTitle.value)}`,
+    `  ${playgroundSnippetAttr('emptyDescription', resolvedEmptyDescription.value)}`,
+    '  :labels="labels"',
+    `  ${playgroundSnippetAttr('locale', locale.value)}`,
   ]
 
-  if (!showSearch.value) props.push('  :searchable="false"')
-  if (!showTotalRecords.value) props.push('  :show-total-records="false"')
-  if (!showPageSize.value) props.push('  :show-page-size="false"')
+  if (!showSearch.value) props.push(`  ${templateBooleanAttr('searchable', false)}`)
+  if (!showTotalRecords.value) props.push(`  ${templateBooleanAttr('showTotalRecords', false)}`)
+  if (!showPageSize.value) props.push(`  ${templateBooleanAttr('showPageSize', false)}`)
+  if (!striped.value) props.push(`  ${templateBooleanAttr('striped', false)}`)
+  if (forceLoading.value) props.push(`  ${templateBooleanAttr('loading', true)}`)
   if (mode.value === 'api') {
-    props.push('  server-side', '  :total="total"', '  :loading="loading"', '  @request="fetchRows"')
+    props.push(
+      `  ${templateBooleanAttr('serverSide', true)}`,
+      '  :total="total"',
+      '  :loading="loading"',
+      '  @request="fetchRows"',
+    )
   }
 
-  return [
+  const lines = [
     'const columns = [',
     ...columnLines,
     ']',
     '',
     '<DataTable',
     ...props,
-    '/>',
-  ].join('\n')
+    '>',
+  ]
+
+  if (showToolbar.value) {
+    lines.push('  <template #toolbar>')
+    lines.push(`    <Button ${templateStringAttr('variant', 'outline')} ${templateStringAttr('size', 'sm')}>Export</Button>`)
+    lines.push('  </template>')
+  }
+
+  lines.push('  <template #cell-status="{ value }">')
+  lines.push('    <Lozenge :variant="value === \'active\' ? \'success\' : \'warning\'">')
+  lines.push('      {{ value }}')
+  lines.push('    </Lozenge>')
+  lines.push('  </template>')
+  lines.push('</DataTable>')
+
+  return lines.join('\n')
 })
 </script>
 
@@ -182,24 +245,30 @@ const code = computed(() => {
         v-model:sort-stack="sortStack"
         v-model:column-filters="columnFilters"
         :columns="tableColumns"
-        :rows="mode === 'client' ? mockUsers : rows"
+        :rows="tableRows"
         :server-side="mode === 'api'"
         :total="mode === 'api' ? total : undefined"
-        :loading="mode === 'api' && loading"
+        :loading="forceLoading || (mode === 'api' && loading)"
         :searchable="showSearch"
         :show-total-records="showTotalRecords"
         :show-page-size="showPageSize"
+        :striped="striped"
+        :page-size-options="pageSizeOptions"
         row-key="id"
-        :search-placeholder="t('dataTable.searchPlaceholder')"
-        :empty-title="dataTableLabels.emptyTitle"
-        :empty-description="dataTableLabels.emptyDescription"
+        :search-placeholder="resolvedSearchPlaceholder"
+        :empty-title="resolvedEmptyTitle"
+        :empty-description="resolvedEmptyDescription"
         :labels="dataTableLabels"
         :locale="locale"
         @request="loadTable"
       >
+        <template v-if="showToolbar" #toolbar>
+          <Badge variant="primary" :value="tableRows.length" />
+          <Button variant="outline" size="sm">Export</Button>
+        </template>
         <template #cell-status="{ value }">
           <Lozenge
-            :appearance="
+            :variant="
               value === 'active' ? 'success' : value === 'pending' ? 'warning' : 'default'
             "
           >
@@ -208,28 +277,21 @@ const code = computed(() => {
         </template>
       </DataTable>
 
-      <div class="grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showSearch" size="sm" />
-          search filter
-        </label>
-        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showSort" size="sm" />
-          sort
-        </label>
-        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showColumnFilter" size="sm" />
-          column filter
-        </label>
-        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showTotalRecords" size="sm" />
-          total records
-        </label>
-        <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showPageSize" size="sm" />
-          rows per page
-        </label>
-      </div>
+      <DataTablePlaygroundControls
+        v-model:show-search="showSearch"
+        v-model:show-sort="showSort"
+        v-model:show-column-filter="showColumnFilter"
+        v-model:show-total-records="showTotalRecords"
+        v-model:show-page-size="showPageSize"
+        v-model:striped="striped"
+        v-model:force-loading="forceLoading"
+        v-model:show-toolbar="showToolbar"
+        v-model:force-empty="forceEmpty"
+        v-model:page-size-preset="pageSizePreset"
+        v-model:search-placeholder="searchPlaceholder"
+        v-model:empty-title="emptyTitle"
+        v-model:empty-description="emptyDescription"
+      />
     </div>
     <UsageBlock :code="code" />
   </div>

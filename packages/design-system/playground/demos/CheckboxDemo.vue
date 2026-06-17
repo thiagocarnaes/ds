@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { templateBooleanAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
 import { Checkbox, Switch } from '@/index'
 
@@ -45,13 +46,13 @@ const code = computed(() => {
   if (mode.value === 'indeterminate') {
     lines.push('  v-model="partial"')
     lines.push('  :indeterminate="isIndeterminate"')
-    lines.push('  cycle-indeterminate')
+    lines.push(`  ${templateBooleanAttr('cycleIndeterminate', true)}`)
     lines.push('  @update:indeterminate="isIndeterminate = $event"')
   } else {
     lines.push('  v-model="checked"')
   }
 
-  if (disabled.value) lines.push('  disabled')
+  if (disabled.value) lines.push(`  ${templateBooleanAttr('disabled', true)}`)
 
   lines.push('>', `  ${currentLabel.value}`, '</Checkbox>')
   return lines.join('\n')

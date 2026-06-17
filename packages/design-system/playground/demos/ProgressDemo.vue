@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr } from '../utils/propTemplateName'
 import { Progress, Switch } from '@/index'
 
 const { t } = usePlaygroundLocale()
@@ -9,8 +10,11 @@ const { t } = usePlaygroundLocale()
 const value = ref(72)
 const indeterminate = ref(false)
 
-const code = `<Progress :value="72" />
-<Progress indeterminate />`
+const code = computed(() =>
+  indeterminate.value
+    ? `<Progress ${templateBooleanAttr('indeterminate', true)} />`
+    : `<Progress ${playgroundSnippetAttr('value', value.value)} />`,
+)
 </script>
 
 <template>

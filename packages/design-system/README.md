@@ -39,11 +39,11 @@ import { Button, Input, FormField } from '@tcarnaes/design-system'
 </script>
 
 <template>
-  <FormField label="Email">
-    <Input v-model="email" placeholder="you@company.com" />
+  <FormField :label="'Email'">
+    <Input v-model="email" :placeholder="'you@company.com'" />
   </FormField>
 
-  <Button appearance="primary">Salvar</Button>
+  <Button :variant="'primary'">Salvar</Button>
 </template>
 ```
 
@@ -87,14 +87,14 @@ import { FormField, Input } from '@tcarnaes/design-system'
 </script>
 
 <template>
-  <FormField label="Email" required>
+  <FormField :label="'Email'" :required="true">
     <template #default="{ id }">
       <div class="relative">
         <Mail
           :size="14"
           class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
         />
-        <Input :id="id" v-model="email" type="email" class="pl-9" />
+        <Input :id="id" v-model="email" :type="'email'" class="pl-9" />
       </div>
     </template>
   </FormField>
@@ -113,7 +113,7 @@ import { FormField, Input } from '@tcarnaes/design-system'
 Campo de data com calendário e formato por locale (ex.: `dd/mm/aaaa` em pt-BR):
 
 ```vue
-<DateInput v-model="date" locale="pt-BR" />
+<DateInput v-model="date" :locale="'pt-BR'" />
 ```
 
 ## Card
@@ -121,7 +121,7 @@ Campo de data com calendário e formato por locale (ex.: `dd/mm/aaaa` em pt-BR):
 Um único componente `Card` com slots — não há `CardHeader` / `CardContent` / `CardFooter` separados:
 
 ```vue
-<Card variant="outlined">
+<Card :variant="'outlined'">
   <template #header>
     <h3 class="font-semibold">Título</h3>
   </template>
@@ -129,7 +129,7 @@ Um único componente `Card` com slots — não há `CardHeader` / `CardContent` 
   Conteúdo principal.
 
   <template #footer>
-    <Button appearance="primary">Salvar</Button>
+    <Button :variant="'primary'">Salvar</Button>
   </template>
 </Card>
 ```
@@ -185,10 +185,10 @@ const columnFilters = ref<DataTableColumnFilters>({})
     v-model:current-page="page"
     :columns="columns"
     :rows="rows"
-    row-key="id"
+    :row-key="'id'"
   >
     <template #cell-status="{ value }">
-      <Lozenge appearance="success">{{ value }}</Lozenge>
+      <Lozenge :variant="'success'">{{ value }}</Lozenge>
     </template>
   </DataTable>
 </template>
@@ -211,8 +211,8 @@ const columnFilters = ref<DataTableColumnFilters>({})
   :rows="rows"
   :total="total"
   :loading="loading"
-  server-side
-  row-key="id"
+  :server-side="true"
+  :row-key="'id'"
   @request="loadFromApi"
 />
 ```
@@ -236,7 +236,7 @@ function onSave() {
 
 <template>
   <ToastHost />
-  <Button appearance="primary" @click="onSave">Salvar</Button>
+  <Button :variant="'primary'" @click="onSave">Salvar</Button>
 </template>
 ```
 
@@ -274,18 +274,18 @@ const notifications = ref(true)
 </script>
 
 <template>
-  <FormField label="Nome" required>
+  <FormField :label="'Nome'" :required="true">
     <Input v-model="name" />
   </FormField>
 
-  <FormField label="Data">
-    <DateInput v-model="date" locale="pt-BR" />
+  <FormField :label="'Data'">
+    <DateInput v-model="date" :locale="'pt-BR'" />
   </FormField>
 
-  <FormField label="Função">
+  <FormField :label="'Função'">
     <Select
       v-model="role"
-      placeholder="Selecione..."
+      :placeholder="'Selecione...'"
       :options="[
         { label: 'Designer', value: 'design' },
         { label: 'Engineer', value: 'eng' },
@@ -295,7 +295,7 @@ const notifications = ref(true)
 
   <Checkbox v-model="terms">Aceito os termos</Checkbox>
   <Toggle v-model="notifications">Notificações</Toggle>
-  <Switch v-model="notifications" size="sm" />
+  <Switch v-model="notifications" :size="'sm'" />
 </template>
 ```
 
@@ -307,13 +307,13 @@ import { Alert, Badge, Progress, Skeleton, Spinner } from '@tcarnaes/design-syst
 </script>
 
 <template>
-  <Alert variant="success">Deploy concluído.</Alert>
-  <Alert variant="error" dismissible>Falha na build.</Alert>
-  <Badge :value="12" appearance="primary" />
+  <Alert :variant="'success'">Deploy concluído.</Alert>
+  <Alert :variant="'error'" :dismissible="true">Falha na build.</Alert>
+  <Badge :value="12" :variant="'primary'" />
   <Progress :value="72" />
   <Skeleton class="h-8 w-full" />
-  <Spinner aria-label="Carregando" />
-  <!-- Sem glow: <Spinner :glow="false" aria-label="Carregando" /> -->
+  <Spinner :aria-label="'Carregando'" />
+  <!-- Sem glow: <Spinner :glow="false" :aria-label="'Carregando'" /> -->
 </template>
 ```
 
@@ -348,7 +348,7 @@ import { Button } from '@tcarnaes/design-system'
 </script>
 
 <template>
-  <Button appearance="primary" icon="zap">Action</Button>
+  <Button :variant="'primary'" :icon="'zap'">Action</Button>
 </template>
 ```
 

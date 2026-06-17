@@ -1,5 +1,5 @@
 export const componentCatalogDescriptionsEn: Record<string, string> = {
-  Button: 'Triggers an event or action. Use appearance to communicate hierarchy and emphasis.',
+  Button: 'Triggers an event or action. Use :variant to communicate hierarchy and emphasis.',
   IconButton: 'Compact icon-only action control for toolbars, tables, and dense layouts.',
   Link: 'Styled anchor for in-app or external navigation with accessible focus states.',
   Input: 'Single-line text field for forms, search, email, password, and date entry.',
@@ -61,7 +61,7 @@ export const componentCatalogDescriptionsEn: Record<string, string> = {
 }
 
 export const componentCatalogDescriptionsPtBR: Record<string, string> = {
-  Button: 'Dispara um evento ou ação. Use appearance para comunicar hierarquia e ênfase.',
+  Button: 'Dispara um evento ou ação. Use :variant para comunicar hierarquia e ênfase.',
   IconButton: 'Botão compacto só com ícone para barras de ferramentas, tabelas e layouts densos.',
   Link: 'Link estilizado para navegação interna ou externa com estados de foco acessíveis.',
   Input: 'Campo de texto de uma linha para formulários, busca, e-mail, senha e datas.',

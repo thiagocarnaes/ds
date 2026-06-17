@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
 import { Switch } from '@/index'
 
@@ -15,10 +16,10 @@ const size = ref<SwitchSize>('md')
 const disabled = ref(false)
 
 const code = computed(() => {
-  const lines = ['<Switch', '  v-model="enabled"', `  size="${size.value}"`]
+  const lines = ['<Switch', '  v-model="enabled"', `  ${playgroundSnippetAttr('size', size.value)}`]
 
   if (disabled.value) {
-    lines.push('  disabled')
+    lines.push(`  ${templateBooleanAttr('disabled', true)}`)
   }
 
   lines.push('/>')

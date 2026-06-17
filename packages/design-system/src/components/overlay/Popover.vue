@@ -1,12 +1,30 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref, computed } from 'vue'
 import { cn } from '@/lib/utils'
+import { overlayAppearanceClasses, type OverlayAppearance, type PopoverAppearance } from './overlayAppearance'
+
+export type { PopoverAppearance }
 
 const open = defineModel<boolean>('open', { default: false })
 
-const props = defineProps<{
-  class?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    variant?: OverlayAppearance
+    /** @deprecated Use `variant` instead. */
+    appearance?: OverlayAppearance
+    class?: string
+  }>(),
+  {
+    variant: undefined,
+    appearance: undefined,
+  },
+)
+
+const resolvedVariant = computed(
+  (): OverlayAppearance => props.variant ?? props.appearance ?? 'outline',
+)
+
+const variantClasses = computed(() => overlayAppearanceClasses[resolvedVariant.value])
 
 const triggerRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
@@ -49,7 +67,8 @@ onUnmounted(() => {
       ref="contentRef"
       :class="
         cn(
-          'absolute left-0 top-full z-50 mt-2 min-w-32 rounded-md border border-border bg-popover p-4 text-popover-foreground shadow-md',
+          'absolute left-0 top-full z-50 mt-2 min-w-32 rounded-md border p-4 shadow-lg',
+          variantClasses,
           props.class,
         )
       "

@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { ArrowUpRight } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { templateBooleanAttr, templateStringAttr } from '../utils/propTemplateName'
 import { Alert, Button, Input, Label, Modal, Switch, Textarea } from '@/index'
 
 type ModalVariant = 'confirm' | 'form' | 'danger'
@@ -13,7 +14,10 @@ const variant = ref<ModalVariant>('confirm')
 const modalOpen = ref(false)
 const projectName = ref('')
 const projectDescription = ref('')
+const showHeader = ref(true)
 const showCloseButton = ref(true)
+const showBody = ref(true)
+const showFooter = ref(true)
 const showCancelButton = ref(true)
 const showPrimaryButton = ref(true)
 
@@ -23,20 +27,53 @@ const modalTitles = computed(() => messages.value.modalPlayground.titles)
 const modalActions = computed(() => messages.value.modalPlayground.actions)
 const copy = computed(() => messages.value.modalPlayground)
 
-const showFooter = computed(() => showCancelButton.value || showPrimaryButton.value)
-
 function variantPillStyle(active: boolean) {
   return active
     ? { background: 'rgba(0,212,255,0.12)', color: '#00D4FF' }
     : { background: 'rgba(0,0,0,0.25)', color: '#4D6A87' }
 }
 
-const primaryAppearance = computed(() => (variant.value === 'danger' ? 'danger' : 'primary'))
+function controlLabelStyle(enabled: boolean) {
+  return enabled ? undefined : { opacity: '0.45' }
+}
+
+const primaryButtonVariant = computed(() => (variant.value === 'danger' ? 'destructive' : 'primary'))
+
+function buildBodyLines(): string[] {
+  if (!showBody.value) return []
+
+  const lines = ['  <!-- Body -->', '  <div class="space-y-4 px-6 py-4">']
+
+  if (variant.value === 'confirm') {
+    lines.push(`    <p class="text-sm text-muted-foreground">${copy.value.confirmBody}</p>`)
+  } else if (variant.value === 'form') {
+    lines.push(
+      '    <div class="space-y-2">',
+      `      <Label>${copy.value.fields.projectName}</Label>`,
+      `      <Input v-model="projectName" ${templateStringAttr('placeholder', 'My awesome project')} />`,
+      '    </div>',
+      '    <div class="space-y-2">',
+      `      <Label>${copy.value.fields.description}</Label>`,
+      `      <Textarea v-model="projectDescription" ${templateStringAttr('placeholder', 'Optional description...')} />`,
+      '    </div>',
+    )
+  } else {
+    lines.push(
+      `    <p class="text-sm text-muted-foreground">${copy.value.dangerIntro} <strong>ATLAS-42</strong> ${copy.value.dangerOutro}</p>`,
+      `    <Alert ${templateStringAttr('variant', 'error')}>${copy.value.dangerAlert}</Alert>`,
+    )
+  }
+
+  lines.push('  </div>')
+  return lines
+}
 
 function buildHeaderLines(title: string): string[] {
+  if (!showHeader.value) return []
+
   if (showCloseButton.value) {
     return [
-      '  <!-- Header: title + optional close -->',
+      '  <!-- Header -->',
       '  <div class="flex items-start justify-between border-b border-border px-6 py-4">',
       `    <h2 class="text-lg font-semibold">${title}</h2>`,
       '    <button type="button" aria-label="Close" @click="modalOpen = false">&times;</button>',
@@ -45,7 +82,7 @@ function buildHeaderLines(title: string): string[] {
   }
 
   return [
-    '  <!-- Header: title only -->',
+    '  <!-- Header -->',
     '  <div class="border-b border-border px-6 py-4">',
     `    <h2 class="text-lg font-semibold">${title}</h2>`,
     '  </div>',
@@ -53,21 +90,19 @@ function buildHeaderLines(title: string): string[] {
 }
 
 function buildFooterLines(action: string): string[] {
-  if (!showFooter.value) {
-    return []
-  }
+  if (!showFooter.value) return []
 
   const lines = [
-    '  <!-- Footer: optional actions -->',
+    '  <!-- Footer -->',
     '  <div class="flex justify-end gap-2 border-t border-border px-6 py-4">',
   ]
 
   if (showCancelButton.value) {
-    lines.push(`    <Button appearance="ghost" @click="modalOpen = false">${copy.value.cancel}</Button>`)
+    lines.push(`    <Button ${templateStringAttr('variant', 'ghost')} @click="modalOpen = false">${copy.value.cancel}</Button>`)
   }
 
   if (showPrimaryButton.value) {
-    lines.push(`    <Button appearance="${primaryAppearance.value}" @click="handleAction">${action}</Button>`)
+    lines.push(`    <Button ${templateStringAttr('variant', primaryButtonVariant.value)} @click="handleAction">${action}</Button>`)
   }
 
   lines.push('  </div>')
@@ -82,32 +117,10 @@ const code = computed(() => {
     '',
     '<Modal v-model:open="modalOpen" class="max-w-md overflow-hidden p-0">',
     ...buildHeaderLines(title),
-    '',
-    '  <!-- Content -->',
-    '  <div class="space-y-4 px-6 py-4">',
+    ...buildBodyLines(),
+    ...buildFooterLines(action),
+    '</Modal>',
   ]
-
-  if (variant.value === 'confirm') {
-    lines.push(`    <p class="text-sm text-muted-foreground">${copy.value.confirmBody}</p>`)
-  } else if (variant.value === 'form') {
-    lines.push(
-      '    <div class="space-y-2">',
-      `      <Label>${copy.value.fields.projectName}</Label>`,
-      '      <Input v-model="projectName" placeholder="My awesome project" />',
-      '    </div>',
-      '    <div class="space-y-2">',
-      `      <Label>${copy.value.fields.description}</Label>`,
-      '      <Textarea v-model="projectDescription" placeholder="Optional description..." />',
-      '    </div>',
-    )
-  } else {
-    lines.push(
-      `    <p class="text-sm text-muted-foreground">${copy.value.dangerIntro} <strong>ATLAS-42</strong> ${copy.value.dangerOutro}</p>`,
-      `    <Alert variant="error">${copy.value.dangerAlert}</Alert>`,
-    )
-  }
-
-  lines.push('  </div>', '', ...buildFooterLines(action), '</Modal>')
 
   return lines.join('\n')
 })
@@ -141,15 +154,36 @@ const code = computed(() => {
       <div class="space-y-2 border-t border-border/60 pt-4">
         <p class="font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ copy.controlsTitle }}</p>
         <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showCloseButton" size="sm" />
+          <Switch v-model="showHeader" size="sm" />
+          {{ copy.showHeader }}
+        </label>
+        <label
+          class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]"
+          :style="controlLabelStyle(showHeader)"
+        >
+          <Switch v-model="showCloseButton" size="sm" :disabled="!showHeader" />
           {{ copy.showCloseButton }}
         </label>
         <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showCancelButton" size="sm" />
-          {{ copy.showCancelButton }}
+          <Switch v-model="showBody" size="sm" />
+          {{ copy.showBody }}
         </label>
         <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
-          <Switch v-model="showPrimaryButton" size="sm" />
+          <Switch v-model="showFooter" size="sm" />
+          {{ copy.showFooter }}
+        </label>
+        <label
+          class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]"
+          :style="controlLabelStyle(showFooter)"
+        >
+          <Switch v-model="showCancelButton" size="sm" :disabled="!showFooter" />
+          {{ copy.showCancelButton }}
+        </label>
+        <label
+          class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]"
+          :style="controlLabelStyle(showFooter)"
+        >
+          <Switch v-model="showPrimaryButton" size="sm" :disabled="!showFooter" />
           {{ copy.showPrimaryButton }}
         </label>
       </div>
@@ -157,6 +191,7 @@ const code = computed(() => {
 
     <Modal v-model:open="modalOpen" class="max-w-md overflow-hidden p-0">
       <div
+        v-if="showHeader"
         class="border-b border-border px-6 py-4"
         :class="showCloseButton ? 'flex items-start justify-between' : undefined"
       >
@@ -174,7 +209,7 @@ const code = computed(() => {
         </button>
       </div>
 
-      <div class="space-y-4 px-6 py-4">
+      <div v-if="showBody" class="space-y-4 px-6 py-4">
         <template v-if="variant === 'confirm'">
           <p class="text-sm leading-relaxed text-[#7BA3C8]">
             {{ copy.confirmBody }}
@@ -209,12 +244,12 @@ const code = computed(() => {
       </div>
 
       <div v-if="showFooter" class="flex justify-end gap-2 border-t border-border px-6 py-4">
-        <Button v-if="showCancelButton" appearance="ghost" @click="modalOpen = false">
+        <Button v-if="showCancelButton" variant="ghost" @click="modalOpen = false">
           {{ copy.cancel }}
         </Button>
         <Button
           v-if="showPrimaryButton"
-          :appearance="primaryAppearance"
+          :variant="primaryButtonVariant"
           :class="variant !== 'danger' ? 'ds-glow-primary' : undefined"
           @click="modalOpen = false"
         >

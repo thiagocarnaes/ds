@@ -22,6 +22,11 @@ import {
   type ToastPosition,
 } from '@/index'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import {
+  templateBooleanAttr,
+  templateStringAttr,
+  playgroundSnippetAttr,
+} from '../utils/propTemplateName'
 import { resolveChatReply } from '../utils/chatPlayground'
 import { getPlaygroundDemoComponent } from '../demos/registry'
 
@@ -32,10 +37,15 @@ const { t, messages, locale } = usePlaygroundLocale()
 const selectMultiple = ref(false)
 const selectValue = ref('')
 const selectMultipleValue = ref<string[]>(['design-system', 'react'])
+const selectSearchable = ref(true)
+const selectDisabled = ref(false)
+const selectPlaceholderSingle = ref('')
+const selectPlaceholderMulti = ref('')
 
-const buttonAppearance = ref<'primary' | 'ghost' | 'outline' | 'danger'>('primary')
+const buttonVariant = ref<'primary' | 'ghost' | 'outline' | 'destructive' | 'link'>('primary')
 const buttonSize = ref<'sm' | 'md' | 'lg'>('md')
 const buttonDisabled = ref(false)
+const buttonLoading = ref(false)
 const buttonIconValue = ref('')
 
 const buttonIcon = computed<ButtonIconName | undefined>(() =>
@@ -154,11 +164,16 @@ onUnmounted(() => {
   if (chatReplyTimer) clearTimeout(chatReplyTimer)
 })
 const breadcrumbDepth = ref(3)
+const breadcrumbSeparator = ref('/')
+
+const breadcrumbSeparatorPresets = ['/', '>', '·', '→'] as const
 
 type AlertVariant = 'info' | 'success' | 'warning' | 'error'
 
 const alertVariant = ref<AlertVariant>('success')
 const alertDismissible = ref(false)
+const alertShowTitle = ref(false)
+const alertTitle = ref('Deployment status')
 const alertPreviewKey = ref(0)
 
 const alertMessages = computed(() => {
@@ -217,40 +232,48 @@ const selectOptions = [
 ]
 
 const codeSnippet = computed(() => {
-  const buttonDisabledAttr = buttonDisabled.value ? '\n  disabled' : ''
-  const buttonIconAttr = buttonIcon.value ? `\n  icon="${buttonIcon.value}"` : ''
+  const buttonAttrs = [
+    playgroundSnippetAttr('variant', buttonVariant.value),
+    playgroundSnippetAttr('size', buttonSize.value),
+  ]
+  if (buttonIcon.value) buttonAttrs.push(playgroundSnippetAttr('icon', buttonIcon.value))
+  if (buttonDisabled.value) buttonAttrs.push(templateBooleanAttr('disabled', true))
+  if (buttonLoading.value) buttonAttrs.push(templateBooleanAttr('loading', true))
 
   const map: Record<string, string> = {
     Button: `<Button
-  appearance="${buttonAppearance.value}"
-  size="${buttonSize.value}"${buttonIconAttr}${buttonDisabledAttr}
+  ${buttonAttrs.join('\n  ')}
 >
   Action
 </Button>`,
     Select: selectMultiple.value
       ? `<Select
   v-model="tags"
-  multiple
-  placeholder="Select technologies..."
+  ${templateBooleanAttr('multiple', true)}
+  ${templateStringAttr('placeholder', selectPlaceholderMulti.value || 'Select technologies...')}
+  ${playgroundSnippetAttr('searchable', selectSearchable.value)}
+  ${playgroundSnippetAttr('disabled', selectDisabled.value)}
   :options="options"
 />`
       : `<Select
   v-model="value"
-  placeholder="Select an option..."
+  ${templateStringAttr('placeholder', selectPlaceholderSingle.value || 'Select an option...')}
+  ${playgroundSnippetAttr('searchable', selectSearchable.value)}
+  ${playgroundSnippetAttr('disabled', selectDisabled.value)}
   :options="options"
 />`,
-    Breadcrumbs: `<Breadcrumb>
+    Breadcrumbs: `<Breadcrumb ${playgroundSnippetAttr('separator', breadcrumbSeparator.value)}>
 ${breadcrumbItems.value
   .slice(0, breadcrumbDepth.value)
   .map((item, index, items) =>
-    `  <BreadcrumbItem${index === items.length - 1 ? ' current' : ''}>${item}</BreadcrumbItem>`,
+    `  <BreadcrumbItem${index === items.length - 1 ? ` ${templateBooleanAttr('current', true)}` : ''}>${item}</BreadcrumbItem>`,
   )
   .join('\n')}
 </Breadcrumb>`,
-    Alert: `<Alert variant="${alertVariant.value}"${alertDismissible.value ? '\n  dismissible' : ''}>
+    Alert: `<Alert ${playgroundSnippetAttr('variant', alertVariant.value)}${alertShowTitle.value ? `\n  ${playgroundSnippetAttr('title', alertTitle.value)}` : ''}${alertDismissible.value ? `\n  ${templateBooleanAttr('dismissible', true)}` : ''}>
   ${alertMessages.value[alertVariant.value]}
 </Alert>`,
-    Toast: `<Toast variant="${toastVariant.value}"${toastDismissible.value ? '\n  dismissible' : ''}>
+    Toast: `<Toast ${playgroundSnippetAttr('variant', toastVariant.value)}${toastDismissible.value ? `\n  ${templateBooleanAttr('dismissible', true)}` : ''}>
   ${alertMessages.value[toastVariant.value]}
 </Toast>
 
@@ -281,25 +304,26 @@ function optionStyle(active: boolean) {
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-6">
         <div class="pg-playground-preview flex h-24 items-center justify-center rounded-xl">
           <Button
-            :appearance="buttonAppearance"
+            :variant="buttonVariant"
             :size="buttonSize"
             :icon="buttonIcon"
             :disabled="buttonDisabled"
-            :class="buttonAppearance === 'primary' ? 'ds-glow-primary' : undefined"
+            :loading="buttonLoading"
+            :class="buttonVariant === 'primary' ? 'ds-glow-primary' : undefined"
           >
             {{ t('buttonPlayground.previewAction') }}
           </Button>
         </div>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div class="min-w-0">
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.appearanceLabel') }}</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.variantLabel') }}</p>
             <button
-              v-for="item in ['primary', 'ghost', 'outline', 'danger']"
+              v-for="item in ['primary', 'ghost', 'outline', 'destructive', 'link']"
               :key="item"
               type="button"
               class="mb-1 block w-full rounded px-2 py-1 text-left text-xs"
-              :style="optionStyle(buttonAppearance === item)"
-              @click="buttonAppearance = item as typeof buttonAppearance"
+              :style="optionStyle(buttonVariant === item)"
+              @click="buttonVariant = item as typeof buttonVariant"
             >
               {{ item }}
             </button>
@@ -323,6 +347,10 @@ function optionStyle(active: boolean) {
               <Switch v-model="buttonDisabled" size="sm" />
               disabled
             </label>
+            <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+              <Switch v-model="buttonLoading" size="sm" />
+              loading
+            </label>
           </div>
         </div>
         <div class="mt-4">
@@ -345,8 +373,35 @@ function optionStyle(active: boolean) {
           <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="!selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = false">{{ selectPlayground.modeSingle }}</button>
           <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = true">{{ selectPlayground.modeMulti }}</button>
         </div>
-        <Select v-if="!selectMultiple" v-model="selectValue" :options="selectOptions" :placeholder="selectPlayground.placeholderSingle" />
-        <Select v-else v-model="selectMultipleValue" multiple :options="selectOptions" :placeholder="selectPlayground.placeholderMulti" />
+        <Select v-if="!selectMultiple" v-model="selectValue" :options="selectOptions" :searchable="selectSearchable" :disabled="selectDisabled" :placeholder="selectPlaceholderSingle || selectPlayground.placeholderSingle" />
+        <Select v-else v-model="selectMultipleValue" multiple :options="selectOptions" :searchable="selectSearchable" :disabled="selectDisabled" :placeholder="selectPlaceholderMulti || selectPlayground.placeholderMulti" />
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <label class="flex cursor-pointer items-center gap-2 text-xs text-[#4D6A87]">
+            <Switch v-model="selectSearchable" size="sm" />
+            searchable
+          </label>
+          <label class="flex cursor-pointer items-center gap-2 text-xs text-[#4D6A87]">
+            <Switch v-model="selectDisabled" size="sm" />
+            disabled
+          </label>
+        </div>
+        <div>
+          <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">placeholder</label>
+          <input
+            v-if="!selectMultiple"
+            v-model="selectPlaceholderSingle"
+            type="text"
+            :placeholder="selectPlayground.placeholderSingle"
+            class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+          />
+          <input
+            v-else
+            v-model="selectPlaceholderMulti"
+            type="text"
+            :placeholder="selectPlayground.placeholderMulti"
+            class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+          />
+        </div>
       </div>
     </template>
 
@@ -354,7 +409,7 @@ function optionStyle(active: boolean) {
     <template v-else-if="name === 'Breadcrumbs'">
       <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
-        <Breadcrumb separator=">" class="text-sm">
+        <Breadcrumb :separator="breadcrumbSeparator" class="text-sm">
           <BreadcrumbItem
             v-for="(item, index) in breadcrumbItems.slice(0, breadcrumbDepth)"
             :key="item"
@@ -364,6 +419,30 @@ function optionStyle(active: boolean) {
             {{ item }}
           </BreadcrumbItem>
         </Breadcrumb>
+        <div>
+          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('breadcrumbPlayground.separatorLabel') }}
+          </p>
+          <div class="mb-3 flex flex-wrap gap-1">
+            <button
+              v-for="item in breadcrumbSeparatorPresets"
+              :key="item"
+              type="button"
+              class="min-w-[2.25rem] rounded px-2 py-1 font-mono text-xs"
+              :style="optionStyle(breadcrumbSeparator === item)"
+              @click="breadcrumbSeparator = item"
+            >
+              {{ item }}
+            </button>
+          </div>
+          <input
+            v-model="breadcrumbSeparator"
+            type="text"
+            maxlength="3"
+            class="w-full rounded-md border border-border bg-background px-2 py-1.5 font-mono text-xs text-foreground"
+            :placeholder="t('breadcrumbPlayground.separatorPlaceholder')"
+          />
+        </div>
         <div>
           <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
             {{ t('breadcrumbPlayground.depthLabel', { depth: breadcrumbDepth }) }}
@@ -478,6 +557,7 @@ function optionStyle(active: boolean) {
         <Alert
           :key="alertPreviewKey"
           :variant="alertVariant"
+          :title="alertShowTitle ? alertTitle : undefined"
           :dismissible="alertDismissible"
           @dismiss="resetAlertPreview"
         >
@@ -503,6 +583,17 @@ function optionStyle(active: boolean) {
               <Switch v-model="alertDismissible" size="sm" @update:model-value="resetAlertPreview()" />
               dismissible
             </div>
+            <div class="mt-2 flex w-full items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+              <Switch v-model="alertShowTitle" size="sm" @update:model-value="resetAlertPreview()" />
+              title
+            </div>
+            <input
+              v-if="alertShowTitle"
+              v-model="alertTitle"
+              type="text"
+              class="mt-2 w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+              @input="resetAlertPreview()"
+            />
           </div>
         </div>
       </div>

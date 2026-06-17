@@ -2,15 +2,26 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateBooleanAttr, templateStringAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
-import { Input } from '@/index'
+import { Input, Switch } from '@/index'
 
 const { t } = usePlaygroundLocale()
 
-const value = ref('Ana Martins')
-const state = ref<'default' | 'error' | 'success' | 'disabled'>('default')
-
+const typeOptions = ['text', 'email', 'password', 'search', 'date'] as const
+const sizeOptions = ['sm', 'md', 'lg'] as const
 const stateOptions = ['default', 'error', 'success', 'disabled'] as const
+
+type InputType = (typeof typeOptions)[number]
+type InputSize = (typeof sizeOptions)[number]
+type InputState = (typeof stateOptions)[number]
+
+const value = ref('Ana Martins')
+const type = ref<InputType>('text')
+const size = ref<InputSize>('md')
+const placeholder = ref('Full name')
+const readonly = ref(false)
+const state = ref<InputState>('default')
 
 const errorMessage = 'Invalid value'
 
@@ -18,17 +29,19 @@ const code = computed(() => {
   const lines = [
     '<Input',
     '  v-model="name"',
-    '  type="text"',
-    '  placeholder="Full name"',
+    `  ${playgroundSnippetAttr('type', type.value)}`,
+    `  ${playgroundSnippetAttr('size', size.value)}`,
+    `  ${playgroundSnippetAttr('placeholder', placeholder.value)}`,
   ]
 
+  if (readonly.value) lines.push(`  ${templateBooleanAttr('readonly', true)}`)
   if (state.value === 'error') {
-    lines.push('  error')
-    lines.push(`  message="${errorMessage}"`)
+    lines.push(`  ${templateBooleanAttr('error', true)}`)
+    lines.push(`  ${templateStringAttr('message', errorMessage)}`)
   } else if (state.value === 'success') {
-    lines.push('  success')
+    lines.push(`  ${templateBooleanAttr('success', true)}`)
   } else if (state.value === 'disabled') {
-    lines.push('  disabled')
+    lines.push(`  ${templateBooleanAttr('disabled', true)}`)
   }
 
   lines.push('/>')
@@ -42,17 +55,65 @@ const code = computed(() => {
     <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
       <div class="pg-playground-preview flex items-center justify-center rounded-xl">
         <Input
-          :key="state"
+          :key="`${type}-${size}-${state}-${readonly}`"
           v-model="value"
-          type="text"
-          :placeholder="t('inputsPlayground.fields.fullName')"
+          :type="type"
+          :size="size"
+          :placeholder="placeholder"
           class="max-w-xs"
+          :readonly="readonly"
           :error="state === 'error'"
           :success="state === 'success'"
           :disabled="state === 'disabled'"
           :message="state === 'error' ? errorMessage : undefined"
         />
       </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">type</p>
+          <button
+            v-for="item in typeOptions"
+            :key="item"
+            type="button"
+            class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
+            :style="playgroundOptionStyle(type === item)"
+            @click="type = item"
+          >
+            {{ item }}
+          </button>
+        </div>
+        <div>
+          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('buttonPlayground.sizeLabel').toLowerCase() }}
+          </p>
+          <button
+            v-for="item in sizeOptions"
+            :key="item"
+            type="button"
+            class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
+            :style="playgroundOptionStyle(size === item)"
+            @click="size = item"
+          >
+            {{ item }}
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">placeholder</label>
+        <input
+          v-model="placeholder"
+          type="text"
+          class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+        />
+      </div>
+
+      <label class="flex cursor-pointer items-center gap-2 text-xs text-[#4D6A87]">
+        <Switch v-model="readonly" size="sm" />
+        readonly
+      </label>
+
       <div>
         <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">state</p>
         <button

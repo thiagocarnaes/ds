@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { Zap } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { propTemplateBinding } from '../utils/propTemplateName'
 import {
   Button,
   Select,
@@ -15,19 +16,21 @@ const { t } = usePlaygroundLocale()
 
 const sizes = ['sm', 'md', 'lg'] as const
 
-type Appearance = 'primary' | 'ghost' | 'outline' | 'destructive'
+type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'destructive' | 'link'
 type Size = (typeof sizes)[number]
 
-const appearance = ref<Appearance>('primary')
+const variant = ref<ButtonVariant>('primary')
 const size = ref<Size>('md')
 const disabled = ref(false)
+const loading = ref(false)
 const iconValue = ref('')
 
-const appearances = [
+const variants = [
   { id: 'primary', variant: 'primary' as const },
   { id: 'ghost', variant: 'ghost' as const },
   { id: 'outline', variant: 'outline' as const },
-  { id: 'danger', variant: 'destructive' as const },
+  { id: 'destructive', variant: 'destructive' as const },
+  { id: 'link', variant: 'link' as const },
 ] as const
 
 const icon = computed<ButtonIconName | undefined>(() =>
@@ -51,11 +54,12 @@ function optionStyle(active: boolean) {
     <div class="flex flex-col gap-3">
       <div class="pg-playground-preview flex items-center justify-center rounded-xl">
         <Button
-          :appearance="appearance === 'destructive' ? 'danger' : appearance === 'default' ? 'primary' : appearance"
+          :variant="variant"
           :size="size"
           :icon="icon"
           :disabled="disabled"
-          :class="appearance === 'primary' ? 'ds-glow-primary' : undefined"
+          :loading="loading"
+          :class="variant === 'primary' ? 'ds-glow-primary' : undefined"
         >
           {{ t('buttonPlayground.previewAction') }}
         </Button>
@@ -63,15 +67,15 @@ function optionStyle(active: boolean) {
       <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <div class="min-w-0">
           <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
-            {{ t('buttonPlayground.appearanceLabel') }}
+            {{ t('buttonPlayground.variantLabel') }}
           </p>
           <button
-            v-for="item in appearances"
+            v-for="item in variants"
             :key="item.id"
             type="button"
             class="mb-0.5 block w-full rounded px-2 py-0.5 text-left text-xs transition-all"
-            :style="optionStyle(appearance === item.variant)"
-            @click="appearance = item.variant"
+            :style="optionStyle(variant === item.variant)"
+            @click="variant = item.variant"
           >
             {{ item.id }}
           </button>
@@ -97,7 +101,11 @@ function optionStyle(active: boolean) {
           </p>
           <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-0.5 text-xs text-[#4D6A87]">
             <Switch v-model="disabled" size="sm" />
-            disabled
+            {{ propTemplateBinding('disabled') }}
+          </label>
+          <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-0.5 text-xs text-[#4D6A87]">
+            <Switch v-model="loading" size="sm" />
+            {{ propTemplateBinding('loading') }}
           </label>
         </div>
       </div>

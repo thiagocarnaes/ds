@@ -25,10 +25,10 @@ const email = ref('')
 <\/script>
 
 <template>
-  <FormField label="Email">
-    <Input v-model="email" placeholder="you@company.com" />
+  <FormField :label="'Email'">
+    <Input v-model="email" :placeholder="'you@company.com'" />
   </FormField>
-  <Button appearance="primary">Save</Button>
+  <Button :variant="'primary'">Save</Button>
 </template>`
 
 const toastUsage = `<script setup lang="ts">
@@ -43,7 +43,7 @@ function onSave() {
 
 <template>
   <ToastHost />
-  <Button appearance="primary" @click="onSave">Save</Button>
+  <Button :variant="'primary'" @click="onSave">Save</Button>
 </template>`
 
 const darkMode = `document.documentElement.classList.toggle('dark', isDark)`
@@ -79,10 +79,10 @@ const columnFilters = ref<DataTableColumnFilters>({})
     v-model:column-filters="columnFilters"
     :columns="columns"
     :rows="rows"
-    row-key="id"
+    :row-key="'id'"
   >
     <template #cell-status="{ value }">
-      <Lozenge appearance="success">{{ value }}</Lozenge>
+      <Lozenge :variant="'success'">{{ value }}</Lozenge>
     </template>
   </DataTable>
 </template>

@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { formTextareaVariants, type FormInputVariants } from './formInputVariants'
 
 export interface TextareaProps extends /* @vue-ignore */ FormInputVariants {
+  size?: FormInputVariants['size']
   modelValue?: string
   placeholder?: string
   disabled?: boolean

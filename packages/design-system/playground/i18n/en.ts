@@ -115,11 +115,21 @@ export const en: PlaygroundMessages = {
     body: 'Are you sure you want to continue?',
     cancel: 'Cancel',
     confirm: 'Confirm',
+    controlsTitle: 'composition',
+    closeOnOverlay: ':close-on-overlay',
+    showTitle: 'title slot',
+    showDescription: 'description slot',
+    showBody: 'body (default slot)',
+    showFooter: 'footer slot',
+    showCancelButton: 'cancel',
+    showConfirmButton: 'confirm',
   },
   overlayDrawerPlayground: {
     open: 'Open drawer',
     title: 'Details',
     body: 'Secondary panel content. Slides in from the selected edge.',
+    closeOnOverlay: ':close-on-overlay',
+    closeAriaLabel: 'Close',
   },
   tooltipPlayground: {
     trigger: 'Hover me',
@@ -129,9 +139,16 @@ export const en: PlaygroundMessages = {
     trigger: 'Open popover',
     title: 'Quick actions',
     body: 'Popover content anchored to the trigger.',
+    controlsTitle: 'composition',
+    showTrigger: 'trigger slot',
+    showContent: 'content slot',
+    showContentTitle: 'content title',
+    showContentBody: 'content body',
+    triggerHiddenHint: 'Enable trigger slot to open the popover.',
   },
   layoutPrimitivesPlayground: {
-    containerHint: 'Container centers content with responsive max-width.',
+    containerHint: 'Responsive horizontal padding and centered max-width.',
+    containerContent: 'Page content',
     action: 'Action',
   },
   layoutPlayground: {
@@ -146,11 +163,16 @@ export const en: PlaygroundMessages = {
     regionsTitle: 'regions',
     menuWidthLabel: 'menu width — {width}',
     startCollapsed: 'start collapsed',
+    footerWidthLabel: 'footer width',
+    footerWidth: {
+      full: '100%',
+      content: 'content only',
+    },
     expandMenu: 'Expand menu',
     collapseMenu: 'Collapse menu',
     introLead: 'composes a full-page grid from four slots.',
     introBody:
-      'Header and footer span the full width; menu sits beside the main content area. Collapse the menu to icon-only mode with the built-in toggle. Nested submenus use SidebarMenuGroup — some open, some closed. Click a button or link inside the content to open the resizable #panel overlay on the right.',
+      'Header and footer span the full width by default; menu sits beside the main content area. Set :footer-width="\'content\'" to keep the footer under the content column so the menu stretches to the bottom. Collapse the menu to icon-only mode with the built-in toggle. Nested submenus use SidebarMenuGroup — some open, some closed. Click a button or link inside the content to open the resizable #panel overlay on the right.',
     panelDescription:
       'Secondary panel overlaying the main content. Drag the left edge to resize. Use the #panel slot and v-model:panel-open to show contextual details without leaving the page.',
     panelTag: 'panel',
@@ -227,7 +249,7 @@ export const en: PlaygroundMessages = {
   },
   buttonPlayground: {
     previewAction: 'Action',
-    appearanceLabel: 'appearance',
+    variantLabel: 'variant',
     sizeLabel: 'size',
     stateLabel: 'state',
     iconLabel: 'icon',
@@ -334,6 +356,8 @@ export const en: PlaygroundMessages = {
   },
   breadcrumbPlayground: {
     depthLabel: 'Depth — {depth}',
+    separatorLabel: 'separator',
+    separatorPlaceholder: 'Custom separator…',
     items: [
       'Home',
       'Projects',
@@ -355,6 +379,9 @@ export const en: PlaygroundMessages = {
     closeAriaLabel: 'Close',
     cancel: 'Cancel',
     controlsTitle: 'composition',
+    showHeader: 'header',
+    showBody: 'body',
+    showFooter: 'footer',
     showCloseButton: 'close button (×)',
     showCancelButton: 'cancel',
     showPrimaryButton: 'primary action',
@@ -413,7 +440,7 @@ export const en: PlaygroundMessages = {
     ],
     replies: {
       button:
-        'Button supports appearances primary, ghost, outline, and danger. Use the icon prop for leading icons from the iconography set.',
+        'Button supports variants primary, ghost, outline, and destructive. Use the icon prop for leading icons from the iconography set.',
       tokens:
         'Design tokens are CSS custom properties for color, spacing, typography, and radius — defined in tokens.css and theme.css.',
       spacing:
@@ -450,6 +477,13 @@ export const en: PlaygroundMessages = {
     filtersLabel: 'Filters:',
     activeFilters: '{count} active',
     noSort: 'No sort',
+    controls: {
+      features: 'features',
+      pageSizeOptions: 'page-size-options',
+      textFields: 'text & empty state',
+      emptyTitlePlaceholder: 'Default from labels…',
+      emptyDescriptionPlaceholder: 'Default from labels…',
+    },
     columns: {
       name: 'Name',
       email: 'Email',
@@ -487,7 +521,7 @@ export const en: PlaygroundMessages = {
     livePlayground: 'Live Playground',
     previewFallback: '{name} preview',
     descriptions: {
-      Button: 'Triggers an event or action. Use appearance to communicate hierarchy.',
+      Button: 'Triggers an event or action. Use :variant to communicate hierarchy.',
       Input: 'Text field with error, success, and disabled states.',
       DateInput: 'Date picker with locale-aware display and calendar popover.',
       Switch: 'Compact on/off control for settings and toggles.',
@@ -574,13 +608,19 @@ export const en: PlaygroundMessages = {
     propsHeading: 'Props',
     modelsHeading: 'v-model',
     slotsHeading: 'Slots',
+    compositionHeading: 'Composition',
     eventsHeading: 'Events',
     composableHeading: 'Composable — {name}',
+    composableOptionsHeading: 'Options — {name}',
     colName: 'Name',
+    colBinding: 'Binding',
     colType: 'Type',
     colDefault: 'Default',
     colDescription: 'Description',
     colBindings: 'Slot props',
+    colOptional: 'Optional',
+    optionalYes: 'yes',
+    optionalNo: 'no',
     colPayload: 'Payload',
     colSignature: 'Signature',
     playgroundHint: 'Open playground to explore options interactively with live code.',

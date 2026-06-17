@@ -7,6 +7,7 @@ import Stack from '@/components/layout/Stack.vue'
 import Grid from '@/components/layout/Grid.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
 import Tooltip from '@/components/overlay/Tooltip.vue'
+import Popover from '@/components/overlay/Popover.vue'
 
 describe('Modal', () => {
   it('shows content when open', () => {
@@ -175,6 +176,25 @@ describe('layout components', () => {
     expect(wrapper.text()).toContain('icons')
   })
 
+  it('AppLayout renders content-width footer inside content column', () => {
+    const wrapper = mount(AppLayout, {
+      props: { showMenu: true, showFooter: true, footerWidth: 'content' },
+      slots: {
+        menu: 'Menu area',
+        default: 'Content area',
+        footer: 'Footer area',
+      },
+    })
+
+    expect(wrapper.findAll('footer')).toHaveLength(1)
+    expect(wrapper.text()).toContain('Footer area')
+
+    const shell = wrapper.find('[style*="grid-area: shell"]')
+    expect(shell.find('aside').exists()).toBe(true)
+    expect(shell.find('footer').exists()).toBe(true)
+    expect(wrapper.find('[style*="grid-area: footer"]').exists()).toBe(false)
+  })
+
   it('AppLayout shows panel overlay when panelOpen is true', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, panelOpen: true },
@@ -250,5 +270,38 @@ describe('Tooltip', () => {
 
     expect(document.body.querySelector('[role="tooltip"]')?.textContent).toBe('Collapse menu')
     wrapper.unmount()
+  })
+
+  it('applies appearance classes to the tooltip bubble', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Hint', appearance: 'primary' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    await flushPromises()
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    const bubble = document.body.querySelector('[role="tooltip"]')
+    expect(bubble?.className).toContain('bg-popover')
+    expect(bubble?.className).toContain('border-transparent')
+    wrapper.unmount()
+  })
+})
+
+describe('Popover', () => {
+  it('applies appearance classes to the panel', () => {
+    const wrapper = mount(Popover, {
+      props: { open: true, appearance: 'primary' },
+      slots: {
+        trigger: '<button type="button">Open</button>',
+        content: '<p>Panel</p>',
+      },
+    })
+
+    expect(wrapper.find('.bg-popover').exists()).toBe(true)
+    expect(wrapper.find('.border-transparent').exists()).toBe(true)
   })
 })

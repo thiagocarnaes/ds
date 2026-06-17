@@ -1,16 +1,22 @@
 <script setup lang="ts">
-import type {
-  CatalogEvent,
-  CatalogModel,
-  CatalogProp,
-  CatalogSlot,
-  ComponentCatalogEntry,
-} from '../data/catalog/types'
+import type { ComponentCatalogEntry } from '../data/catalog/types'
+import { resolveApiDescription } from '../data/catalog/resolveApiDescription'
+import {
+  eventTemplateName,
+  modelTemplateName,
+  propTemplateBinding,
+  propTemplateName,
+  slotBindingsTemplate,
+} from '../utils/propTemplateName'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
 defineProps<{ entry: ComponentCatalogEntry }>()
 
-const { t } = usePlaygroundLocale()
+const { locale, t } = usePlaygroundLocale()
+
+function desc(text: string | undefined): string {
+  return resolveApiDescription(text, locale.value) ?? '—'
+}
 
 function hasRows<T>(rows: T[] | undefined): rows is T[] {
   return Boolean(rows?.length)
@@ -24,7 +30,7 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
         {{ t('componentCatalog.composableHeading', { name: entry.composable.name }) }}
       </h5>
       <p v-if="entry.composable.description" class="pg-text-subtle mb-3 text-xs leading-relaxed">
-        {{ entry.composable.description }}
+        {{ desc(entry.composable.description) }}
       </p>
       <div class="overflow-x-auto rounded-lg border" style="border-color: var(--pg-border)">
         <table class="w-full min-w-[28rem] text-left text-xs">
@@ -44,11 +50,46 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
             >
               <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
               <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.signature }}</td>
-              <td class="pg-text-subtle px-3 py-2">{{ row.description ?? '—' }}</td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
             </tr>
           </tbody>
         </table>
       </div>
+
+      <template v-if="hasRows(entry.composable.options)">
+        <h5 class="pg-text-muted mb-2 mt-4 font-mono text-[10px] uppercase tracking-wider">
+          {{
+            t('componentCatalog.composableOptionsHeading', {
+              name: entry.composable.optionsName ?? 'Options',
+            })
+          }}
+        </h5>
+        <div class="overflow-x-auto rounded-lg border" style="border-color: var(--pg-border)">
+          <table class="w-full min-w-[32rem] text-left text-xs">
+            <thead class="pg-playground-row">
+              <tr>
+                <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colName') }}</th>
+                <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colType') }}</th>
+                <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDefault') }}</th>
+                <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDescription') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                v-for="row in entry.composable.options"
+                :key="row.name"
+                class="border-t"
+                style="border-color: var(--pg-border)"
+              >
+                <td class="px-3 py-2 font-mono text-primary">{{ propTemplateName(row.name) }}</td>
+                <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.type }}</td>
+                <td class="pg-text-muted px-3 py-2 font-mono">{{ row.default ?? '—' }}</td>
+                <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </template>
     </section>
 
     <section v-if="hasRows(entry.models)">
@@ -59,7 +100,7 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
         <table class="w-full min-w-[32rem] text-left text-xs">
           <thead class="pg-playground-row">
             <tr>
-              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colName') }}</th>
+              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colBinding') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colType') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDefault') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDescription') }}</th>
@@ -72,10 +113,10 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
               class="border-t"
               style="border-color: var(--pg-border)"
             >
-              <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
+              <td class="px-3 py-2 font-mono text-primary">{{ modelTemplateName(row.name) }}</td>
               <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.type }}</td>
               <td class="pg-text-muted px-3 py-2 font-mono">{{ row.default ?? '—' }}</td>
-              <td class="pg-text-subtle px-3 py-2">{{ row.description ?? '—' }}</td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
             </tr>
           </tbody>
         </table>
@@ -90,7 +131,7 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
         <table class="w-full min-w-[32rem] text-left text-xs">
           <thead class="pg-playground-row">
             <tr>
-              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colName') }}</th>
+              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colBinding') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colType') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDefault') }}</th>
               <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDescription') }}</th>
@@ -103,10 +144,10 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
               class="border-t"
               style="border-color: var(--pg-border)"
             >
-              <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
+              <td class="px-3 py-2 font-mono text-primary">{{ propTemplateBinding(row.name) }}</td>
               <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.type }}</td>
               <td class="pg-text-muted px-3 py-2 font-mono">{{ row.default ?? '—' }}</td>
-              <td class="pg-text-subtle px-3 py-2">{{ row.description ?? '—' }}</td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
             </tr>
           </tbody>
         </table>
@@ -134,8 +175,42 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
               style="border-color: var(--pg-border)"
             >
               <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
-              <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.bindings ?? '—' }}</td>
-              <td class="pg-text-subtle px-3 py-2">{{ row.description ?? '—' }}</td>
+              <td class="pg-text-subtle px-3 py-2 font-mono">{{ slotBindingsTemplate(row.bindings) }}</td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section v-if="entry.composition?.parts?.length">
+      <h5 class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
+        {{ t('componentCatalog.compositionHeading') }}
+      </h5>
+      <p v-if="entry.composition.description" class="pg-text-subtle mb-3 text-xs leading-relaxed">
+        {{ desc(entry.composition.description) }}
+      </p>
+      <div class="overflow-x-auto rounded-lg border" style="border-color: var(--pg-border)">
+        <table class="w-full min-w-[28rem] text-left text-xs">
+          <thead class="pg-playground-row">
+            <tr>
+              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colName') }}</th>
+              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colOptional') }}</th>
+              <th class="px-3 py-2 font-mono font-medium">{{ t('componentCatalog.colDescription') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="row in entry.composition.parts"
+              :key="row.name"
+              class="border-t"
+              style="border-color: var(--pg-border)"
+            >
+              <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
+              <td class="pg-text-muted px-3 py-2 font-mono">
+                {{ row.optional ? t('componentCatalog.optionalYes') : t('componentCatalog.optionalNo') }}
+              </td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
             </tr>
           </tbody>
         </table>
@@ -162,9 +237,9 @@ function hasRows<T>(rows: T[] | undefined): rows is T[] {
               class="border-t"
               style="border-color: var(--pg-border)"
             >
-              <td class="px-3 py-2 font-mono text-primary">{{ row.name }}</td>
+              <td class="px-3 py-2 font-mono text-primary">@{{ eventTemplateName(row.name) }}</td>
               <td class="pg-text-subtle px-3 py-2 font-mono">{{ row.payload ?? '—' }}</td>
-              <td class="pg-text-subtle px-3 py-2">{{ row.description ?? '—' }}</td>
+              <td class="pg-text-subtle px-3 py-2">{{ desc(row.description) }}</td>
             </tr>
           </tbody>
         </table>

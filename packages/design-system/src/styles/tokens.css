@@ -26,14 +26,14 @@
   --ds-spacing-6: 24px;
   --ds-spacing-8: 32px;
 
-  --ds-font-xs: 10px;
-  --ds-font-sm: 12px;
-  --ds-font-base: 13px;
-  --ds-font-md: 14px;
-  --ds-font-lg: 16px;
-  --ds-font-xl: 20px;
-  --ds-font-2xl: 24px;
-  --ds-font-display: 32px;
+  --ds-font-xs: 12px;
+  --ds-font-sm: 14px;
+  --ds-font-base: 16px;
+  --ds-font-md: 17px;
+  --ds-font-lg: 20px;
+  --ds-font-xl: 24px;
+  --ds-font-2xl: 30px;
+  --ds-font-display: 40px;
 }
 
 :root {

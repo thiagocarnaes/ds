@@ -43,10 +43,17 @@ describe('Badge', () => {
 })
 
 describe('Spinner', () => {
-  it('has status role', () => {
+  it('has status role with ariaLabel prop', () => {
     const wrapper = mount(Spinner, { props: { ariaLabel: 'Loading' } })
     expect(wrapper.attributes('role')).toBe('status')
     expect(wrapper.attributes('aria-label')).toBe('Loading')
+  })
+
+  it('maps aria-label attribute to the rendered label', () => {
+    const wrapper = mount(Spinner, {
+      attrs: { 'aria-label': 'Fetching data' },
+    })
+    expect(wrapper.attributes('aria-label')).toBe('Fetching data')
   })
 })
 

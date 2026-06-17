@@ -62,13 +62,13 @@ const pillars = [
           {{ t('hero.subtitle') }}
         </p>
         <div class="mt-6 flex flex-wrap items-center gap-3">
-          <Button appearance="primary" @click="emit('browse')">
+          <Button variant="primary" @click="emit('browse')">
             {{ t('hero.browseComponents') }}
           </Button>
-          <Button appearance="outline" @click="emit('docs')">
+          <Button variant="outline" @click="emit('docs')">
             {{ t('hero.installDocs') }}
           </Button>
-          <Button appearance="outline" @click="emit('playground')">
+          <Button variant="outline" @click="emit('playground')">
             <GlowDot color="#00E5B0" />
             {{ t('hero.playground') }}
           </Button>

@@ -1,17 +1,35 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import { cn } from '@/lib/utils'
+import {
+  overlayAppearanceClasses,
+  type OverlayAppearance,
+  type TooltipAppearance,
+} from './overlayAppearance'
+
+export type { TooltipAppearance }
 
 const props = withDefaults(
   defineProps<{
     content: string
     placement?: 'top' | 'bottom' | 'left' | 'right'
+    variant?: OverlayAppearance
+    /** @deprecated Use `variant` instead. */
+    appearance?: OverlayAppearance
     class?: string
   }>(),
   {
     placement: 'top',
+    variant: undefined,
+    appearance: undefined,
   },
 )
+
+const resolvedVariant = computed(
+  (): OverlayAppearance => props.variant ?? props.appearance ?? 'outline',
+)
+
+const variantClasses = computed(() => overlayAppearanceClasses[resolvedVariant.value])
 
 const triggerRef = ref<HTMLElement | null>(null)
 const tooltipRef = ref<HTMLElement | null>(null)
@@ -130,7 +148,8 @@ const tooltipStyle = computed(() => ({
       role="tooltip"
       :class="
         cn(
-          'pointer-events-none fixed z-[200] whitespace-nowrap rounded-md border border-border bg-popover px-2 py-1 text-xs text-popover-foreground shadow-md',
+          'pointer-events-none fixed z-[200] whitespace-nowrap rounded-md border px-2 py-1 text-xs shadow-md',
+          variantClasses,
           props.class,
         )
       "

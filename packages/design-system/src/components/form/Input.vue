@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils'
 import { formInputVariants, type FormInputVariants } from './formInputVariants'
 
 export interface InputProps extends /* @vue-ignore */ FormInputVariants {
+  size?: FormInputVariants['size']
   modelValue?: string
   type?: 'text' | 'email' | 'password' | 'search' | 'date'
   placeholder?: string

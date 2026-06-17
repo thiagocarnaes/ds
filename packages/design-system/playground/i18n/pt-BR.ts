@@ -115,11 +115,21 @@ export const ptBR: PlaygroundMessages = {
     body: 'Tem certeza que deseja continuar?',
     cancel: 'Cancelar',
     confirm: 'Confirmar',
+    controlsTitle: 'composição',
+    closeOnOverlay: ':close-on-overlay',
+    showTitle: 'slot title',
+    showDescription: 'slot description',
+    showBody: 'body (slot default)',
+    showFooter: 'slot footer',
+    showCancelButton: 'cancelar',
+    showConfirmButton: 'confirmar',
   },
   overlayDrawerPlayground: {
     open: 'Abrir drawer',
     title: 'Detalhes',
     body: 'Conteúdo secundário. Desliza a partir da borda selecionada.',
+    closeOnOverlay: ':close-on-overlay',
+    closeAriaLabel: 'Fechar',
   },
   tooltipPlayground: {
     trigger: 'Passe o mouse',
@@ -129,9 +139,16 @@ export const ptBR: PlaygroundMessages = {
     trigger: 'Abrir popover',
     title: 'Ações rápidas',
     body: 'Conteúdo flutuante ancorado ao gatilho.',
+    controlsTitle: 'composição',
+    showTrigger: 'slot trigger',
+    showContent: 'slot content',
+    showContentTitle: 'título do conteúdo',
+    showContentBody: 'corpo do conteúdo',
+    triggerHiddenHint: 'Ative o slot trigger para abrir o popover.',
   },
   layoutPrimitivesPlayground: {
-    containerHint: 'Container centraliza o conteúdo com largura máxima responsiva.',
+    containerHint: 'Padding horizontal responsivo e largura máxima centralizada.',
+    containerContent: 'Conteúdo da página',
     action: 'Ação',
   },
   layoutPlayground: {
@@ -146,11 +163,16 @@ export const ptBR: PlaygroundMessages = {
     regionsTitle: 'regiões',
     menuWidthLabel: 'largura do menu — {width}',
     startCollapsed: 'iniciar recolhido',
+    footerWidthLabel: 'largura do footer',
+    footerWidth: {
+      full: '100%',
+      content: 'só conteúdo',
+    },
     expandMenu: 'Expandir menu',
     collapseMenu: 'Recolher menu',
     introLead: 'compõe um grid de página inteira a partir de quatro slots.',
     introBody:
-      'Header e footer ocupam a largura total; o menu fica ao lado da área de conteúdo principal. Recolha o menu para o modo só ícones com o toggle integrado. Submenus aninhados usam SidebarMenuGroup — alguns abertos, outros fechados. Clique em um botão ou link no conteúdo para abrir o overlay #panel redimensionável à direita.',
+      'Header e footer ocupam a largura total por padrão; o menu fica ao lado da área de conteúdo principal. Use :footer-width="\'content\'" para manter o footer apenas sob a coluna de conteúdo, fazendo o menu esticar até o rodapé. Recolha o menu para o modo só ícones com o toggle integrado. Submenus aninhados usam SidebarMenuGroup — alguns abertos, outros fechados. Clique em um botão ou link no conteúdo para abrir o overlay #panel redimensionável à direita.',
     panelDescription:
       'Painel secundário sobrepondo o conteúdo principal. Arraste a borda esquerda para redimensionar. Use o slot #panel e v-model:panel-open para exibir detalhes contextuais sem sair da página.',
     panelTag: 'painel',
@@ -227,7 +249,7 @@ export const ptBR: PlaygroundMessages = {
   },
   buttonPlayground: {
     previewAction: 'Ação',
-    appearanceLabel: 'aparência',
+    variantLabel: 'variante',
     sizeLabel: 'tamanho',
     stateLabel: 'estado',
     iconLabel: 'ícone',
@@ -334,6 +356,8 @@ export const ptBR: PlaygroundMessages = {
   },
   breadcrumbPlayground: {
     depthLabel: 'Profundidade — {depth}',
+    separatorLabel: 'separador',
+    separatorPlaceholder: 'Separador personalizado…',
     items: [
       'Início',
       'Projetos',
@@ -355,6 +379,9 @@ export const ptBR: PlaygroundMessages = {
     closeAriaLabel: 'Fechar',
     cancel: 'Cancelar',
     controlsTitle: 'composição',
+    showHeader: 'header',
+    showBody: 'body',
+    showFooter: 'footer',
     showCloseButton: 'botão fechar (×)',
     showCancelButton: 'cancelar',
     showPrimaryButton: 'ação principal',
@@ -413,7 +440,7 @@ export const ptBR: PlaygroundMessages = {
     ],
     replies: {
       button:
-        'O Button suporta appearances primary, ghost, outline e danger. Use a prop icon para ícones à esquerda do conjunto de iconografia.',
+        'O Button suporta variantes primary, ghost, outline e destructive. Use a prop icon para ícones à esquerda do conjunto de iconografia.',
       tokens:
         'Design tokens são custom properties CSS para cor, espaçamento, tipografia e radius — definidos em tokens.css e theme.css.',
       spacing:
@@ -450,6 +477,13 @@ export const ptBR: PlaygroundMessages = {
     filtersLabel: 'Filtros:',
     activeFilters: '{count} ativos',
     noSort: 'Sem ordenação',
+    controls: {
+      features: 'recursos',
+      pageSizeOptions: 'page-size-options',
+      textFields: 'texto e estado vazio',
+      emptyTitlePlaceholder: 'Padrão dos labels…',
+      emptyDescriptionPlaceholder: 'Padrão dos labels…',
+    },
     columns: {
       name: 'Nome',
       email: 'E-mail',
@@ -487,7 +521,7 @@ export const ptBR: PlaygroundMessages = {
     livePlayground: 'Playground ao vivo',
     previewFallback: 'Preview de {name}',
     descriptions: {
-      Button: 'Dispara um evento ou ação. Use appearance para comunicar hierarquia.',
+      Button: 'Dispara um evento ou ação. Use :variant para comunicar hierarquia.',
       Input: 'Campo de texto com estados de erro, sucesso e desabilitado.',
       DateInput: 'Seletor de data com exibição por locale e calendário.',
       Switch: 'Controle compacto liga/desliga para configurações.',
@@ -574,13 +608,19 @@ export const ptBR: PlaygroundMessages = {
     propsHeading: 'Props',
     modelsHeading: 'v-model',
     slotsHeading: 'Slots',
+    compositionHeading: 'Composição',
     eventsHeading: 'Eventos',
     composableHeading: 'Composable — {name}',
+    composableOptionsHeading: 'Opções — {name}',
     colName: 'Nome',
+    colBinding: 'Binding',
     colType: 'Tipo',
     colDefault: 'Padrão',
     colDescription: 'Descrição',
     colBindings: 'Props do slot',
+    colOptional: 'Opcional',
+    optionalYes: 'sim',
+    optionalNo: 'não',
     colPayload: 'Payload',
     colSignature: 'Assinatura',
     playgroundHint: 'Abra o playground para explorar opções com código ao vivo.',

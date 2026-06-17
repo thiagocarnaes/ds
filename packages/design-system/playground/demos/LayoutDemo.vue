@@ -15,6 +15,8 @@ import {
 } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, propTemplateBinding, templateStringAttr } from '../utils/propTemplateName'
+import { playgroundOptionStyle } from './playgroundOptionStyle'
 import {
   AppLayout,
   Button,
@@ -33,11 +35,22 @@ const showHeader = ref(true)
 const showMenu = ref(true)
 const showFooter = ref(true)
 const showPanel = ref(true)
+const footerWidth = ref<'full' | 'content'>('full')
 const menuWidthRem = ref(12)
 const menuWidth = computed(() => `${menuWidthRem.value}rem`)
+const menuCollapsedWidthRem = ref(3)
+const menuCollapsedWidth = computed(() => `${menuCollapsedWidthRem.value}rem`)
+const menuLabel = ref('Menu')
+const menuCollapsible = ref(true)
 const menuCollapsed = ref(false)
 const defaultCollapsed = ref(false)
 const panelOpen = ref(false)
+const panelWidth = ref('min(24rem, 50%)')
+const panelMinWidthRem = ref(12)
+const panelMinWidth = computed(() => `${panelMinWidthRem.value}rem`)
+const panelMaxWidth = ref('75%')
+const panelResizable = ref(true)
+const panelBackdrop = ref(true)
 const activeNav = ref('components.forms.input')
 const openKeys = ref(['components', 'components.forms'])
 
@@ -56,20 +69,44 @@ watch(showPanel, (enabled) => {
 
 const previewKey = computed(
   () =>
-    `${showHeader.value}-${showMenu.value}-${showFooter.value}-${showPanel.value}-${menuWidthRem.value}-${defaultCollapsed.value}`,
+    [
+      showHeader.value,
+      showMenu.value,
+      showFooter.value,
+      showPanel.value,
+      footerWidth.value,
+      menuWidthRem.value,
+      menuCollapsedWidthRem.value,
+      menuLabel.value,
+      menuCollapsible.value,
+      defaultCollapsed.value,
+      panelWidth.value,
+      panelMinWidthRem.value,
+      panelMaxWidth.value,
+      panelResizable.value,
+      panelBackdrop.value,
+    ].join('-'),
 )
 
 const code = computed(() => {
   const props = [
     '  v-model:menu-collapsed="menuCollapsed"',
     '  v-model:panel-open="panelOpen"',
-    `  menu-width="${menuWidth.value}"`,
+    `  ${playgroundSnippetAttr('menuWidth', menuWidth.value)}`,
+    `  ${playgroundSnippetAttr('menuCollapsedWidth', menuCollapsedWidth.value)}`,
+    `  ${playgroundSnippetAttr('menuLabel', menuLabel.value)}`,
+    `  ${playgroundSnippetAttr('menuCollapsible', menuCollapsible.value)}`,
+    `  ${playgroundSnippetAttr('defaultMenuCollapsed', defaultCollapsed.value)}`,
+    `  ${playgroundSnippetAttr('panelWidth', panelWidth.value)}`,
+    `  ${playgroundSnippetAttr('panelMinWidth', panelMinWidth.value)}`,
+    `  ${playgroundSnippetAttr('panelMaxWidth', panelMaxWidth.value)}`,
+    `  ${playgroundSnippetAttr('panelResizable', panelResizable.value)}`,
+    `  ${playgroundSnippetAttr('panelBackdrop', panelBackdrop.value)}`,
+    `  ${playgroundSnippetAttr('showHeader', showHeader.value)}`,
+    `  ${playgroundSnippetAttr('showMenu', showMenu.value)}`,
+    `  ${playgroundSnippetAttr('showFooter', showFooter.value)}`,
+    `  ${playgroundSnippetAttr('footerWidth', footerWidth.value)}`,
   ]
-
-  if (!showHeader.value) props.push('  :show-header="false"')
-  if (!showMenu.value) props.push('  :show-menu="false"')
-  if (!showFooter.value) props.push('  :show-footer="false"')
-  if (defaultCollapsed.value) props.push('  default-menu-collapsed')
 
   const lines = [
     '<AppLayout',
@@ -77,7 +114,7 @@ const code = computed(() => {
     '>',
     '  <template #menu="{ collapsed }">',
     '    <SidebarMenu v-model:active-id="activeId" v-model:open-keys="openKeys" :collapsed="collapsed">',
-    '      <SidebarMenuItem id="dashboard" label="Dashboard" />',
+    `      <SidebarMenuItem ${templateStringAttr('id', 'dashboard')} ${templateStringAttr('label', 'Dashboard')} />`,
     '    </SidebarMenu>',
     '  </template>',
     '',
@@ -145,9 +182,18 @@ const code = computed(() => {
         v-model:panel-open="panelOpen"
         :default-menu-collapsed="defaultCollapsed"
         :menu-width="menuWidth"
+        :menu-collapsed-width="menuCollapsedWidth"
+        :menu-label="menuLabel"
+        :menu-collapsible="menuCollapsible"
+        :panel-width="panelWidth"
+        :panel-min-width="panelMinWidth"
+        :panel-max-width="panelMaxWidth"
+        :panel-resizable="panelResizable"
+        :panel-backdrop="panelBackdrop"
         :show-header="showHeader"
         :show-menu="showMenu"
         :show-footer="showFooter"
+        :footer-width="footerWidth"
         class="min-h-[26rem] border-[#00E5B0]/20"
       >
         <template #header>
@@ -165,7 +211,7 @@ const code = computed(() => {
               </span>
               <span class="text-sm font-semibold text-foreground">Design System</span>
             </div>
-            <Lozenge appearance="success">{{ t('app.stable') }}</Lozenge>
+            <Lozenge variant="success">{{ t('app.stable') }}</Lozenge>
           </div>
         </template>
 
@@ -251,7 +297,7 @@ const code = computed(() => {
             <p class="text-sm text-[#7BA3C8]">
               {{ navLabels[activeNav] ?? activeNav }}
             </p>
-            <Button v-if="showPanel" appearance="outline" size="sm" @click="panelOpen = true">
+            <Button v-if="showPanel" variant="outline" size="sm" @click="panelOpen = true">
               {{ t('layoutPlayground.viewDetails') }}
             </Button>
           </div>
@@ -297,15 +343,15 @@ const code = computed(() => {
           <p class="mb-1 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('layoutPlayground.regionsTitle') }}</p>
           <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
             <Switch v-model="showHeader" size="sm" />
-            {{ t('layoutPlayground.regions.header.label').toLowerCase() }}
+            {{ propTemplateBinding('showHeader') }}
           </label>
           <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
             <Switch v-model="showMenu" size="sm" />
-            {{ t('layoutPlayground.regions.menu.label').toLowerCase() }}
+            {{ propTemplateBinding('showMenu') }}
           </label>
           <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
             <Switch v-model="showFooter" size="sm" />
-            {{ t('layoutPlayground.regions.footer.label').toLowerCase() }}
+            {{ propTemplateBinding('showFooter') }}
           </label>
           <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
             <Switch v-model="showPanel" size="sm" />
@@ -327,10 +373,88 @@ const code = computed(() => {
               class="w-full accent-[#00E5B0]"
             />
           </div>
+          <div>
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+              {{ propTemplateBinding('menuCollapsedWidth') }} — {{ menuCollapsedWidth }}
+            </label>
+            <input
+              v-model.number="menuCollapsedWidthRem"
+              type="range"
+              min="2"
+              max="6"
+              step="0.5"
+              class="w-full accent-[#00E5B0]"
+            />
+          </div>
+          <div>
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('menuLabel') }}</label>
+            <input
+              v-model="menuLabel"
+              type="text"
+              class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+            />
+          </div>
           <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
             <Switch v-model="defaultCollapsed" size="sm" />
-            {{ t('layoutPlayground.startCollapsed') }}
+            {{ propTemplateBinding('defaultMenuCollapsed') }}
           </label>
+          <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+            <Switch v-model="menuCollapsible" size="sm" />
+            {{ propTemplateBinding('menuCollapsible') }}
+          </label>
+
+          <div v-if="showPanel">
+            <p class="mb-2 mt-1 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">panel</p>
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('panelWidth') }}</label>
+            <input
+              v-model="panelWidth"
+              type="text"
+              class="mb-3 w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+            />
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+              {{ propTemplateBinding('panelMinWidth') }} — {{ panelMinWidth }}
+            </label>
+            <input
+              v-model.number="panelMinWidthRem"
+              type="range"
+              min="8"
+              max="20"
+              step="1"
+              class="mb-3 w-full accent-[#00E5B0]"
+            />
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('panelMaxWidth') }}</label>
+            <input
+              v-model="panelMaxWidth"
+              type="text"
+              class="mb-3 w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+            />
+            <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+              <Switch v-model="panelResizable" size="sm" />
+              {{ propTemplateBinding('panelResizable') }}
+            </label>
+            <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+              <Switch v-model="panelBackdrop" size="sm" />
+              {{ propTemplateBinding('panelBackdrop') }}
+            </label>
+          </div>
+
+          <div v-if="showFooter && showMenu">
+            <p class="mb-2 mt-1 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+              {{ t('layoutPlayground.footerWidthLabel') }}
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="option in (['full', 'content'] as const)"
+                :key="option"
+                type="button"
+                class="rounded-md px-2.5 py-1 font-mono text-[10px] transition-colors"
+                :style="playgroundOptionStyle(footerWidth === option)"
+                @click="footerWidth = option"
+              >
+                {{ t(`layoutPlayground.footerWidth.${option}`) }}
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

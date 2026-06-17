@@ -3,6 +3,8 @@ import { componentCatalogEntries } from './entries'
 import { usageSnippets } from './usageSnippets'
 
 export type {
+  CatalogComposition,
+  CatalogCompositionPart,
   CatalogComposable,
   CatalogComposableMethod,
   CatalogEvent,
@@ -12,7 +14,7 @@ export type {
   ComponentCatalogEntry,
 } from './types'
 
-export { cls, e, m, p, s } from './helpers'
+export { cls, c, e, m, p, s } from './helpers'
 export { componentCatalogEntries } from './entries'
 export { usageSnippets } from './usageSnippets'
 

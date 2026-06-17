@@ -1,4 +1,4 @@
-import type { CatalogEvent, CatalogModel, CatalogProp, CatalogSlot } from './types'
+import type { CatalogCompositionPart, CatalogEvent, CatalogModel, CatalogProp, CatalogSlot } from './types'
 
 export function p(
   name: string,
@@ -28,4 +28,12 @@ export function e(name: string, payload?: string, description?: string): Catalog
 
 export function cls(description = 'Additional CSS classes'): CatalogProp {
   return { name: 'class', type: 'string', description }
+}
+
+export function c(
+  name: string,
+  description?: string,
+  optional = false,
+): CatalogCompositionPart {
+  return { name, description, optional }
 }

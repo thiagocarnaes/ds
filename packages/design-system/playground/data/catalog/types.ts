@@ -33,7 +33,21 @@ export interface CatalogComposableMethod {
 export interface CatalogComposable {
   name: string
   description?: string
+  /** Options object accepted by composable methods (e.g. ShowToastOptions). */
+  optionsName?: string
+  options?: CatalogProp[]
   methods: CatalogComposableMethod[]
+}
+
+export interface CatalogCompositionPart {
+  name: string
+  optional?: boolean
+  description?: string
+}
+
+export interface CatalogComposition {
+  description?: string
+  parts: CatalogCompositionPart[]
 }
 
 export interface ComponentCatalogEntry {
@@ -43,4 +57,5 @@ export interface ComponentCatalogEntry {
   slots?: CatalogSlot[]
   events?: CatalogEvent[]
   composable?: CatalogComposable
+  composition?: CatalogComposition
 }

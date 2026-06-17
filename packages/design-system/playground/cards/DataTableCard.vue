@@ -138,7 +138,7 @@ function setMode(next: DataMode): void {
         @request="loadFromApi"
       >
         <template #cell-status="{ value }">
-          <Lozenge :appearance="statusAppearance[value as UserRow['status']]">
+          <Lozenge :variant="statusAppearance[value as UserRow['status']]">
             {{ formatStatus(value as UserRow['status']) }}
           </Lozenge>
         </template>

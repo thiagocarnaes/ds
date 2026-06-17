@@ -10,18 +10,19 @@ import {
 } from './badgeVariants'
 
 export interface BadgeProps extends /* @vue-ignore */ BadgeVariants {
+  size?: BadgeVariants['size']
   /** Numeric value — renders as text (99+ when above 99). */
   value?: number
-  /** Figma appearance: default, primary, important, added, removed. */
-  appearance?: BadgeAppearance
-  /** @deprecated Use `appearance` instead. */
+  /** Badge color variant. */
   variant?: keyof typeof badgeVariantToAppearance | BadgeAppearance
+  /** @deprecated Use `variant` instead. */
+  appearance?: BadgeAppearance
   class?: string
 }
 
 const props = withDefaults(defineProps<BadgeProps>(), {
-  appearance: undefined,
   variant: 'default',
+  appearance: undefined,
   size: 'md',
 })
 

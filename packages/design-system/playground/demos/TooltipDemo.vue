@@ -2,24 +2,23 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, propTemplateBinding } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
-import { Button, Tooltip } from '@/index'
+import { Button, Tooltip, type TooltipAppearance } from '@/index'
 
 const { t, messages } = usePlaygroundLocale()
 
 const placement = ref<'top' | 'bottom' | 'left' | 'right'>('top')
-const appearance = ref<'primary' | 'ghost' | 'outline' | 'danger'>('outline')
+const variant = ref<TooltipAppearance>('outline')
 
 const placementOptions = ['top', 'bottom', 'left', 'right'] as const
-const appearanceOptions = ['primary', 'ghost', 'outline', 'danger'] as const
+const variantOptions: TooltipAppearance[] = ['primary', 'ghost', 'outline', 'danger']
 
 const copy = computed(() => messages.value.tooltipPlayground)
 
-const previewKey = computed(() => `${placement.value}-${appearance.value}`)
-
 const code = computed(
-  () => `<Tooltip content="${copy.value.hint}" placement="${placement.value}">
-  <Button appearance="${appearance.value}">${copy.value.trigger}</Button>
+  () => `<Tooltip ${playgroundSnippetAttr('content', copy.value.hint)} ${playgroundSnippetAttr('placement', placement.value)} ${playgroundSnippetAttr('variant', variant.value)}>
+  <Button ${playgroundSnippetAttr('variant', 'outline')}>${copy.value.trigger}</Button>
 </Tooltip>`,
 )
 </script>
@@ -29,8 +28,8 @@ const code = computed(
     <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
     <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
       <div class="pg-playground-preview flex items-center justify-center rounded-xl py-8">
-        <Tooltip :key="previewKey" :content="copy.hint" :placement="placement">
-          <Button :appearance="appearance">{{ copy.trigger }}</Button>
+        <Tooltip :content="copy.hint" :placement="placement" :variant="variant">
+          <Button variant="outline">{{ copy.trigger }}</Button>
         </Tooltip>
       </div>
 
@@ -49,16 +48,14 @@ const code = computed(
           </button>
         </div>
         <div>
-          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
-            {{ t('buttonPlayground.appearanceLabel').toLowerCase() }}
-          </p>
+          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('variant') }}</p>
           <button
-            v-for="item in appearanceOptions"
+            v-for="item in variantOptions"
             :key="item"
             type="button"
             class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
-            :style="playgroundOptionStyle(appearance === item)"
-            @click="appearance = item"
+            :style="playgroundOptionStyle(variant === item)"
+            @click="variant = item"
           >
             {{ item }}
           </button>

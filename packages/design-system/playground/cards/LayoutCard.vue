@@ -35,7 +35,7 @@ const regionShellClass =
       <AppLayout
         v-model:panel-open="panelOpen"
         class="mb-4 min-h-[300px] flex-1"
-        menu-width="10rem"
+        :menu-width="'10rem'"
         :menu-collapsible="false"
       >
         <template #header>
@@ -67,7 +67,7 @@ const regionShellClass =
           <span class="font-mono text-[9px] uppercase tracking-wider text-[#00E5B0]">
             {{ t('layoutPlayground.regions.content.label') }}
           </span>
-          <Button appearance="outline" size="sm" @click="panelOpen = true">
+          <Button variant="outline" size="sm" @click="panelOpen = true">
             {{ t('layoutPlayground.openPanel') }}
           </Button>
         </div>

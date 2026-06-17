@@ -4,6 +4,7 @@ import UsageBlock from '../components/UsageBlock.vue'
 import PageSizeSelect from '@/components/data-display/PageSizeSelect.vue'
 import { useDataTableLabels } from '../composables/useUserTableColumns'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr, templateStringAttr } from '../utils/propTemplateName'
 import { Pagination, Switch } from '@/index'
 
 const { t } = usePlaygroundLocale()
@@ -33,8 +34,8 @@ const code = computed(() => {
   if (!hasMeta) {
     return `<Pagination
   v-model:current-page="currentPage"
-  :total="${totalRecords.value}"
-  :page-size="${pageSize.value}"
+  ${playgroundSnippetAttr('total', totalRecords.value)}
+  ${playgroundSnippetAttr('pageSize', pageSize.value)}
 />`
   }
 
@@ -57,7 +58,7 @@ const code = computed(() => {
       '    <PageSizeSelect',
       '      v-model="pageSize"',
       '      :options="[5, 10, 25, 50]"',
-      '      label="Rows per page"',
+      `      ${templateStringAttr('label', 'Rows per page')}`,
       '    />',
     )
   }
@@ -66,8 +67,8 @@ const code = computed(() => {
     '  </div>',
     '  <Pagination',
     '    v-model:current-page="currentPage"',
-    `    :total="${totalRecords.value}"`,
-    `    :page-size="${pageSize.value}"`,
+    `    ${playgroundSnippetAttr('total', totalRecords.value)}`,
+    `    ${playgroundSnippetAttr('pageSize', pageSize.value)}`,
     '  />',
     '</div>',
   )

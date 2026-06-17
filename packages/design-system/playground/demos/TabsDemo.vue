@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { AlertCircle, BarChart2, Info, Settings } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { templateStringAttr } from '../utils/propTemplateName'
 import { Tab, TabList, TabPanel, Tabs } from '@/index'
 
 const { messages, t } = usePlaygroundLocale()
@@ -19,13 +20,13 @@ const code = computed(() => {
   const lines = ['<Tabs v-model="activeTab">', '  <TabList>']
 
   for (const key of tabKeys) {
-    lines.push(`    <Tab value="${key}">${tabs.value[key]}</Tab>`)
+    lines.push(`    <Tab ${templateStringAttr('value', key)}>${tabs.value[key]}</Tab>`)
   }
 
   lines.push('  </TabList>')
 
   for (const key of tabKeys) {
-    lines.push(`  <TabPanel value="${key}">`, `    ${panels.value[key]}`, '  </TabPanel>')
+    lines.push(`  <TabPanel ${templateStringAttr('value', key)}>`, `    ${panels.value[key]}`, '  </TabPanel>')
   }
 
   lines.push('</Tabs>')

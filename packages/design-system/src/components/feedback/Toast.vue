@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { cn } from '@/lib/utils'
+import { semanticSurfaceClasses } from '@/lib/semanticSurfaceClasses'
 import type { ToastVariant } from '@/composables/useToast'
 
 export interface ToastProps {
@@ -21,10 +22,10 @@ const emit = defineEmits<{
 const visible = ref(true)
 
 const variantClasses: Record<ToastVariant, string> = {
-  success: 'border-success/40 bg-success/10 text-foreground',
-  error: 'border-destructive/40 bg-destructive/10 text-foreground',
-  info: 'border-primary/40 bg-primary/10 text-foreground',
-  warning: 'border-warning/40 bg-warning/10 text-foreground',
+  success: semanticSurfaceClasses.success,
+  error: semanticSurfaceClasses.error,
+  info: semanticSurfaceClasses.info,
+  warning: semanticSurfaceClasses.warning,
 }
 
 function dismiss(): void {
@@ -39,7 +40,7 @@ function dismiss(): void {
     role="status"
     :class="
       cn(
-        'rounded-md border px-4 py-3 text-sm shadow-md',
+        'rounded-md border px-4 py-3 text-sm shadow-lg',
         variantClasses[props.variant],
         props.class,
       )

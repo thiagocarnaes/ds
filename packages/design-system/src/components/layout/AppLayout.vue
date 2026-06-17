@@ -17,6 +17,8 @@ export interface AppLayoutProps {
   showHeader?: boolean
   showMenu?: boolean
   showFooter?: boolean
+  /** `full` spans header/menu/content; `content` keeps footer under main content only. */
+  footerWidth?: 'full' | 'content'
   class?: string
 }
 
@@ -34,6 +36,7 @@ const props = withDefaults(defineProps<AppLayoutProps>(), {
   showHeader: true,
   showMenu: true,
   showFooter: true,
+  footerWidth: 'full',
 })
 
 const menuCollapsed = defineModel<boolean>('menuCollapsed', { default: false })
@@ -49,21 +52,29 @@ const activeMenuWidth = computed(() =>
   menuCollapsed.value ? props.menuCollapsedWidth : props.menuWidth,
 )
 
+const usesGridFooter = computed(
+  () => props.showFooter && !(props.footerWidth === 'content' && props.showMenu),
+)
+
+const usesContentFooter = computed(
+  () => props.showFooter && props.footerWidth === 'content' && props.showMenu,
+)
+
 const gridStyle = computed(() => {
   if (props.showMenu) {
     return {
-      gridTemplateAreas: props.showHeader && props.showFooter
+      gridTemplateAreas: props.showHeader && usesGridFooter.value
         ? '"header header" "shell shell" "footer footer"'
         : props.showHeader
           ? '"header header" "shell shell"'
-          : props.showFooter
+          : usesGridFooter.value
             ? '"shell shell" "footer footer"'
             : '"shell shell"',
       gridTemplateColumns: 'minmax(0, 1fr)',
       gridTemplateRows: [
         props.showHeader ? 'auto' : null,
         'minmax(0, 1fr)',
-        props.showFooter ? 'auto' : null,
+        usesGridFooter.value ? 'auto' : null,
       ]
         .filter(Boolean)
         .join(' '),
@@ -71,18 +82,18 @@ const gridStyle = computed(() => {
   }
 
   return {
-    gridTemplateAreas: props.showHeader && props.showFooter
+    gridTemplateAreas: props.showHeader && usesGridFooter.value
       ? '"header" "content" "footer"'
       : props.showHeader
         ? '"header" "content"'
-        : props.showFooter
+        : usesGridFooter.value
           ? '"content" "footer"'
           : '"content"',
     gridTemplateColumns: 'minmax(0, 1fr)',
     gridTemplateRows: [
       props.showHeader ? 'auto' : null,
       'minmax(0, 1fr)',
-      props.showFooter ? 'auto' : null,
+      usesGridFooter.value ? 'auto' : null,
     ]
       .filter(Boolean)
       .join(' '),
@@ -156,23 +167,32 @@ onUnmounted(() => {
         </div>
       </aside>
 
-      <div class="relative min-h-0 min-w-0 flex-1 overflow-hidden bg-background">
-        <main class="h-full min-h-0 overflow-y-auto">
-          <slot />
-        </main>
+      <div class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
+        <div class="relative min-h-0 flex-1 overflow-hidden">
+          <main class="h-full min-h-0 overflow-y-auto">
+            <slot />
+          </main>
 
-        <AppLayoutPanelOverlay
-          v-model:open="panelOpen"
-          :backdrop="panelBackdrop"
-          :initial-width="panelWidth"
-          :min-width="panelMinWidth"
-          :max-width="panelMaxWidth"
-          :resizable="panelResizable"
+          <AppLayoutPanelOverlay
+            v-model:open="panelOpen"
+            :backdrop="panelBackdrop"
+            :initial-width="panelWidth"
+            :min-width="panelMinWidth"
+            :max-width="panelMaxWidth"
+            :resizable="panelResizable"
+          >
+            <template #default="panelSlot">
+              <slot name="panel" v-bind="panelSlot" />
+            </template>
+          </AppLayoutPanelOverlay>
+        </div>
+
+        <footer
+          v-if="usesContentFooter"
+          class="shrink-0 border-t border-border bg-card"
         >
-          <template #default="panelSlot">
-            <slot name="panel" v-bind="panelSlot" />
-          </template>
-        </AppLayoutPanelOverlay>
+          <slot name="footer" />
+        </footer>
       </div>
     </div>
 
@@ -200,7 +220,7 @@ onUnmounted(() => {
     </div>
 
     <footer
-      v-if="showFooter"
+      v-if="usesGridFooter"
       class="border-t border-border bg-card"
       style="grid-area: footer"
     >

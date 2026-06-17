@@ -100,6 +100,11 @@ export interface PlaygroundMessages {
     regionsTitle: string
     menuWidthLabel: string
     startCollapsed: string
+    footerWidthLabel: string
+    footerWidth: {
+      full: string
+      content: string
+    }
     expandMenu: string
     collapseMenu: string
     introLead: string
@@ -147,11 +152,21 @@ export interface PlaygroundMessages {
     body: string
     cancel: string
     confirm: string
+    controlsTitle: string
+    closeOnOverlay: string
+    showTitle: string
+    showDescription: string
+    showBody: string
+    showFooter: string
+    showCancelButton: string
+    showConfirmButton: string
   }
   overlayDrawerPlayground: {
     open: string
     title: string
     body: string
+    closeOnOverlay: string
+    closeAriaLabel: string
   }
   tooltipPlayground: {
     trigger: string
@@ -161,9 +176,16 @@ export interface PlaygroundMessages {
     trigger: string
     title: string
     body: string
+    controlsTitle: string
+    showTrigger: string
+    showContent: string
+    showContentTitle: string
+    showContentBody: string
+    triggerHiddenHint: string
   }
   layoutPrimitivesPlayground: {
     containerHint: string
+    containerContent: string
     action: string
   }
   inputsPlayground: {
@@ -193,7 +215,7 @@ export interface PlaygroundMessages {
   }
   buttonPlayground: {
     previewAction: string
-    appearanceLabel: string
+    variantLabel: string
     sizeLabel: string
     stateLabel: string
     iconLabel: string
@@ -299,6 +321,8 @@ export interface PlaygroundMessages {
   }
   breadcrumbPlayground: {
     depthLabel: string
+    separatorLabel: string
+    separatorPlaceholder: string
     items: string[]
   }
   paginationPlayground: {
@@ -309,6 +333,9 @@ export interface PlaygroundMessages {
     closeAriaLabel: string
     cancel: string
     controlsTitle: string
+    showHeader: string
+    showBody: string
+    showFooter: string
     showCloseButton: string
     showCancelButton: string
     showPrimaryButton: string
@@ -383,6 +410,13 @@ export interface PlaygroundMessages {
     filtersLabel: string
     activeFilters: string
     noSort: string
+    controls: {
+      features: string
+      pageSizeOptions: string
+      textFields: string
+      emptyTitlePlaceholder: string
+      emptyDescriptionPlaceholder: string
+    }
     columns: UserTableColumnMessages
     labels: {
       record: string
@@ -456,13 +490,19 @@ export interface PlaygroundMessages {
     propsHeading: string
     modelsHeading: string
     slotsHeading: string
+    compositionHeading: string
     eventsHeading: string
     composableHeading: string
+    composableOptionsHeading: string
     colName: string
+    colBinding: string
     colType: string
     colDefault: string
     colDescription: string
     colBindings: string
+    colOptional: string
+    optionalYes: string
+    optionalNo: string
     colPayload: string
     colSignature: string
     playgroundHint: string

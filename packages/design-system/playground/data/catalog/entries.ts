@@ -1,13 +1,12 @@
 import type { ComponentCatalogEntry } from './types'
-import { cls, e, m, p, s } from './helpers'
+import { c, cls, e, m, p, s } from './helpers'
 import { usageSnippets } from './usageSnippets'
 
 export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Button: {
     usage: usageSnippets.Button!,
     props: [
-      p('appearance', "'primary' | 'ghost' | 'outline' | 'danger' | 'default' | 'secondary' | 'destructive' | 'link'", undefined, 'Visual style matching Figma appearances'),
-      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Button variant (use appearance for Figma styles)'),
+      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style / button variant'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'default', 'Button size'),
       p('icon', 'ButtonIconName', undefined, 'Leading icon by registered name'),
       p('type', "'button' | 'submit' | 'reset'", 'button', 'Native button type'),
@@ -54,7 +53,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('readonly', 'boolean', 'false', 'Makes the input read-only'),
       p('error', 'boolean', 'false', 'Error validation state'),
       p('success', 'boolean', 'false', 'Success validation state'),
-      p('message', 'string', undefined, 'Validation or helper message shown when error is true'),
+      p('message', 'string', undefined, 'Validation or helper message shown when :error is true'),
       p('id', 'string', undefined, 'Input element id'),
       p('lang', 'string', undefined, 'Language for the input element'),
       cls(),
@@ -87,7 +86,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('disabled', 'boolean', 'false', 'Disables the textarea'),
       p('readonly', 'boolean', 'false', 'Makes the textarea read-only'),
       p('error', 'boolean', 'false', 'Error validation state'),
-      p('message', 'string', undefined, 'Error message shown when error is true'),
+      p('message', 'string', undefined, 'Error message shown when :error is true'),
       p('id', 'string', undefined, 'Textarea element id'),
       cls(),
     ],
@@ -110,7 +109,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       m('modelValue', 'boolean', 'false', 'Checked state'),
       m('indeterminate', 'boolean', 'false', 'Indeterminate state (v-model:indeterminate)'),
     ],
-    slots: [s('default', undefined, 'Custom label content (falls back to label prop)')],
+    slots: [s('default', undefined, 'Custom label content (falls back to :label)')],
     events: [
       e('update:modelValue', 'boolean', 'Emitted when checked state changes'),
       e('update:indeterminate', 'boolean', 'Emitted when indeterminate state changes'),
@@ -163,7 +162,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       cls(),
     ],
     models: [m('modelValue', 'boolean', 'false', 'On/off state')],
-    slots: [s('default', undefined, 'Toggle label (falls back to label prop)')],
+    slots: [s('default', undefined, 'Toggle label (falls back to :label)')],
   },
 
   Select: {
@@ -196,7 +195,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('label', 'string', undefined, 'Field label text'),
       p('helper', 'string', undefined, 'Helper text below the control'),
       p('error', 'string', undefined, 'Error message (takes precedence over helper)'),
-      p('success', 'boolean', undefined, 'Styles helper text as success when true'),
+      p('success', 'boolean', undefined, 'Styles helper text as success when :success is true'),
       p('required', 'boolean', undefined, 'Shows required asterisk on label'),
       cls(),
     ],
@@ -219,8 +218,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     usage: usageSnippets.Badge!,
     props: [
       p('value', 'number', undefined, 'Numeric value — renders as text (99+ when above 99)'),
-      p('appearance', "'default' | 'primary' | 'important' | 'added' | 'removed'", undefined, 'Figma appearance style'),
-      p('variant', 'string', 'default', 'Deprecated — use appearance instead'),
+      p('variant', "'default' | 'primary' | 'important' | 'added' | 'removed'", 'default', 'Badge color variant'),
       p('size', "'sm' | 'md'", 'md', 'Badge size'),
       cls(),
     ],
@@ -264,6 +262,16 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     composable: {
       name: 'useToast()',
       description: 'Mount ToastHost once, then call useToast() to trigger live notifications.',
+      optionsName: 'ShowToastOptions',
+      options: [
+        p(
+          'position',
+          "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
+          'top-right',
+          'Viewport corner where ToastHost renders the notification',
+        ),
+        p('dismissible', 'boolean', 'false', 'Shows dismiss button on the toast'),
+      ],
       methods: [
         { name: 'success', signature: "(message, { position?, dismissible? })", description: 'Show success toast' },
         { name: 'error', signature: "(message, { position?, dismissible? })", description: 'Show error toast' },
@@ -280,6 +288,16 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     composable: {
       name: 'useToast()',
       description: 'ToastHost renders toasts pushed by useToast(). Position and dismissible are set per call.',
+      optionsName: 'ShowToastOptions',
+      options: [
+        p(
+          'position',
+          "'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'",
+          'top-right',
+          'Viewport corner where ToastHost renders the notification',
+        ),
+        p('dismissible', 'boolean', 'false', 'Shows dismiss button on the toast'),
+      ],
       methods: [
         { name: 'success | error | info | warning', signature: "(message, 'top-right' | ShowToastOptions)", description: 'Trigger a live notification' },
         { name: 'dismiss', signature: '(id: string)', description: 'Dismiss a toast by id' },
@@ -442,7 +460,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Lozenge: {
     usage: usageSnippets.Lozenge!,
     props: [
-      p('appearance', "'default' | 'success' | 'danger' | 'progress' | 'warning' | 'new'", 'default', 'Color appearance'),
+      p('variant', "'default' | 'success' | 'danger' | 'progress' | 'warning' | 'new'", 'default', 'Color variant'),
       p('bold', 'boolean', 'false', 'Bold/high-contrast style'),
       p('isBold', 'boolean', 'false', 'Alias for bold'),
       cls(),
@@ -592,6 +610,22 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     ],
     models: [m('open', 'boolean', 'false', 'Visibility state (v-model:open)')],
     slots: [s('default', undefined, 'Modal content — compose header, body, and footer manually')],
+    composition: {
+      description:
+        'Modal exposes one default slot. Use class="max-w-md overflow-hidden p-0" on the panel and compose header, body, and footer as separate blocks inside it.',
+      parts: [
+        c('header', 'Title row with border-b — title on the left'),
+        c('close button', 'Optional × in the header with aria-label="Close" wired to close the modal', true),
+        c('body', 'Main message, form fields, or alerts with px-6 py-4 padding'),
+        c(
+          'footer',
+          'Optional action row with border-t — align buttons to the end (justify-end gap-2)',
+          true,
+        ),
+        c('cancel action', 'Optional ghost Button that closes the modal', true),
+        c('primary action', 'Optional primary or danger Button for the main action', true),
+      ],
+    },
   },
 
   Dialog: {
@@ -602,7 +636,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     ],
     models: [m('open', 'boolean', 'false', 'Visibility state (v-model:open)')],
     slots: [
-      s('title', undefined, 'Dialog title (no title prop — use this slot)'),
+      s('title', undefined, 'Dialog title (no :title prop — use this slot)'),
       s('description', undefined, 'Optional description below the title'),
       s('default', undefined, 'Main dialog body content'),
       s('footer', undefined, 'Footer actions aligned to the end'),
@@ -614,6 +648,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     props: [
       p('content', 'string', undefined, 'Tooltip text (required)'),
       p('placement', "'top' | 'bottom' | 'left' | 'right'", 'top', 'Tooltip position relative to trigger'),
+      p('variant', "'primary' | 'ghost' | 'outline' | 'danger'", 'outline', 'Tooltip bubble visual style'),
       cls(),
     ],
     slots: [s('default', undefined, 'Trigger element (hover/focus target)')],
@@ -621,12 +656,25 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
 
   Popover: {
     usage: usageSnippets.Popover!,
-    props: [cls('Popover panel classes')],
+    props: [
+      p('variant', "'primary' | 'ghost' | 'outline' | 'danger'", 'outline', 'Popover panel visual style'),
+      cls('Popover panel classes'),
+    ],
     models: [m('open', 'boolean', 'false', 'Open state (v-model:open)')],
     slots: [
-      s('trigger', undefined, 'Element that toggles the popover'),
-      s('content', undefined, 'Popover panel content'),
+      s('trigger', undefined, 'Click target that toggles the popover — commonly a Button'),
+      s('content', undefined, 'Floating panel body — compose title, text, and actions inside'),
     ],
+    composition: {
+      description:
+        'Popover uses #trigger and #content slots. Set :variant on Popover for panel styling; style the trigger with its own component props (e.g. Button :variant).',
+      parts: [
+        c('trigger', 'Click target in #trigger — typically a Button'),
+        c('content', 'Panel markup rendered when open'),
+        c('content title', 'Optional heading inside #content (e.g. p.text-sm.font-medium)', true),
+        c('content body', 'Optional supporting copy inside #content (e.g. p.text-xs.text-muted-foreground)', true),
+      ],
+    },
   },
 
   Drawer: {
@@ -637,7 +685,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       cls('Drawer panel width and padding classes'),
     ],
     models: [m('open', 'boolean', 'false', 'Visibility state (v-model:open)')],
-    slots: [s('default', undefined, 'Drawer content — compose title and body manually (no title prop)')],
+    slots: [s('default', undefined, 'Drawer content — compose title and body manually (no :title prop)')],
   },
 
   Container: {
@@ -688,6 +736,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('showHeader', 'boolean', 'true', 'Render header region'),
       p('showMenu', 'boolean', 'true', 'Render sidebar menu region'),
       p('showFooter', 'boolean', 'true', 'Render footer region'),
+      p('footerWidth', "'full' | 'content'", 'full', 'Footer spans full width or content column only'),
       cls(),
     ],
     models: [

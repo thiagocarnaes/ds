@@ -18,6 +18,8 @@ interface LozengeStyle {
 }
 
 export interface LozengeProps {
+  variant?: LozengeAppearance
+  /** @deprecated Use `variant` instead. */
   appearance?: LozengeAppearance
   bold?: boolean
   /** Alias for `bold`. */
@@ -26,10 +28,15 @@ export interface LozengeProps {
 }
 
 const props = withDefaults(defineProps<LozengeProps>(), {
-  appearance: 'default',
+  variant: undefined,
+  appearance: undefined,
   bold: false,
   isBold: false,
 })
+
+const resolvedVariant = computed(
+  (): LozengeAppearance => props.variant ?? props.appearance ?? 'default',
+)
 
 const normalStyles: Record<LozengeAppearance, LozengeStyle> = {
   default: { bg: 'rgba(77,106,135,0.15)', color: '#7BA3C8', border: 'rgba(77,106,135,0.25)' },
@@ -51,7 +58,7 @@ const boldStyles: Record<LozengeAppearance, LozengeStyle> = {
 
 const isBold = computed(() => props.bold || props.isBold)
 
-const palette = computed(() => (isBold.value ? boldStyles : normalStyles)[props.appearance])
+const palette = computed(() => (isBold.value ? boldStyles : normalStyles)[resolvedVariant.value])
 
 const lozengeStyle = computed(() => ({
   backgroundColor: palette.value.bg,

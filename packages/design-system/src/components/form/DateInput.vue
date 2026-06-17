@@ -15,6 +15,7 @@ import {
 import { formInputVariants, type FormInputVariants } from './formInputVariants'
 
 export interface DateInputProps extends /* @vue-ignore */ FormInputVariants {
+  size?: FormInputVariants['size']
   modelValue?: string
   locale?: string
   disabled?: boolean

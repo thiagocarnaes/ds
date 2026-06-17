@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { playgroundSnippetAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
 import { Avatar, AvatarGroup } from '@/index'
 import type { AvatarSize } from '@/components/data-display/Avatar.vue'
@@ -38,14 +39,14 @@ const code = computed(() => {
   if (mode.value === 'group') {
     return `<AvatarGroup
   :members="people"
-  :max="${max.value}"
-  size="${size.value}"
+  ${playgroundSnippetAttr('max', max.value)}
+  ${playgroundSnippetAttr('size', size.value)}
 />`
   }
 
   return `<Avatar
-  name="${name.value}"
-  size="${size.value}"
+  ${playgroundSnippetAttr('name', name.value)}
+  ${playgroundSnippetAttr('size', size.value)}
 />`
 })
 </script>
