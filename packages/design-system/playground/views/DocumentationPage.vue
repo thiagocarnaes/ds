@@ -1,9 +1,13 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { BookOpen, ExternalLink, Package } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
 const PACKAGE = '@tcarnaes/design-system'
 const VERSION = '0.1.2'
+
+const { messages, t, locale } = usePlaygroundLocale()
 
 const installCmd = `npm install ${PACKAGE} vue`
 
@@ -86,10 +90,7 @@ const columnFilters = ref<DataTableColumnFilters>({})
 <!-- Click header: single sort. Ctrl+click: multi-sort. Filter icon: column popover. -->`
 
 const componentGroups = [
-  {
-    category: 'Actions',
-    items: ['Button', 'IconButton', 'Link'],
-  },
+  { category: 'Actions', items: ['Button', 'IconButton', 'Link'] },
   {
     category: 'Forms',
     items: ['Input', 'Textarea', 'Checkbox', 'Radio', 'RadioGroup', 'Switch', 'Toggle', 'Select', 'Label', 'FormField'],
@@ -106,19 +107,17 @@ const componentGroups = [
     category: 'Data display',
     items: ['Card', 'Divider', 'Avatar', 'AvatarGroup', 'Lozenge', 'Table*', 'DataTable', 'DataTableColumnFilterMenu', 'PageSizeSelect', 'List', 'ListItem', 'EmptyState'],
   },
-  {
-    category: 'Overlay',
-    items: ['Modal', 'Dialog', 'Tooltip', 'Popover', 'Drawer'],
-  },
-  {
-    category: 'Layout',
-    items: ['Container', 'Stack', 'Grid', 'AppLayout'],
-  },
-  {
-    category: 'Utils',
-    items: ['cn', 'useToast', 'buttonVariants', 'iconography'],
-  },
+  { category: 'Overlay', items: ['Modal', 'Dialog', 'Tooltip', 'Popover', 'Drawer'] },
+  { category: 'Layout', items: ['Container', 'Stack', 'Grid', 'AppLayout'] },
+  { category: 'Utils', items: ['cn', 'useToast', 'buttonVariants', 'iconography'] },
 ]
+
+const localizedGroups = computed(() =>
+  componentGroups.map((group) => ({
+    ...group,
+    label: messages.value.docs.groupCategories[group.category] ?? group.category,
+  })),
+)
 </script>
 
 <template>
@@ -126,12 +125,11 @@ const componentGroups = [
     <div class="pg-docs-hero pg-playground-panel rounded-2xl p-6 md:p-8">
       <div class="mb-4 flex items-center gap-2">
         <BookOpen :size="16" class="text-primary" />
-        <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">Documentation</span>
+        <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">{{ t('docs.badge') }}</span>
       </div>
-      <h2 class="mb-2 text-2xl font-bold" style="color: var(--pg-text)">Install &amp; use</h2>
+      <h2 class="mb-2 text-2xl font-bold" style="color: var(--pg-text)">{{ t('docs.title') }}</h2>
       <p class="pg-text-subtle mb-6 max-w-2xl text-sm leading-relaxed">
-        Vue 3 component library with design tokens, Tailwind CSS 4, and light/dark mode support.
-        Import the CSS once, then use components anywhere in your app.
+        {{ t('docs.subtitle') }}
       </p>
       <div class="flex flex-wrap items-center gap-3">
         <span
@@ -163,75 +161,72 @@ const componentGroups = [
     </div>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">Requirements</h3>
+      <h3 class="pg-docs-heading">{{ t('docs.requirements') }}</h3>
       <ul class="pg-text-subtle list-inside list-disc space-y-1 text-sm">
-        <li>Vue <code class="pg-docs-inline">^3.5.0</code> (peer dependency)</li>
-        <li>Node.js 18+</li>
+        <li>{{ t('docs.reqVue') }}</li>
+        <li>{{ t('docs.reqNode') }}</li>
       </ul>
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">1. Install</h3>
-      <p class="pg-text-subtle mb-3 text-sm">Add the package and Vue to your project.</p>
+      <h3 class="pg-docs-heading">{{ t('docs.installTitle') }}</h3>
+      <p class="pg-text-subtle mb-3 text-sm">{{ t('docs.installBody') }}</p>
       <UsageBlock :code="installCmd" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">2. Import styles</h3>
-      <p class="pg-text-subtle mb-3 text-sm">
-        Load the compiled CSS in your app entry point before mounting.
-      </p>
+      <h3 class="pg-docs-heading">{{ t('docs.stylesTitle') }}</h3>
+      <p class="pg-text-subtle mb-3 text-sm">{{ t('docs.stylesBody') }}</p>
       <UsageBlock :code="mainTs" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">3. Use components</h3>
-      <p class="pg-text-subtle mb-3 text-sm">
-        Import named exports from the package. TypeScript types are included.
-      </p>
+      <h3 class="pg-docs-heading">{{ t('docs.componentsTitle') }}</h3>
+      <p class="pg-text-subtle mb-3 text-sm">{{ t('docs.componentsBody') }}</p>
       <UsageBlock :code="basicUsage" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">Toasts</h3>
+      <h3 class="pg-docs-heading">{{ t('docs.toastsTitle') }}</h3>
       <p class="pg-text-subtle mb-3 text-sm">
-        Mount <code class="pg-docs-inline">ToastHost</code> once at the root, then call
-        <code class="pg-docs-inline">useToast()</code> from any component.
+        {{ t('docs.toastsBody') }}
       </p>
       <UsageBlock :code="toastUsage" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">Dark mode</h3>
+      <h3 class="pg-docs-heading">{{ t('docs.darkModeTitle') }}</h3>
       <p class="pg-text-subtle mb-3 text-sm">
-        Toggle the <code class="pg-docs-inline">dark</code> class on
-        <code class="pg-docs-inline">&lt;html&gt;</code> to switch semantic tokens.
+        {{ t('docs.darkModeBody') }}
       </p>
       <UsageBlock :code="darkMode" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">DataTable</h3>
+      <h3 class="pg-docs-heading">{{ t('docs.dataTableTitle') }}</h3>
       <p class="pg-text-subtle mb-3 text-sm">
-        Configure columns with <code class="pg-docs-inline">filter: 'text' | 'date' | 'enum'</code>,
-        use <code class="pg-docs-inline">v-model:sort-stack</code> for multi-sort (Ctrl+click in UI),
-        and <code class="pg-docs-inline">v-model:column-filters</code> for per-column filters opened
-        from the header icon.
+        {{ t('docs.dataTableBody') }}
+        <code class="pg-docs-inline">{{ t('docs.dataTableBodyFilter') }}</code>,
+        use
+        <code class="pg-docs-inline">{{ t('docs.dataTableBodySortStack') }}</code>
+        {{ locale === 'pt-BR' ? 'para multi-sort (Ctrl+clique na UI), e' : 'for multi-sort (Ctrl+click in UI), and' }}
+        <code class="pg-docs-inline">{{ t('docs.dataTableBodyColumnFilters') }}</code>
+        {{ locale === 'pt-BR' ? 'para filtros por coluna abertos pelo ícone no cabeçalho.' : 'for per-column filters opened from the header icon.' }}
       </p>
       <UsageBlock :code="dataTableUsage" />
     </section>
 
     <section class="pg-docs-section">
-      <h3 class="pg-docs-heading">Exported components</h3>
+      <h3 class="pg-docs-heading">{{ t('docs.exportedTitle') }}</h3>
       <div class="pg-playground-panel overflow-hidden rounded-xl">
         <div
-          v-for="group in componentGroups"
+          v-for="group in localizedGroups"
           :key="group.category"
           class="border-b px-4 py-3 last:border-b-0"
           style="border-color: var(--pg-border)"
         >
           <p class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
-            {{ group.category }}
+            {{ group.label }}
           </p>
           <div class="flex flex-wrap gap-2">
             <code

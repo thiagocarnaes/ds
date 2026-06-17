@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Palette } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+
+const { t } = usePlaygroundLocale()
 
 const palette = [
   { hex: '#00D4FF', name: 'Cyan 500', token: '--primary' },
@@ -18,7 +21,7 @@ async function copyHex(hex: string): Promise<void> {
 </script>
 
 <template>
-  <PlayCard label="Color Tokens" accent-color="#2979FF" tag="8 tokens">
+  <PlayCard :label="t('cards.color.label')" accent-color="#2979FF" :tag="t('cards.color.tag')">
     <template #icon><Palette :size="14" /></template>
     <div class="grid grid-cols-4 gap-3">
       <button
@@ -39,6 +42,6 @@ async function copyHex(hex: string): Promise<void> {
         <p class="font-mono text-[10px] text-[#4D6A87]">{{ color.hex }}</p>
       </button>
     </div>
-    <p class="mt-4 text-[10px] text-[#4D6A87]">Click any swatch to copy hex value</p>
+    <p class="mt-4 text-[10px] text-[#4D6A87]">{{ t('colorPlayground.footerHint') }}</p>
   </PlayCard>
 </template>

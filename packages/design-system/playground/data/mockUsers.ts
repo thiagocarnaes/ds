@@ -8,6 +8,7 @@ import type {
   DataTableSortEntry,
   SortDirection,
 } from '@/components/data-display/dataTableTypes'
+import type { UserTableColumnMessages } from '../i18n/types'
 
 export interface UserRow {
   id: string
@@ -63,6 +64,26 @@ const userColumns = [
   },
   { key: 'lastLogin', label: 'Last login', sortable: true, filter: 'date' as const },
 ]
+
+export function createUserTableColumns(columns: UserTableColumnMessages) {
+  return [
+    { key: 'name', label: columns.name, sortable: true, filter: 'text' as const },
+    { key: 'email', label: columns.email, sortable: true, filter: 'text' as const },
+    { key: 'role', label: columns.role, sortable: true, filter: 'text' as const },
+    {
+      key: 'status',
+      label: columns.status,
+      sortable: true,
+      filter: 'enum' as const,
+      filterOptions: [
+        { label: columns.statusActive, value: 'active' },
+        { label: columns.statusInactive, value: 'inactive' },
+        { label: columns.statusPending, value: 'pending' },
+      ],
+    },
+    { key: 'lastLogin', label: columns.lastLogin, sortable: true, filter: 'date' as const },
+  ]
+}
 
 export const userTableColumns = userColumns
 

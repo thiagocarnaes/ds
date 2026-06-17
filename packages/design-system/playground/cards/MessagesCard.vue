@@ -1,18 +1,25 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Bell } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { Alert } from '@/index'
 
-const msgs = [
-  { variant: 'info' as const, text: 'Deploy queued for production environment.' },
-  { variant: 'success' as const, text: 'All 42 tests passed in 3.2s.' },
-  { variant: 'warning' as const, text: 'Rate limit at 85% — throttling may occur.' },
-  { variant: 'error' as const, text: 'Build failed: missing env variable API_KEY.' },
-]
+const { t, messages } = usePlaygroundLocale()
+
+const msgs = computed(() => {
+  const copy = messages.value.messagesPlayground
+  return [
+    { variant: 'info' as const, text: copy.deployQueued },
+    { variant: 'success' as const, text: copy.testsPassed },
+    { variant: 'warning' as const, text: copy.rateLimit },
+    { variant: 'error' as const, text: copy.buildFailed },
+  ]
+})
 </script>
 
 <template>
-  <PlayCard label="Messages" accent-color="#FF8B00" tag="4 variants">
+  <PlayCard :label="t('cards.messages.label')" accent-color="#FF8B00" :tag="t('cards.messages.tag')">
     <template #icon><Bell :size="14" /></template>
     <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
       <Alert v-for="msg in msgs" :key="msg.text" :variant="msg.variant">

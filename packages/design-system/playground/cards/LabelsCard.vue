@@ -1,22 +1,25 @@
 <script setup lang="ts">
 import { Tag } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { Badge, Lozenge } from '@/index'
+
+const { t } = usePlaygroundLocale()
 </script>
 
 <template>
-  <PlayCard label="Labels" accent-color="#A78BFA" tag="lozenge · badge">
+  <PlayCard :label="t('cards.labels.label')" accent-color="#A78BFA" :tag="t('cards.labels.tag')">
     <template #icon><Tag :size="14" /></template>
     <div class="space-y-4">
       <div>
         <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">lozenge</p>
         <div class="flex flex-wrap gap-2">
-          <Lozenge appearance="default">Backlog</Lozenge>
-          <Lozenge appearance="success">Done</Lozenge>
-          <Lozenge appearance="danger">Blocked</Lozenge>
-          <Lozenge appearance="progress">In Progress</Lozenge>
-          <Lozenge appearance="warning">Review</Lozenge>
-          <Lozenge appearance="new">New</Lozenge>
+          <Lozenge appearance="default">{{ t('labelsPlayground.statuses.backlog') }}</Lozenge>
+          <Lozenge appearance="success">{{ t('labelsPlayground.statuses.done') }}</Lozenge>
+          <Lozenge appearance="danger">{{ t('labelsPlayground.statuses.blocked') }}</Lozenge>
+          <Lozenge appearance="progress">{{ t('labelsPlayground.statuses.inProgress') }}</Lozenge>
+          <Lozenge appearance="warning">{{ t('labelsPlayground.statuses.review') }}</Lozenge>
+          <Lozenge appearance="new">{{ t('labelsPlayground.statuses.new') }}</Lozenge>
         </div>
       </div>
       <div>

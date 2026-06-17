@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { Search } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
 import ColorPalettePicker from '../components/ColorPalettePicker.vue'
 import { useCopy } from '../composables/useCopy'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { iconography } from '@/icons/iconography'
+
+const { t } = usePlaygroundLocale()
 
 const query = ref('')
 const iconSize = ref(20)
@@ -20,17 +23,19 @@ const filtered = () =>
 
 const copy = useCopy('')
 
+const iconTag = computed(() => `${iconography.length} ${t('cards.icons.tagSuffix')}`)
+
 async function copyIcon(name: string, label: string): Promise<void> {
   await copy.copy(`<${label} />`)
 }
 </script>
 
 <template>
-  <PlayCard label="Iconography" accent-color="#00D4FF" :tag="`${iconography.length} icons`">
+  <PlayCard :label="t('cards.icons.label')" accent-color="#00D4FF" :tag="iconTag">
     <template #icon><Search :size="14" /></template>
     <input
       v-model="query"
-      placeholder="Search icons..."
+      :placeholder="t('iconsPlayground.searchPlaceholder')"
       class="mb-3 w-full rounded-lg border border-border bg-input px-3 py-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring/30"
     />
     <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -66,6 +71,6 @@ async function copyIcon(name: string, label: string): Promise<void> {
         </button>
       </div>
     </div>
-    <p class="mt-3 text-[10px] text-[#4D6A87]">Click any icon to copy JSX snippet · sourced from Lucide</p>
+    <p class="mt-3 text-[10px] text-[#4D6A87]">{{ t('iconsPlayground.footerHint') }}</p>
   </PlayCard>
 </template>

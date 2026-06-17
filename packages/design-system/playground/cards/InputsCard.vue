@@ -12,14 +12,17 @@ import {
   User,
 } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { FormField, Input } from '@/index'
+
+const { t } = usePlaygroundLocale()
 
 const showPassword = ref(false)
 const withIcon = ref(true)
 </script>
 
 <template>
-  <PlayCard label="Text Field" accent-color="#00E5B0" tag="with icon · plain">
+  <PlayCard :label="t('cards.inputs.label')" accent-color="#00E5B0" :tag="t('cards.inputs.tag')">
     <template #icon><Mail :size="14" /></template>
     <div class="mb-4 flex gap-2">
       <button
@@ -32,7 +35,7 @@ const withIcon = ref(true)
         "
         @click="withIcon = true"
       >
-        With icon
+        {{ t('inputsPlayground.modeWithIcon') }}
       </button>
       <button
         type="button"
@@ -44,11 +47,11 @@ const withIcon = ref(true)
         "
         @click="withIcon = false"
       >
-        Aa Plain
+        {{ t('inputsPlayground.modePlain') }}
       </button>
     </div>
     <div class="grid grid-cols-2 gap-x-4 gap-y-3">
-      <FormField label="Full name">
+      <FormField :label="t('inputsPlayground.fields.fullName')">
         <template #default="{ id }">
           <div class="relative">
             <User
@@ -64,7 +67,12 @@ const withIcon = ref(true)
           </div>
         </template>
       </FormField>
-      <FormField label="Email" helper="✓ Valid address" success required>
+      <FormField
+        :label="t('inputsPlayground.fields.email')"
+        :helper="t('inputsPlayground.helpers.emailValid')"
+        success
+        required
+      >
         <template #default="{ id }">
           <div class="relative">
             <Mail
@@ -85,7 +93,7 @@ const withIcon = ref(true)
           </div>
         </template>
       </FormField>
-      <FormField label="Password">
+      <FormField :label="t('inputsPlayground.fields.password')">
         <template #default="{ id }">
           <div class="relative">
             <Lock
@@ -110,7 +118,10 @@ const withIcon = ref(true)
           </div>
         </template>
       </FormField>
-      <FormField label="Username" error="Username already taken">
+      <FormField
+        :label="t('inputsPlayground.fields.username')"
+        :error="t('inputsPlayground.helpers.usernameTaken')"
+      >
         <template #default="{ id }">
           <div class="relative">
             <User
@@ -131,7 +142,7 @@ const withIcon = ref(true)
           </div>
         </template>
       </FormField>
-      <FormField label="Phone">
+      <FormField :label="t('inputsPlayground.fields.phone')">
         <template #default="{ id }">
           <div class="relative">
             <Phone
@@ -147,7 +158,10 @@ const withIcon = ref(true)
           </div>
         </template>
       </FormField>
-      <FormField label="Website" helper="Locked by admin">
+      <FormField
+        :label="t('inputsPlayground.fields.website')"
+        :helper="t('inputsPlayground.helpers.websiteLocked')"
+      >
         <template #default="{ id }">
           <div class="relative">
             <Globe
@@ -157,7 +171,7 @@ const withIcon = ref(true)
             />
             <Input
               :id="id"
-              placeholder="https://..."
+              :placeholder="t('inputsPlayground.websitePlaceholder')"
               disabled
               :class="withIcon ? 'pl-9' : undefined"
             />
@@ -166,11 +180,11 @@ const withIcon = ref(true)
       </FormField>
     </div>
     <div class="mt-4 flex flex-wrap gap-3 text-[10px] text-[#4D6A87]">
-      <span>● default</span>
-      <span style="color: #00d4ff">● focus</span>
-      <span style="color: #ff3d57">● error</span>
-      <span style="color: #00e5b0">● success</span>
-      <span>● disabled</span>
+      <span>● {{ t('inputsPlayground.states.default') }}</span>
+      <span style="color: #00d4ff">● {{ t('inputsPlayground.states.focus') }}</span>
+      <span style="color: #ff3d57">● {{ t('inputsPlayground.states.error') }}</span>
+      <span style="color: #00e5b0">● {{ t('inputsPlayground.states.success') }}</span>
+      <span>● {{ t('inputsPlayground.states.disabled') }}</span>
     </div>
   </PlayCard>
 </template>

@@ -1,7 +1,7 @@
 import type { DataTableColumnFilters, DataTableSortEntry } from '@/components/data-display/dataTableTypes'
 
-export function formatSortStack(stack: DataTableSortEntry[]): string {
-  if (stack.length === 0) return 'No sort'
+export function formatSortStack(stack: DataTableSortEntry[], emptyLabel = 'No sort'): string {
+  if (stack.length === 0) return emptyLabel
   return stack.map((entry, index) => `${index + 1}. ${entry.key} (${entry.direction})`).join(' · ')
 }
 

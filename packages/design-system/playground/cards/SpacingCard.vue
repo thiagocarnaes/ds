@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Layers } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+
+const { t } = usePlaygroundLocale()
 
 const spacing = [
   { px: 2, token: 'space-0.5' },
@@ -14,7 +17,7 @@ const spacing = [
 </script>
 
 <template>
-  <PlayCard label="Spacing Scale" accent-color="#2979FF" tag="8px grid">
+  <PlayCard :label="t('cards.spacing.label')" accent-color="#2979FF" :tag="t('cards.spacing.tag')">
     <template #icon><Layers :size="14" /></template>
     <div class="space-y-3">
       <div v-for="item in spacing" :key="item.token" class="flex items-center gap-3">

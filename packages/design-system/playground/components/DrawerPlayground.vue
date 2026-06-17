@@ -53,16 +53,23 @@ import {
   type ButtonIconName,
   type ToastPosition,
 } from '@/index'
+import PageSizeSelect from '@/components/data-display/PageSizeSelect.vue'
 import type { DataTableColumnFilters, DataTableSortEntry } from '@/components/data-display/dataTableTypes'
 import {
   fetchUsers,
   mockUsers,
-  userTableColumns,
   type UserRow,
 } from '../data/mockUsers'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import { useDataTableLabels, useStatusLabel, useUserTableColumns } from '../composables/useUserTableColumns'
 import DataTablePlaygroundHints from './DataTablePlaygroundHints.vue'
+import { resolveChatReply } from '../utils/chatPlayground'
 
 const props = defineProps<{ name: string }>()
+const { t, messages, locale } = usePlaygroundLocale()
+const userTableColumns = useUserTableColumns()
+const dataTableLabels = useDataTableLabels()
+const { formatStatus } = useStatusLabel()
 
 const badgeCount = ref(21)
 const selectMultiple = ref(false)
@@ -93,11 +100,16 @@ const partialIndeterminate = ref(true)
 type ChatModel = 'fast' | 'balanced' | 'deep'
 type ChatMessage = { id: string; role: 'user' | 'assistant'; text: string; time: string }
 
-const chatModels = [
-  { id: 'fast' as const, label: 'Fast', icon: Zap },
-  { id: 'balanced' as const, label: 'Balanced', icon: Target },
-  { id: 'deep' as const, label: 'Deep', icon: Gem },
-]
+const chatModels = computed(() => {
+  const { models } = messages.value.chatPlayground
+  return [
+    { id: 'fast' as const, label: models.fast, icon: Zap },
+    { id: 'balanced' as const, label: models.balanced, icon: Target },
+    { id: 'deep' as const, label: models.deep, icon: Gem },
+  ]
+})
+
+const chatSuggestions = computed(() => messages.value.chatPlayground.suggestions)
 
 const chatModel = ref<ChatModel>('balanced')
 const chatInput = ref('')
@@ -113,7 +125,8 @@ async function scrollChatToBottom(): Promise<void> {
 }
 
 function chatTime(): string {
-  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  const timeLocale = locale.value === 'pt-BR' ? 'pt-BR' : 'en-US'
+  return new Date().toLocaleTimeString(timeLocale, { hour: '2-digit', minute: '2-digit' })
 }
 
 function resetChat(): void {
@@ -122,31 +135,20 @@ function resetChat(): void {
   chatModel.value = 'balanced'
   chatInput.value = ''
   chatTyping.value = false
+
+  const { welcome, preview } = messages.value.chatPlayground
+  const time = chatTime()
+
   chatMessages.value = [
-    {
-      id: 'welcome',
-      role: 'assistant',
-      text: "Hey! I'm the design system assistant. Ask me about any component, token, or guideline.",
-      time: chatTime(),
-    },
+    { id: 'welcome', role: 'assistant', text: welcome, time },
+    { id: 'demo-u1', role: 'user', text: preview.userQuestion1, time },
+    { id: 'demo-a1', role: 'assistant', text: preview.assistantAnswer1, time },
+    { id: 'demo-u2', role: 'user', text: preview.userQuestion2, time },
   ]
 }
 
 function chatReply(text: string): string {
-  const lower = text.toLowerCase()
-  if (lower.includes('button')) {
-    return 'Button supports appearances primary, ghost, outline, and danger. Use the icon prop for leading icons from the iconography set.'
-  }
-  if (lower.includes('token')) {
-    return 'Design tokens are CSS custom properties for color, spacing, typography, and radius — defined in tokens.css and theme.css.'
-  }
-  if (lower.includes('spacing')) {
-    return 'Spacing uses a 4px base scale. Common steps: 1=4px, 2=8px, 3=12px, 4=16px, 6=24px, 8=32px.'
-  }
-  if (lower.includes('color')) {
-    return 'The palette centers on cyan primary (#00D4FF) with semantic colors for success, warning, danger, and labels.'
-  }
-  return 'I can help with any component, token, or guideline in this design system. Try asking about Button, spacing, or colors.'
+  return resolveChatReply(text, messages.value.chatPlayground.replies)
 }
 
 function sendChatMessage(text?: string): void {
@@ -201,13 +203,32 @@ watch(
   { immediate: true },
 )
 
+watch(locale, () => {
+  if (props.name === 'AI Chat') {
+    resetChat()
+    scrollChatToBottom()
+  }
+})
+
 onUnmounted(() => {
   if (chatReplyTimer) clearTimeout(chatReplyTimer)
 })
 const lozengeBold = ref(false)
 const breadcrumbDepth = ref(3)
-const totalPages = ref(8)
-const currentPage = ref(3)
+const pgPageSize = ref(10)
+const pgTotalRecords = ref(70)
+const pgCurrentPage = ref(3)
+const pgPageSizeOptions = [5, 10, 25, 50] as const
+
+const pgTotalPages = computed(() => {
+  if (pgTotalRecords.value === 0) return 0
+  return Math.ceil(pgTotalRecords.value / pgPageSize.value)
+})
+
+watch([pgPageSize, pgTotalRecords], () => {
+  const maxPage = Math.max(1, Math.ceil(pgTotalRecords.value / pgPageSize.value))
+  if (pgCurrentPage.value > maxPage) pgCurrentPage.value = maxPage
+})
 const dtSearch = ref('')
 const dtPage = ref(1)
 const dtPageSize = ref(5)
@@ -259,12 +280,15 @@ const alertVariant = ref<AlertVariant>('success')
 const alertDismissible = ref(false)
 const alertPreviewKey = ref(0)
 
-const alertMessages: Record<AlertVariant, string> = {
-  info: 'Deploy queued for production environment.',
-  success: 'Saved successfully',
-  warning: 'Rate limit at 85% — throttling may occur.',
-  error: 'Build failed: missing env variable API_KEY.',
-}
+const alertMessages = computed(() => {
+  const copy = messages.value.messagesPlayground
+  return {
+    info: copy.deployQueued,
+    success: copy.savedSuccessfully,
+    warning: copy.rateLimit,
+    error: copy.buildFailed,
+  }
+})
 
 function resetAlertPreview(): void {
   alertPreviewKey.value += 1
@@ -290,7 +314,7 @@ const toastPositionRows: { label: string; value: ToastPosition }[][] = [
 ]
 
 function showLiveToast(): void {
-  toastDemo[toastVariant.value](alertMessages[toastVariant.value], {
+  toastDemo[toastVariant.value](alertMessages.value[toastVariant.value], {
     position: toastPosition.value,
     dismissible: toastDismissible.value,
   })
@@ -309,17 +333,9 @@ const modalProjectDescription = ref('')
 
 const modalVariants: ModalVariant[] = ['confirm', 'form', 'danger']
 
-const modalTitles: Record<ModalVariant, string> = {
-  confirm: 'Confirm action',
-  form: 'Create project',
-  danger: 'Delete permanently',
-}
-
-const modalActions: Record<ModalVariant, string> = {
-  confirm: 'Archive',
-  form: 'Create',
-  danger: 'Delete forever',
-}
+const modalTitles = computed(() => messages.value.modalPlayground.titles)
+const modalActions = computed(() => messages.value.modalPlayground.actions)
+const modalCopy = computed(() => messages.value.modalPlayground)
 
 function variantPillStyle(active: boolean) {
   return active
@@ -342,22 +358,16 @@ const layoutPanelOpen = ref(false)
 const layoutActiveNav = ref('components.forms.input')
 const layoutOpenKeys = ref(['components', 'components.forms'])
 
-const layoutNavLabels: Record<string, string> = {
-  dashboard: 'Dashboard overview',
-  'components.overview': 'Components — Overview',
-  'components.button': 'Components — Button',
-  'components.forms.input': 'Components — Input field',
-  'components.forms.select': 'Components — Select dropdown',
-  'components.feedback.alert': 'Components — Alert banner',
-  'components.feedback.toast': 'Components — Toast notification',
-  'foundations.colors': 'Foundations — Color tokens',
-  'foundations.typography': 'Foundations — Typography scale',
-  'settings.profile': 'Settings — Profile',
-  'settings.team': 'Settings — Team members',
-}
+const layoutNavLabels = computed(() => messages.value.layoutPlayground.navLabels)
+const layoutSidebar = computed(() => messages.value.layoutPlayground.sidebar)
+const controlToggles = computed(() => messages.value.controlsPlayground.toggles)
+const drawerCheckboxes = computed(() => messages.value.controlsPlayground.drawerCheckboxes)
+const selectPlayground = computed(() => messages.value.selectPlayground)
+const tabsPlayground = computed(() => messages.value.tabsPlayground)
+const breadcrumbItems = computed(() => messages.value.breadcrumbPlayground.items)
+const spinnerSizes = ['xs', 'sm', 'md', 'lg'] as const
 
 const badgeAppearances = ['default', 'primary', 'important', 'added', 'removed'] as const
-const spinnerSizes = ['xs', 'sm', 'md', 'lg'] as const
 
 const selectOptions = [
   { label: 'Design System', value: 'design-system' },
@@ -367,18 +377,6 @@ const selectOptions = [
   { label: 'Figma', value: 'figma' },
 ]
 
-const breadcrumbItems = [
-  'Home',
-  'Projects',
-  'Design System',
-  'Components',
-  'Navigation',
-  'Breadcrumbs',
-  'Settings',
-  'Advanced',
-  'Details',
-  'ATLAS-42',
-]
 const avatarMembers = [
   { name: 'Ana Martins' },
   { name: 'Bruno Silva' },
@@ -439,18 +437,27 @@ const codeSnippet = computed(() => {
   </TabList>
 </Tabs>`,
     Breadcrumbs: `<Breadcrumb>
-${breadcrumbItems
+${breadcrumbItems.value
   .slice(0, breadcrumbDepth.value)
   .map((item, index, items) =>
     `  <BreadcrumbItem${index === items.length - 1 ? ' current' : ''}>${item}</BreadcrumbItem>`,
   )
   .join('\n')}
 </Breadcrumb>`,
-    Pagination: `<Pagination
-  :total="${totalPages.value * 10}"
-  :page-size="10"
-  :current-page="${currentPage.value}"
-/>`,
+    Pagination: `<div class="flex items-center justify-between gap-4 border-t border-border pt-4">
+  <div class="flex items-center gap-4">
+    <p class="text-sm text-muted-foreground">
+      <span class="font-medium text-foreground">${pgTotalRecords.value}</span> records ·
+      <span class="font-medium text-foreground">${pgTotalPages.value}</span> pages
+    </p>
+    <PageSizeSelect v-model="pageSize" :options="[5, 10, 25, 50]" label="Rows per page" />
+  </div>
+  <Pagination
+    v-model:current-page="currentPage"
+    :total="${pgTotalRecords.value}"
+    :page-size="${pgPageSize.value}"
+  />
+</div>`,
     DataTable: `const columns = [
   { key: 'name', label: 'Name', sortable: true, filter: 'text' },
   {
@@ -492,24 +499,22 @@ ${breadcrumbItems
   color="${spinnerColor.value}"
 />`,
     Alert: `<Alert variant="${alertVariant.value}"${alertDismissible.value ? '\n  dismissible' : ''}>
-  ${alertMessages[alertVariant.value]}
+  ${alertMessages.value[alertVariant.value]}
 </Alert>`,
     Toast: `<Toast variant="${toastVariant.value}"${toastDismissible.value ? '\n  dismissible' : ''}>
-  ${alertMessages[toastVariant.value]}
+  ${alertMessages.value[toastVariant.value]}
 </Toast>
 
 // trigger live notification
-toast.${toastVariant.value}("${alertMessages[toastVariant.value]}", {
+toast.${toastVariant.value}("${alertMessages.value[toastVariant.value]}", {
   position: "${toastPosition.value}",
   dismissible: ${toastDismissible.value},
 })`,
-    'AI Chat': `<AIChat
-  model="${chatModel.value}"
-  placeholder="Ask about any component..."
-  onMessage={(msg) => getReply(msg)}
-/>`,
+    'AI Chat': messages.value.chatPlayground.usageCode
+      .replace('{model}', chatModel.value)
+      .replace('{placeholder}', messages.value.chatPlayground.inputPlaceholder),
     Modal: `<Modal variant="${modalVariant.value}" v-model:open="modalOpen">
-  <!-- ${modalTitles[modalVariant.value]} -->
+  <!-- ${modalTitles.value[modalVariant.value]} -->
 </Modal>`,
     Layout: `<AppLayout v-model:menu-collapsed="menuCollapsed" v-model:panel-open="panelOpen" menu-width="${layoutMenuWidth.value}">
   <template #menu="{ collapsed }">
@@ -542,7 +547,7 @@ function optionStyle(active: boolean) {
   <div>
     <!-- Badge -->
     <template v-if="name === 'Badge'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 rounded-xl p-6">
         <div class="flex flex-wrap justify-center gap-6 py-2">
           <div v-for="appearance in badgeAppearances" :key="appearance" class="flex flex-col items-center gap-2">
@@ -552,7 +557,7 @@ function optionStyle(active: boolean) {
         </div>
         <div class="mt-6">
           <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
-            Count — {{ badgeCount }}
+            {{ t('badgePlayground.countLabel', { count: badgeCount }) }}
           </label>
           <input v-model.number="badgeCount" type="range" min="1" max="99" class="w-full accent-[#00D4FF]" />
         </div>
@@ -561,7 +566,7 @@ function optionStyle(active: boolean) {
 
     <!-- Button -->
     <template v-else-if="name === 'Button'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-6">
         <div class="pg-playground-preview flex h-24 items-center justify-center rounded-xl">
           <Button
@@ -571,12 +576,12 @@ function optionStyle(active: boolean) {
             :disabled="buttonDisabled"
             :class="buttonAppearance === 'primary' ? 'ds-glow-primary' : undefined"
           >
-            Action
+            {{ t('buttonPlayground.previewAction') }}
           </Button>
         </div>
         <div class="grid grid-cols-3 gap-3">
           <div class="min-w-0">
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">appearance</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.appearanceLabel') }}</p>
             <button
               v-for="item in ['primary', 'ghost', 'outline', 'danger']"
               :key="item"
@@ -589,7 +594,7 @@ function optionStyle(active: boolean) {
             </button>
           </div>
           <div class="min-w-0">
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">size</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.sizeLabel') }}</p>
             <button
               v-for="item in ['sm', 'md', 'lg']"
               :key="item"
@@ -602,7 +607,7 @@ function optionStyle(active: boolean) {
             </button>
           </div>
           <div class="min-w-0">
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">state</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.stateLabel') }}</p>
             <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
               <Switch v-model="buttonDisabled" size="sm" />
               disabled
@@ -610,11 +615,12 @@ function optionStyle(active: boolean) {
           </div>
         </div>
         <div class="mt-4">
-          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">icon</p>
+          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.iconLabel') }}</p>
           <Select
             v-model="buttonIconValue"
             :options="iconographySelectOptions"
-            placeholder="Select an icon..."
+            :placeholder="t('buttonPlayground.iconPlaceholder')"
+            :searchable="false"
           />
         </div>
       </div>
@@ -622,28 +628,28 @@ function optionStyle(active: boolean) {
 
     <!-- Toggle -->
     <template v-else-if="name === 'Toggle'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-2 rounded-xl p-4">
-        <Toggle v-model="toggles.notifications">Notifications</Toggle>
-        <Toggle v-model="toggles.darkMode">Dark mode</Toggle>
-        <Toggle v-model="toggles.autoSave">Auto-save</Toggle>
-        <Toggle v-model="toggles.analytics">Analytics</Toggle>
-        <Toggle v-model="toggles.beta">Beta features</Toggle>
+        <Toggle v-model="toggles.notifications">{{ controlToggles.notifications }}</Toggle>
+        <Toggle v-model="toggles.darkMode">{{ controlToggles.darkMode }}</Toggle>
+        <Toggle v-model="toggles.autoSave">{{ controlToggles.autoSave }}</Toggle>
+        <Toggle v-model="toggles.analytics">{{ controlToggles.analytics }}</Toggle>
+        <Toggle v-model="toggles.beta">{{ controlToggles.beta }}</Toggle>
       </div>
     </template>
 
     <!-- Checkbox -->
     <template v-else-if="name === 'Checkbox'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-2 rounded-xl p-4">
         <div class="pg-playground-row rounded-lg px-4 py-3.5">
-          <Checkbox v-model="checks.terms">Accept terms and conditions</Checkbox>
+          <Checkbox v-model="checks.terms">{{ drawerCheckboxes.terms }}</Checkbox>
         </div>
         <div class="pg-playground-row rounded-lg px-4 py-3.5">
-          <Checkbox v-model="checks.newsletter">Subscribe to newsletter</Checkbox>
+          <Checkbox v-model="checks.newsletter">{{ drawerCheckboxes.newsletter }}</Checkbox>
         </div>
         <div class="pg-playground-row rounded-lg px-4 py-3.5">
-          <Checkbox v-model="checks.twoFactor">Enable two-factor auth</Checkbox>
+          <Checkbox v-model="checks.twoFactor">{{ drawerCheckboxes.twoFactor }}</Checkbox>
         </div>
         <div class="pg-playground-row rounded-lg px-4 py-3.5">
           <Checkbox
@@ -652,7 +658,7 @@ function optionStyle(active: boolean) {
             cycle-indeterminate
             @update:indeterminate="partialIndeterminate = $event"
           >
-            Partial selection (indeterminate)
+            {{ drawerCheckboxes.partial }}
           </Checkbox>
         </div>
       </div>
@@ -660,39 +666,39 @@ function optionStyle(active: boolean) {
 
     <!-- Select -->
     <template v-else-if="name === 'Select'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 w-full space-y-4 rounded-xl p-4">
         <div class="flex gap-2">
-          <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="!selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = false">Single select</button>
-          <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = true">Multi-select</button>
+          <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="!selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = false">{{ selectPlayground.modeSingle }}</button>
+          <button type="button" class="rounded-md px-3 py-1.5 text-xs font-medium" :style="selectMultiple ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }" @click="selectMultiple = true">{{ selectPlayground.modeMulti }}</button>
         </div>
-        <Select v-if="!selectMultiple" v-model="selectValue" :options="selectOptions" placeholder="Select an option..." />
-        <Select v-else v-model="selectMultipleValue" multiple :options="selectOptions" placeholder="Select technologies..." />
+        <Select v-if="!selectMultiple" v-model="selectValue" :options="selectOptions" :placeholder="selectPlayground.placeholderSingle" />
+        <Select v-else v-model="selectMultipleValue" multiple :options="selectOptions" :placeholder="selectPlayground.placeholderMulti" />
       </div>
     </template>
 
     <!-- Lozenge -->
     <template v-else-if="name === 'Lozenge'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
         <div class="flex flex-wrap gap-2">
-          <Lozenge appearance="default" :bold="lozengeBold">Backlog</Lozenge>
-          <Lozenge appearance="success" :bold="lozengeBold">Done</Lozenge>
-          <Lozenge appearance="danger" :bold="lozengeBold">Blocked</Lozenge>
-          <Lozenge appearance="progress" :bold="lozengeBold">In Progress</Lozenge>
-          <Lozenge appearance="warning" :bold="lozengeBold">Review</Lozenge>
-          <Lozenge appearance="new" :bold="lozengeBold">New</Lozenge>
+          <Lozenge appearance="default" :bold="lozengeBold">{{ t('labelsPlayground.statuses.backlog') }}</Lozenge>
+          <Lozenge appearance="success" :bold="lozengeBold">{{ t('labelsPlayground.statuses.done') }}</Lozenge>
+          <Lozenge appearance="danger" :bold="lozengeBold">{{ t('labelsPlayground.statuses.blocked') }}</Lozenge>
+          <Lozenge appearance="progress" :bold="lozengeBold">{{ t('labelsPlayground.statuses.inProgress') }}</Lozenge>
+          <Lozenge appearance="warning" :bold="lozengeBold">{{ t('labelsPlayground.statuses.review') }}</Lozenge>
+          <Lozenge appearance="new" :bold="lozengeBold">{{ t('labelsPlayground.statuses.new') }}</Lozenge>
         </div>
         <label class="flex cursor-pointer items-center gap-3 text-xs text-[#7BA3C8]">
           <Switch v-model="lozengeBold" size="sm" />
-          Bold appearance
+          {{ t('labelsPlayground.boldAppearance') }}
         </label>
       </div>
     </template>
 
     <!-- Avatar -->
     <template v-else-if="name === 'Avatar'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-6 rounded-xl p-4">
         <div>
           <p class="mb-3 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">sizes</p>
@@ -712,36 +718,36 @@ function optionStyle(active: boolean) {
 
     <!-- Tabs -->
     <template v-else-if="name === 'Tabs'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 w-full rounded-xl p-4">
         <Tabs v-model="activeTab" class="ds-drawer-tabs w-full">
           <TabList class="h-auto w-full justify-start gap-1 bg-transparent p-0">
             <Tab value="overview" class="inline-flex items-center gap-1.5 px-3 py-2">
-              <Info :size="14" /> Overview
+              <Info :size="14" /> {{ tabsPlayground.tabs.overview }}
             </Tab>
             <Tab value="issues" class="inline-flex items-center gap-1.5 px-3 py-2">
-              <AlertCircle :size="14" /> Issues
+              <AlertCircle :size="14" /> {{ tabsPlayground.tabs.issues }}
             </Tab>
             <Tab value="reports" class="inline-flex items-center gap-1.5 px-3 py-2">
-              <BarChart2 :size="14" /> Reports
+              <BarChart2 :size="14" /> {{ tabsPlayground.tabs.reports }}
             </Tab>
             <Tab value="settings" class="inline-flex items-center gap-1.5 px-3 py-2">
-              <Settings :size="14" /> Settings
+              <Settings :size="14" /> {{ tabsPlayground.tabs.settings }}
             </Tab>
           </TabList>
           <TabPanel value="overview" class="pt-4 text-xs leading-relaxed text-[#7BA3C8]">
-            Project overview showing key metrics, velocity trends, and recent team activity for the current quarter.
+            {{ tabsPlayground.panels.overview }}
           </TabPanel>
-          <TabPanel value="issues" class="pt-4 text-xs text-[#7BA3C8]">12 open issues across 3 epics.</TabPanel>
-          <TabPanel value="reports" class="pt-4 text-xs text-[#7BA3C8]">Weekly reports and burndown charts.</TabPanel>
-          <TabPanel value="settings" class="pt-4 text-xs text-[#7BA3C8]">Project settings and permissions.</TabPanel>
+          <TabPanel value="issues" class="pt-4 text-xs text-[#7BA3C8]">{{ tabsPlayground.panels.issues }}</TabPanel>
+          <TabPanel value="reports" class="pt-4 text-xs text-[#7BA3C8]">{{ tabsPlayground.panels.reports }}</TabPanel>
+          <TabPanel value="settings" class="pt-4 text-xs text-[#7BA3C8]">{{ tabsPlayground.panels.settings }}</TabPanel>
         </Tabs>
       </div>
     </template>
 
     <!-- Breadcrumbs -->
     <template v-else-if="name === 'Breadcrumbs'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
         <Breadcrumb separator=">" class="text-sm">
           <BreadcrumbItem
@@ -755,7 +761,7 @@ function optionStyle(active: boolean) {
         </Breadcrumb>
         <div>
           <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
-            Depth — {{ breadcrumbDepth }}
+            {{ t('breadcrumbPlayground.depthLabel', { depth: breadcrumbDepth }) }}
           </label>
           <input v-model.number="breadcrumbDepth" type="range" min="1" max="10" class="w-full accent-[#00D4FF]" />
         </div>
@@ -764,25 +770,57 @@ function optionStyle(active: boolean) {
 
     <!-- Pagination -->
     <template v-else-if="name === 'Pagination'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
-        <Pagination :total="totalPages * 10" :page-size="10" :current-page="currentPage" @update:current-page="currentPage = $event" />
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Total pages — {{ totalPages }}</label>
-            <input v-model.number="totalPages" type="range" min="3" max="12" class="w-full accent-[#00D4FF]" />
+        <div
+          class="min-h-[8rem] rounded-lg border border-dashed border-border/60 bg-muted/20"
+          aria-hidden="true"
+        />
+
+        <div class="flex items-center justify-between gap-4 overflow-x-auto border-t border-border pt-4">
+          <div class="flex shrink-0 items-center gap-4 whitespace-nowrap">
+            <p class="text-sm text-muted-foreground">
+              <span class="font-medium text-foreground">{{ pgTotalRecords }}</span>
+              {{ pgTotalRecords === 1 ? dataTableLabels.record : dataTableLabels.records }}
+              ·
+              <span class="font-medium text-foreground">{{ pgTotalPages }}</span>
+              {{ pgTotalPages === 1 ? dataTableLabels.page : dataTableLabels.pages }}
+            </p>
+            <PageSizeSelect
+              v-model="pgPageSize"
+              :options="[...pgPageSizeOptions]"
+              :label="dataTableLabels.pageSize"
+              class="shrink-0"
+            />
           </div>
-          <div class="text-right">
-            <p class="mb-1 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Current</p>
-            <p class="font-mono text-lg"><span class="text-primary">{{ currentPage }}</span> / {{ totalPages }}</p>
-          </div>
+
+          <Pagination
+            v-model:current-page="pgCurrentPage"
+            :total="pgTotalRecords"
+            :page-size="pgPageSize"
+            class="shrink-0"
+          />
+        </div>
+
+        <div>
+          <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('paginationPlayground.totalRecordsLabel', { count: pgTotalRecords }) }}
+          </label>
+          <input
+            v-model.number="pgTotalRecords"
+            type="range"
+            min="10"
+            max="120"
+            step="10"
+            class="w-full accent-[#00D4FF]"
+          />
         </div>
       </div>
     </template>
 
     <!-- DataTable -->
     <template v-else-if="name === 'DataTable'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
         <DataTablePlaygroundHints
           :sort-stack="dtSortStack"
@@ -803,7 +841,7 @@ function optionStyle(active: boolean) {
             "
             @click="setDrawerTableMode('client')"
           >
-            Client
+            {{ t('dataTable.modeClient') }}
           </button>
           <button
             type="button"
@@ -815,7 +853,7 @@ function optionStyle(active: boolean) {
             "
             @click="setDrawerTableMode('api')"
           >
-            Mock API
+            {{ t('dataTable.modeApi') }}
           </button>
         </div>
 
@@ -831,7 +869,10 @@ function optionStyle(active: boolean) {
           :total="dtMode === 'api' ? dtTotal : undefined"
           :loading="dtMode === 'api' && dtLoading"
           row-key="id"
-          search-placeholder="Filter users…"
+          :search-placeholder="t('dataTable.searchPlaceholder')"
+          :empty-title="dataTableLabels.emptyTitle"
+          :empty-description="dataTableLabels.emptyDescription"
+          :labels="dataTableLabels"
           @request="loadDrawerTable"
         >
           <template #cell-status="{ value }">
@@ -840,7 +881,7 @@ function optionStyle(active: boolean) {
                 value === 'active' ? 'success' : value === 'pending' ? 'warning' : 'default'
               "
             >
-              {{ value }}
+              {{ formatStatus(value as UserRow['status']) }}
             </Lozenge>
           </template>
         </DataTable>
@@ -849,7 +890,7 @@ function optionStyle(active: boolean) {
 
     <!-- Spinner -->
     <template v-else-if="name === 'Spinner'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
         <div class="flex flex-wrap items-end justify-around gap-4 py-4">
           <div v-for="size in spinnerSizes" :key="size" class="flex flex-col items-center gap-2">
@@ -863,8 +904,9 @@ function optionStyle(active: boolean) {
 
     <!-- AI Chat -->
     <template v-else-if="name === 'AI Chat'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
+        <p class="font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('chatPlayground.live.modelsLabel') }}</p>
         <div class="flex gap-2">
           <button
             v-for="model in chatModels"
@@ -896,7 +938,7 @@ function optionStyle(active: boolean) {
                 class="flex size-6 shrink-0 items-center justify-center rounded text-[10px] font-semibold text-[#7BA3C8]"
                 style="background: rgba(0,212,255,0.15); border: 1px solid rgba(0,212,255,0.2)"
               >
-                U
+                {{ t('chatPlayground.live.userBadge') }}
               </span>
             </div>
             <div v-else class="flex gap-2">
@@ -915,6 +957,7 @@ function optionStyle(active: boolean) {
             </span>
             <div
               class="pg-chat-ai-bubble flex items-center gap-1 rounded-xl rounded-tl-sm px-4 py-3"
+              :aria-label="t('chatPlayground.live.typingAriaLabel')"
             >
               <span
                 v-for="dot in 3"
@@ -925,9 +968,10 @@ function optionStyle(active: boolean) {
             </div>
           </div>
         </div>
+        <p class="font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('chatPlayground.live.suggestionsLabel') }}</p>
         <div class="flex flex-wrap gap-2">
           <button
-            v-for="chip in ['Tell me about Button', 'What are design tokens?', 'How does spacing work?', 'Explain the color palette']"
+            v-for="chip in chatSuggestions"
             :key="chip"
             type="button"
             class="rounded-full border border-border px-3 py-1 text-[10px] text-[#7BA3C8] transition-colors hover:border-primary/40 hover:text-primary"
@@ -939,13 +983,14 @@ function optionStyle(active: boolean) {
         <div class="relative">
           <input
             v-model="chatInput"
-            placeholder="Ask about any component or token..."
+            :placeholder="t('chatPlayground.inputPlaceholder')"
             class="w-full rounded-lg border border-border bg-input py-2.5 pl-3 pr-10 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring/30"
             @keydown="onChatKeydown"
           />
           <button
             type="button"
             class="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-[#4D6A87] transition-colors hover:text-primary disabled:opacity-40"
+            :aria-label="t('chatPlayground.live.sendAriaLabel')"
             :disabled="!chatInput.trim() || chatTyping"
             @click="sendChatMessage()"
           >
@@ -957,7 +1002,7 @@ function optionStyle(active: boolean) {
 
     <!-- Alert -->
     <template v-else-if="name === 'Alert'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
         <Alert
           :key="alertPreviewKey"
@@ -994,7 +1039,7 @@ function optionStyle(active: boolean) {
 
     <!-- Toast -->
     <template v-else-if="name === 'Toast'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
         <Toast
           :key="toastPreviewKey"
@@ -1050,14 +1095,14 @@ function optionStyle(active: boolean) {
           class="w-full rounded-md border border-border px-3 py-2 text-xs text-[#7BA3C8] transition-colors hover:border-primary/40 hover:text-primary"
           @click="showLiveToast()"
         >
-          Show toast at {{ toastPosition.replace('-', ' ') }} →
+          {{ t('toastPlayground.showAt', { position: toastPosition.replace('-', ' ') }) }}
         </button>
       </div>
     </template>
 
     <!-- Modal -->
     <template v-else-if="name === 'Modal'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
         <div class="flex gap-2">
           <button
@@ -1076,7 +1121,7 @@ function optionStyle(active: boolean) {
           class="flex w-full items-center justify-center gap-2 rounded-md border border-primary/40 px-3 py-2.5 text-xs text-primary transition-colors hover:border-primary hover:bg-primary/5"
           @click="openModalPreview()"
         >
-          Open Modal
+          {{ modalCopy.openButton }}
           <ArrowUpRight :size="14" />
         </button>
       </div>
@@ -1089,7 +1134,7 @@ function optionStyle(active: boolean) {
           <button
             type="button"
             class="rounded-sm text-muted-foreground opacity-70 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-            aria-label="Close"
+            :aria-label="modalCopy.closeAriaLabel"
             @click="modalOpen = false"
           >
             <span aria-hidden="true">&times;</span>
@@ -1099,20 +1144,20 @@ function optionStyle(active: boolean) {
         <div class="space-y-4 px-6 py-4">
           <template v-if="modalVariant === 'confirm'">
             <p class="text-sm leading-relaxed text-[#7BA3C8]">
-              Are you sure you want to archive this project? It will be hidden from your workspace but can be restored later.
+              {{ modalCopy.confirmBody }}
             </p>
           </template>
 
           <template v-else-if="modalVariant === 'form'">
             <div class="space-y-2">
-              <Label class="text-[#7BA3C8]">Project name</Label>
-              <Input v-model="modalProjectName" placeholder="My awesome project" />
+              <Label class="text-[#7BA3C8]">{{ modalCopy.fields.projectName }}</Label>
+              <Input v-model="modalProjectName" :placeholder="modalCopy.placeholders.projectName" />
             </div>
             <div class="space-y-2">
-              <Label class="text-[#7BA3C8]">Description</Label>
+              <Label class="text-[#7BA3C8]">{{ modalCopy.fields.description }}</Label>
               <Textarea
                 v-model="modalProjectDescription"
-                placeholder="Optional description..."
+                :placeholder="modalCopy.placeholders.description"
                 class="min-h-24"
               />
             </div>
@@ -1120,19 +1165,19 @@ function optionStyle(active: boolean) {
 
           <template v-else>
             <p class="text-sm leading-relaxed text-[#7BA3C8]">
-              This will permanently delete
+              {{ modalCopy.dangerIntro }}
               <strong class="text-foreground">ATLAS-42</strong>
-              and all 128 associated issues. This action cannot be undone.
+              {{ modalCopy.dangerOutro }}
             </p>
             <Alert variant="error">
-              All data will be permanently lost.
+              {{ modalCopy.dangerAlert }}
             </Alert>
           </template>
         </div>
 
         <div class="flex justify-end gap-2 border-t border-border px-6 py-4">
           <Button appearance="ghost" @click="modalOpen = false">
-            Cancel
+            {{ modalCopy.cancel }}
           </Button>
           <Button
             :appearance="modalVariant === 'danger' ? 'danger' : 'primary'"
@@ -1147,41 +1192,37 @@ function optionStyle(active: boolean) {
 
     <!-- Layout -->
     <template v-else-if="name === 'Layout'">
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
 
       <div
         class="mb-4 rounded-xl border border-[#00E5B0]/15 p-4"
         style="background: rgba(0,229,176,0.04)"
       >
         <p class="mb-3 text-xs leading-relaxed text-[#7BA3C8]">
-          <strong class="text-[#E8EDF5]">AppLayout</strong> composes a full-page grid from four slots.
-          Header and footer span the full width; menu sits beside the main content area.
-          Collapse the menu to icon-only mode with the built-in toggle.
-          Nested submenus use <code class="text-primary">SidebarMenuGroup</code> — some open, some closed.
-          Click a button or link inside the content to open the resizable
-          <code class="text-primary">#panel</code> overlay on the right.
+          <strong class="text-[#E8EDF5]">AppLayout</strong> {{ t('layoutPlayground.introLead') }}
+          {{ t('layoutPlayground.introBody') }}
         </p>
         <div class="grid grid-cols-2 gap-2 text-[10px]">
           <div class="rounded-md px-2 py-1.5" style="background: rgba(0,212,255,0.08); color: #00D4FF">
-            <span class="font-mono uppercase">#header</span> — top bar
+            <span class="font-mono uppercase">{{ t('layoutPlayground.slots.header') }}</span>
           </div>
           <div class="rounded-md px-2 py-1.5" style="background: rgba(167,139,250,0.08); color: #A78BFA">
-            <span class="font-mono uppercase">#menu</span> — sidebar
+            <span class="font-mono uppercase">{{ t('layoutPlayground.slots.menu') }}</span>
           </div>
           <div class="rounded-md px-2 py-1.5" style="background: rgba(0,229,176,0.08); color: #00E5B0">
-            <span class="font-mono uppercase">default</span> — main content
+            <span class="font-mono uppercase">{{ t('layoutPlayground.slots.default') }}</span>
           </div>
           <div class="rounded-md px-2 py-1.5" style="background: rgba(0,212,255,0.08); color: #00D4FF">
-            <span class="font-mono uppercase">#panel</span> — overlay detail
+            <span class="font-mono uppercase">{{ t('layoutPlayground.slots.panel') }}</span>
           </div>
           <div class="rounded-md px-2 py-1.5" style="background: rgba(255,139,0,0.08); color: #FF8B00">
-            <span class="font-mono uppercase">#footer</span> — bottom bar
+            <span class="font-mono uppercase">{{ t('layoutPlayground.slots.footer') }}</span>
           </div>
         </div>
       </div>
 
       <div class="pg-playground-panel mb-6 space-y-4 rounded-xl p-4">
-        <p class="font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Preview</p>
+        <p class="font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('layoutPlayground.preview') }}</p>
 
         <AppLayout
           v-model:menu-collapsed="layoutMenuCollapsed"
@@ -1199,7 +1240,7 @@ function optionStyle(active: boolean) {
               style="background: rgba(0,212,255,0.06)"
             >
               <div class="flex items-center gap-2">
-                <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">header</span>
+                <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.regions.header.label') }}</span>
                 <span
                   class="flex size-6 items-center justify-center rounded-md text-[10px] font-bold text-[#060D18]"
                   style="background: linear-gradient(135deg, #0052CC, #00D4FF)"
@@ -1208,7 +1249,7 @@ function optionStyle(active: boolean) {
                 </span>
                 <span class="text-sm font-semibold text-foreground">Design System</span>
               </div>
-              <Lozenge appearance="success">stable</Lozenge>
+              <Lozenge appearance="success">{{ t('app.stable') }}</Lozenge>
             </div>
           </template>
 
@@ -1225,13 +1266,13 @@ function optionStyle(active: boolean) {
               >
                 <template #toggle>
                   <Tooltip
-                    :content="collapsed ? 'Expand menu' : 'Collapse menu'"
+                    :content="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
                     placement="right"
                   >
                     <button
                       type="button"
                       class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                      :aria-label="collapsed ? 'Expand menu' : 'Collapse menu'"
+                      :aria-label="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
                       :aria-expanded="!collapsed"
                       @click="toggleMenu()"
                     >
@@ -1255,31 +1296,31 @@ function optionStyle(active: boolean) {
                   v-model:open-keys="layoutOpenKeys"
                   :collapsed="collapsed"
                 >
-                  <SidebarMenuItem id="dashboard" label="Dashboard" :icon="BarChart2" />
+                  <SidebarMenuItem id="dashboard" :label="layoutSidebar.dashboard" :icon="BarChart2" />
 
-                  <SidebarMenuGroup id="components" label="Components" :icon="Gem" default-open>
-                    <SidebarMenuItem id="components.overview" label="Overview" :icon="Layers" />
-                    <SidebarMenuItem id="components.button" label="Button" :icon="Box" />
+                  <SidebarMenuGroup id="components" :label="layoutSidebar.components" :icon="Gem" default-open>
+                    <SidebarMenuItem id="components.overview" :label="layoutSidebar.overview" :icon="Layers" />
+                    <SidebarMenuItem id="components.button" :label="layoutSidebar.button" :icon="Box" />
 
-                    <SidebarMenuGroup id="components.forms" label="Forms" :icon="Type" default-open>
-                      <SidebarMenuItem id="components.forms.input" label="Input" :icon="Type" />
-                      <SidebarMenuItem id="components.forms.select" label="Select" :icon="Target" />
+                    <SidebarMenuGroup id="components.forms" :label="layoutSidebar.forms" :icon="Type" default-open>
+                      <SidebarMenuItem id="components.forms.input" :label="layoutSidebar.input" :icon="Type" />
+                      <SidebarMenuItem id="components.forms.select" :label="layoutSidebar.select" :icon="Target" />
                     </SidebarMenuGroup>
 
-                    <SidebarMenuGroup id="components.feedback" label="Feedback" :icon="AlertCircle">
-                      <SidebarMenuItem id="components.feedback.alert" label="Alert" :icon="AlertCircle" />
-                      <SidebarMenuItem id="components.feedback.toast" label="Toast" :icon="Info" />
+                    <SidebarMenuGroup id="components.feedback" :label="layoutSidebar.feedback" :icon="AlertCircle">
+                      <SidebarMenuItem id="components.feedback.alert" :label="layoutSidebar.alert" :icon="AlertCircle" />
+                      <SidebarMenuItem id="components.feedback.toast" :label="layoutSidebar.toast" :icon="Info" />
                     </SidebarMenuGroup>
                   </SidebarMenuGroup>
 
-                  <SidebarMenuGroup id="foundations" label="Foundations" :icon="Palette">
-                    <SidebarMenuItem id="foundations.colors" label="Colors" :icon="Palette" />
-                    <SidebarMenuItem id="foundations.typography" label="Typography" :icon="Type" />
+                  <SidebarMenuGroup id="foundations" :label="layoutSidebar.foundations" :icon="Palette">
+                    <SidebarMenuItem id="foundations.colors" :label="layoutSidebar.colors" :icon="Palette" />
+                    <SidebarMenuItem id="foundations.typography" :label="layoutSidebar.typography" :icon="Type" />
                   </SidebarMenuGroup>
 
-                  <SidebarMenuGroup id="settings" label="Settings" :icon="Settings">
-                    <SidebarMenuItem id="settings.profile" label="Profile" :icon="Users" />
-                    <SidebarMenuItem id="settings.team" label="Team" :icon="Users" />
+                  <SidebarMenuGroup id="settings" :label="layoutSidebar.settings" :icon="Settings">
+                    <SidebarMenuItem id="settings.profile" :label="layoutSidebar.profile" :icon="Users" />
+                    <SidebarMenuItem id="settings.team" :label="layoutSidebar.team" :icon="Users" />
                   </SidebarMenuGroup>
                 </SidebarMenu>
               </SidebarMenuShell>
@@ -1290,7 +1331,7 @@ function optionStyle(active: boolean) {
             class="flex h-full min-h-0 w-full flex-col rounded p-2"
             style="background: rgba(0,229,176,0.06)"
           >
-            <p class="mb-2 font-mono text-[8px] uppercase tracking-wider text-[#00E5B0]">content</p>
+            <p class="mb-2 font-mono text-[8px] uppercase tracking-wider text-[#00E5B0]">{{ t('layoutPlayground.slots.content') }}</p>
             <div
               class="pg-playground-preview flex flex-1 flex-col items-center justify-center gap-3 rounded-lg px-4 py-6 text-center"
             >
@@ -1298,7 +1339,7 @@ function optionStyle(active: boolean) {
                 {{ layoutNavLabels[layoutActiveNav] ?? layoutActiveNav }}
               </p>
               <Button appearance="outline" size="sm" @click="layoutPanelOpen = true">
-                View details
+                {{ t('layoutPlayground.viewDetails') }}
               </Button>
             </div>
           </div>
@@ -1309,22 +1350,20 @@ function optionStyle(active: boolean) {
               style="background: rgba(0,212,255,0.06)"
             >
               <div class="mb-3 flex items-center justify-between gap-2 border-b border-[#00D4FF]/20 pb-2">
-                <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">panel</span>
+                <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.panelTag') }}</span>
                 <button
                   type="button"
                   class="rounded px-2 py-0.5 font-mono text-[10px] text-[#4D6A87] transition-colors hover:bg-muted/40 hover:text-foreground"
                   @click="closePanel()"
                 >
-                  Close
+                  {{ t('layoutPlayground.close') }}
                 </button>
               </div>
               <p class="mb-2 text-sm font-medium text-foreground">
                 {{ layoutNavLabels[layoutActiveNav] ?? layoutActiveNav }}
               </p>
               <p class="text-xs leading-relaxed text-[#7BA3C8]">
-                Secondary panel overlaying the main content. Drag the left edge to resize.
-                Use the <code class="text-primary">#panel</code> slot and
-                <code class="text-primary">v-model:panel-open</code> to show contextual details without leaving the page.
+                {{ t('layoutPlayground.panelDescription') }}
               </p>
             </div>
           </template>
@@ -1334,15 +1373,15 @@ function optionStyle(active: boolean) {
               class="flex w-full items-center justify-between gap-3 rounded p-2 text-xs"
               style="background: rgba(255,139,0,0.06)"
             >
-              <span class="font-mono text-[8px] uppercase tracking-wider text-[#FF8B00]">footer</span>
-              <span class="font-mono text-[10px] text-[#4D6A87]">All systems operational</span>
+              <span class="font-mono text-[8px] uppercase tracking-wider text-[#FF8B00]">{{ t('layoutPlayground.regions.footer.label') }}</span>
+              <span class="font-mono text-[10px] text-[#4D6A87]">{{ t('app.footer') }}</span>
             </div>
           </template>
         </AppLayout>
 
         <div class="grid grid-cols-2 gap-3">
           <div class="min-w-0">
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">regions</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('layoutPlayground.regionsTitle') }}</p>
             <button
               type="button"
               class="mb-1 flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-[#4D6A87]"
@@ -1354,7 +1393,7 @@ function optionStyle(active: boolean) {
               >
                 <span class="size-3 rounded-full bg-white shadow" />
               </span>
-              header
+              {{ t('layoutPlayground.regions.header.label').toLowerCase() }}
             </button>
             <button
               type="button"
@@ -1367,7 +1406,7 @@ function optionStyle(active: boolean) {
               >
                 <span class="size-3 rounded-full bg-white shadow" />
               </span>
-              menu
+              {{ t('layoutPlayground.regions.menu.label').toLowerCase() }}
             </button>
             <button
               type="button"
@@ -1380,14 +1419,14 @@ function optionStyle(active: boolean) {
               >
                 <span class="size-3 rounded-full bg-white shadow" />
               </span>
-              footer
+              {{ t('layoutPlayground.regions.footer.label').toLowerCase() }}
             </button>
           </div>
           <div
             class="min-w-0"
           >
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
-              menu width — {{ layoutMenuWidth }}
+              {{ t('layoutPlayground.menuWidthLabel', { width: layoutMenuWidth }) }}
             </p>
             <input
               v-model.number="layoutMenuWidthRem"
@@ -1397,7 +1436,7 @@ function optionStyle(active: boolean) {
               step="1"
               class="mb-4 w-full accent-[#00E5B0]"
             />
-            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">menu</p>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('layoutPlayground.regions.menu.label').toLowerCase() }}</p>
             <button
               type="button"
               class="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-[#4D6A87]"
@@ -1409,7 +1448,7 @@ function optionStyle(active: boolean) {
               >
                 <span class="size-3 rounded-full bg-white shadow" />
               </span>
-              start collapsed
+              {{ t('layoutPlayground.startCollapsed') }}
             </button>
           </div>
         </div>
@@ -1418,9 +1457,9 @@ function optionStyle(active: boolean) {
 
     <!-- Fallback -->
     <template v-else>
-      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Live Playground</p>
+      <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 flex min-h-[120px] items-center justify-center rounded-xl p-6">
-        <span class="text-sm text-[#4D6A87]">{{ name }} preview</span>
+        <span class="text-sm text-[#4D6A87]">{{ t('drawer.previewFallback', { name }) }}</span>
       </div>
     </template>
 

@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { Zap } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
-import UsageBlock from '../components/UsageBlock.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import {
   Button,
   Select,
@@ -11,15 +11,11 @@ import {
   type ButtonIconName,
 } from '@/index'
 
-const appearances = [
-  { id: 'primary', variant: 'primary' as const, label: 'primary' },
-  { id: 'ghost', variant: 'ghost' as const, label: 'ghost' },
-  { id: 'outline', variant: 'outline' as const, label: 'outline' },
-  { id: 'danger', variant: 'destructive' as const, label: 'danger' },
-]
+const { t } = usePlaygroundLocale()
+
 const sizes = ['sm', 'md', 'lg'] as const
 
-type Appearance = (typeof appearances)[number]['variant']
+type Appearance = 'primary' | 'ghost' | 'outline' | 'destructive'
 type Size = (typeof sizes)[number]
 
 const appearance = ref<Appearance>('primary')
@@ -27,20 +23,16 @@ const size = ref<Size>('md')
 const disabled = ref(false)
 const iconValue = ref('')
 
+const appearances = [
+  { id: 'primary', variant: 'primary' as const },
+  { id: 'ghost', variant: 'ghost' as const },
+  { id: 'outline', variant: 'outline' as const },
+  { id: 'danger', variant: 'destructive' as const },
+] as const
+
 const icon = computed<ButtonIconName | undefined>(() =>
   iconValue.value ? (iconValue.value as ButtonIconName) : undefined,
 )
-
-const codeSnippet = computed(() => {
-  const disabledAttr = disabled.value ? '\n  disabled' : ''
-  const iconAttr = icon.value ? `\n  icon="${icon.value}"` : ''
-  return `<Button
-  appearance="${appearance.value === 'destructive' ? 'danger' : appearance.value === 'default' ? 'primary' : appearance.value}"
-  size="${size.value}"${iconAttr}${disabledAttr}
->
-  Action
-</Button>`
-})
 
 function optionStyle(active: boolean) {
   return active
@@ -54,12 +46,10 @@ function optionStyle(active: boolean) {
 </script>
 
 <template>
-  <PlayCard label="Button" accent-color="#00D4FF" tag="interactive">
+  <PlayCard :label="t('cards.button.label')" accent-color="#00D4FF" :tag="t('cards.button.tag')">
     <template #icon><Zap :size="14" /></template>
-    <div class="flex flex-col gap-5">
-      <div
-        class="pg-playground-preview flex h-24 items-center justify-center rounded-xl"
-      >
+    <div class="flex flex-col gap-3">
+      <div class="pg-playground-preview flex h-16 items-center justify-center rounded-xl">
         <Button
           :appearance="appearance === 'destructive' ? 'danger' : appearance === 'default' ? 'primary' : appearance"
           :size="size"
@@ -67,30 +57,34 @@ function optionStyle(active: boolean) {
           :disabled="disabled"
           :class="appearance === 'primary' ? 'ds-glow-primary' : undefined"
         >
-          Action
+          {{ t('buttonPlayground.previewAction') }}
         </Button>
       </div>
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-3 gap-2">
         <div class="min-w-0">
-          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">appearance</p>
+          <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('buttonPlayground.appearanceLabel') }}
+          </p>
           <button
             v-for="item in appearances"
             :key="item.id"
             type="button"
-            class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
+            class="mb-0.5 block w-full rounded px-2 py-0.5 text-left text-xs transition-all"
             :style="optionStyle(appearance === item.variant)"
             @click="appearance = item.variant"
           >
-            {{ item.label }}
+            {{ item.id }}
           </button>
         </div>
         <div class="min-w-0">
-          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">size</p>
+          <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('buttonPlayground.sizeLabel') }}
+          </p>
           <button
             v-for="item in sizes"
             :key="item"
             type="button"
-            class="mb-1 block w-full rounded px-2 py-1 text-left text-xs transition-all"
+            class="mb-0.5 block w-full rounded px-2 py-0.5 text-left text-xs transition-all"
             :style="optionStyle(size === item)"
             @click="size = item"
           >
@@ -98,22 +92,26 @@ function optionStyle(active: boolean) {
           </button>
         </div>
         <div class="min-w-0">
-          <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">state</p>
-          <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+          <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+            {{ t('buttonPlayground.stateLabel') }}
+          </p>
+          <label class="flex w-full cursor-pointer items-center gap-2 rounded px-2 py-0.5 text-xs text-[#4D6A87]">
             <Switch v-model="disabled" size="sm" />
             disabled
           </label>
         </div>
       </div>
       <div>
-        <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">icon</p>
+        <p class="mb-1.5 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">
+          {{ t('buttonPlayground.iconLabel') }}
+        </p>
         <Select
           v-model="iconValue"
           :options="iconographySelectOptions"
-          placeholder="Select an icon..."
+          :placeholder="t('buttonPlayground.iconPlaceholder')"
+          :searchable="false"
         />
       </div>
-      <UsageBlock :code="codeSnippet" />
     </div>
   </PlayCard>
 </template>

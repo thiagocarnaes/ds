@@ -1,17 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Users } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { Avatar } from '@/index'
 
-const people = [
-  { name: 'Ana Martins', role: 'Design Lead', initials: 'AM', color: '#00D4FF' },
-  { name: 'Bruno Silva', role: 'Engineer', initials: 'BS', color: '#2979FF' },
-  { name: 'Carla Souza', role: 'PM', initials: 'CS', color: '#00E5B0' },
-]
+const { t, messages } = usePlaygroundLocale()
+
+const people = computed(() => {
+  const roles = messages.value.avatarPlayground.roles
+  return [
+    { name: 'Ana Martins', role: roles.designLead, initials: 'AM', color: '#00D4FF' },
+    { name: 'Bruno Silva', role: roles.engineer, initials: 'BS', color: '#2979FF' },
+    { name: 'Carla Souza', role: roles.pm, initials: 'CS', color: '#00E5B0' },
+  ]
+})
 </script>
 
 <template>
-  <PlayCard label="Avatar" accent-color="#00E5B0">
+  <PlayCard :label="t('cards.avatar.label')" accent-color="#00E5B0">
     <template #icon><Users :size="14" /></template>
     <div class="space-y-5">
       <div>

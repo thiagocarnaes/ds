@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { ToggleLeft } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { Checkbox, Toggle } from '@/index'
+
+const { t, messages } = usePlaygroundLocale()
 
 const tab = ref<'toggle' | 'checkbox'>('toggle')
 
@@ -18,10 +21,13 @@ const checks = ref({
   cookies: false,
   beta: false,
 })
+
+const toggleLabels = computed(() => messages.value.controlsPlayground.toggles)
+const checkboxLabels = computed(() => messages.value.controlsPlayground.checkboxes)
 </script>
 
 <template>
-  <PlayCard label="Controls" accent-color="#FF8B00" tag="toggle · checkbox">
+  <PlayCard :label="t('cards.controls.label')" accent-color="#FF8B00" :tag="t('cards.controls.tag')">
     <template #icon><ToggleLeft :size="14" /></template>
     <div class="mb-4 flex gap-2">
       <button
@@ -34,7 +40,7 @@ const checks = ref({
         "
         @click="tab = 'toggle'"
       >
-        toggle
+        {{ t('controlsPlayground.tabToggle') }}
       </button>
       <button
         type="button"
@@ -46,19 +52,19 @@ const checks = ref({
         "
         @click="tab = 'checkbox'"
       >
-        checkbox
+        {{ t('controlsPlayground.tabCheckbox') }}
       </button>
     </div>
     <div v-if="tab === 'toggle'" class="space-y-2">
-      <Toggle v-model="toggles.notifications">Notifications</Toggle>
-      <Toggle v-model="toggles.darkMode">Dark mode</Toggle>
-      <Toggle v-model="toggles.autoSave">Auto-save</Toggle>
-      <Toggle v-model="toggles.analytics">Analytics</Toggle>
+      <Toggle v-model="toggles.notifications">{{ toggleLabels.notifications }}</Toggle>
+      <Toggle v-model="toggles.darkMode">{{ toggleLabels.darkMode }}</Toggle>
+      <Toggle v-model="toggles.autoSave">{{ toggleLabels.autoSave }}</Toggle>
+      <Toggle v-model="toggles.analytics">{{ toggleLabels.analytics }}</Toggle>
     </div>
     <div v-else class="space-y-2">
-      <Checkbox v-model="checks.digest">Send weekly digest</Checkbox>
-      <Checkbox v-model="checks.cookies">Accept all cookies</Checkbox>
-      <Checkbox v-model="checks.beta">Enable beta features</Checkbox>
+      <Checkbox v-model="checks.digest">{{ checkboxLabels.digest }}</Checkbox>
+      <Checkbox v-model="checks.cookies">{{ checkboxLabels.cookies }}</Checkbox>
+      <Checkbox v-model="checks.beta">{{ checkboxLabels.beta }}</Checkbox>
     </div>
   </PlayCard>
 </template>

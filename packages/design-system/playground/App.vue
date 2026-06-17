@@ -4,7 +4,10 @@ import { ArrowUpRight, Moon, Sun, Zap } from 'lucide-vue-next'
 import GlowDot from './components/GlowDot.vue'
 import StatPill from './components/StatPill.vue'
 import ComponentDrawer from './components/ComponentDrawer.vue'
+import PlaygroundLocaleSelect from './components/PlaygroundLocaleSelect.vue'
 import { usePlaygroundTheme } from './composables/usePlaygroundTheme'
+import { providePlaygroundLocale } from './composables/usePlaygroundLocale'
+import type { CategoryKey } from './i18n/types'
 import ButtonCard from './cards/ButtonCard.vue'
 import ColorCard from './cards/ColorCard.vue'
 import TypographyCard from './cards/TypographyCard.vue'
@@ -23,42 +26,63 @@ import DataTableCard from './cards/DataTableCard.vue'
 import DocumentationPage from './views/DocumentationPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
 
-const categories = ['All', 'Docs', 'Foundations', 'Forms', 'Labels', 'Feedback', 'Layout'] as const
-type Category = (typeof categories)[number]
+const CATEGORY_KEYS: CategoryKey[] = [
+  'all',
+  'foundations',
+  'forms',
+  'labels',
+  'feedback',
+  'layout',
+  'docs',
+]
 
-const activeCat = ref<Category>('All')
+const activeCat = ref<CategoryKey>('all')
 const drawerName = ref<string | null>(null)
 const drawerOpen = ref(false)
 const { isDark, toggleTheme } = usePlaygroundTheme()
+const { t } = providePlaygroundLocale()
 
 const cards = [
-  { id: 'button', cats: ['Forms'], span: 1, component: ButtonCard },
-  { id: 'controls', cats: ['Forms'], span: 1, component: ControlsCard },
-  { id: 'inputs', cats: ['Forms'], span: 3, component: InputsCard },
-  { id: 'color', cats: ['Foundations'], span: 4, component: ColorCard },
-  { id: 'typography', cats: ['Foundations'], span: 1, component: TypographyCard },
-  { id: 'spacing', cats: ['Foundations'], span: 1, component: SpacingCard },
-  { id: 'icons', cats: ['Foundations'], span: 4, component: IconsCard },
-  { id: 'labels', cats: ['Labels'], span: 1, component: LabelsCard },
-  { id: 'avatar', cats: ['Labels'], span: 1, component: AvatarCard },
-  { id: 'loading', cats: ['Feedback'], span: 1, component: LoadingCard },
-  { id: 'messages', cats: ['Feedback'], span: 1, component: MessagesCard },
-  { id: 'chat', cats: ['Feedback'], span: 4, component: ChatPreviewCard },
-  { id: 'layout', cats: ['Layout'], span: 3, component: LayoutCard, tall: true },
-  { id: 'datatable', cats: ['Layout'], span: 4, component: DataTableCard, tall: true },
-  { id: 'index', cats: ['Layout'], span: 3, component: ComponentIndexCard, tall: true },
+  { id: 'button', cats: ['forms'], span: 1, component: ButtonCard },
+  { id: 'controls', cats: ['forms'], span: 1, component: ControlsCard },
+  { id: 'inputs', cats: ['forms'], span: 3, component: InputsCard },
+  { id: 'color', cats: ['foundations'], span: 4, component: ColorCard },
+  { id: 'typography', cats: ['foundations'], span: 1, component: TypographyCard },
+  { id: 'spacing', cats: ['foundations'], span: 1, component: SpacingCard },
+  { id: 'icons', cats: ['foundations'], span: 4, component: IconsCard },
+  { id: 'labels', cats: ['labels'], span: 1, component: LabelsCard },
+  { id: 'avatar', cats: ['labels'], span: 1, component: AvatarCard },
+  { id: 'loading', cats: ['feedback'], span: 1, component: LoadingCard },
+  { id: 'messages', cats: ['feedback'], span: 1, component: MessagesCard },
+  { id: 'chat', cats: ['feedback'], span: 4, component: ChatPreviewCard },
+  { id: 'layout', cats: ['layout'], span: 3, component: LayoutCard, tall: true },
+  { id: 'datatable', cats: ['layout'], span: 4, component: DataTableCard, tall: true },
+  { id: 'index', cats: ['forms', 'labels', 'feedback', 'layout'], span: 3, component: ComponentIndexCard, tall: true },
 ] as const
 
 type PlaygroundCard = (typeof cards)[number]
 
 const visibleCards = computed(() =>
-  activeCat.value === 'All'
+  activeCat.value === 'all'
     ? [...cards]
     : cards.filter((c) => c.cats.includes(activeCat.value)),
 )
 
+const heroPillars = computed(() => [
+  {
+    color: '#A78BFA',
+    title: t('hero.pillarComponentsTitle'),
+    body: t('hero.pillarComponentsBody'),
+  },
+  {
+    color: '#00E5B0',
+    title: t('hero.pillarPlaygroundsTitle'),
+    body: t('hero.pillarPlaygroundsBody'),
+  },
+])
+
 function cardGridSpan(card: PlaygroundCard): number {
-  if (activeCat.value === 'All') {
+  if (activeCat.value === 'all') {
     if (card.id === 'inputs' || card.id === 'icons' || card.id === 'color' || card.id === 'chat' || card.id === 'datatable') return 4
     if (card.id === 'button' || card.id === 'controls') return 2
     if (card.id === 'loading' || card.id === 'messages') return 2
@@ -78,14 +102,14 @@ function openDrawer(name: string): void {
 }
 
 function scrollToIndex(): void {
-  activeCat.value = 'All'
+  activeCat.value = 'all'
   requestAnimationFrame(() => {
     document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   })
 }
 
 function openDocs(): void {
-  activeCat.value = 'Docs'
+  activeCat.value = 'docs'
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
@@ -103,14 +127,14 @@ function openDocs(): void {
           <Zap :size="14" class="text-white" />
         </div>
         <div class="flex items-baseline gap-2">
-          <span class="text-sm font-semibold" style="color: var(--pg-text)">Design System</span>
-          <span class="pg-text-muted font-mono text-[10px]">v2.0.0</span>
+          <span class="text-sm font-semibold" style="color: var(--pg-text)">{{ t('app.title') }}</span>
+          <span class="pg-text-muted font-mono text-[10px]">{{ t('app.versionBadge') }}</span>
         </div>
       </div>
 
       <nav class="pg-nav hidden items-center gap-1 rounded-xl p-1 md:flex">
         <button
-          v-for="cat in categories"
+          v-for="cat in CATEGORY_KEYS"
           :key="cat"
           type="button"
           class="rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-300 ease-out"
@@ -125,16 +149,17 @@ function openDocs(): void {
           "
           @click="activeCat = cat"
         >
-          {{ cat }}
+          {{ t(`categories.${cat}`) }}
         </button>
       </nav>
 
       <div class="flex items-center gap-2">
+        <PlaygroundLocaleSelect />
         <button
           type="button"
           class="pg-theme-toggle"
-          :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-          :title="isDark ? 'Light mode' : 'Dark mode'"
+          :aria-label="isDark ? t('theme.switchToLight') : t('theme.switchToDark')"
+          :title="isDark ? t('theme.lightMode') : t('theme.darkMode')"
           @click="toggleTheme"
         >
           <Sun v-if="isDark" :size="16" />
@@ -144,7 +169,7 @@ function openDocs(): void {
           class="rounded-md px-2 py-1 font-mono text-[10px]"
           :style="{ background: 'var(--pg-stable-bg)', color: 'var(--pg-stable-text)' }"
         >
-          stable
+          {{ t('app.stable') }}
         </span>
         <a
           href="https://github.com/thiagocarnaes/ds"
@@ -158,25 +183,23 @@ function openDocs(): void {
     </header>
 
     <main class="relative z-10 mx-auto max-w-6xl px-6 py-12">
-      <!-- Hero + grid -->
-      <template v-if="activeCat !== 'Docs'">
+      <template v-if="activeCat !== 'docs'">
         <div class="mb-12">
         <div class="mb-6 flex items-center gap-2">
           <GlowDot />
-          <span class="pg-text-muted font-mono text-[10px] uppercase tracking-widest">v2.0.0 · stable</span>
+          <span class="pg-text-muted font-mono text-[10px] uppercase tracking-widest">{{ t('hero.versionLine') }}</span>
         </div>
 
         <div class="grid grid-cols-1 gap-8 lg:grid-cols-2">
           <div>
             <h1 class="mb-5 text-5xl font-bold leading-[1.05]" style="letter-spacing: -0.02em">
-              <span style="color: var(--pg-text)">One system.</span><br />
+              <span style="color: var(--pg-text)">{{ t('hero.titleLine1') }}</span><br />
               <span :style="{ color: 'var(--pg-hero-accent)', textShadow: `0 0 40px var(--pg-hero-glow)` }">
-                Every team.
+                {{ t('hero.titleLine2') }}
               </span>
             </h1>
             <p class="pg-text-subtle max-w-md text-sm leading-[1.8]">
-              A shared foundation for designers and engineers — accessible Vue 3 components and live
-              playgrounds for every team.
+              {{ t('hero.subtitle') }}
             </p>
             <div class="mt-6 flex flex-wrap items-center gap-3">
               <button
@@ -189,7 +212,7 @@ function openDocs(): void {
                 }"
                 @click="scrollToIndex"
               >
-                Browse components
+                {{ t('hero.browseComponents') }}
               </button>
               <button
                 type="button"
@@ -197,17 +220,14 @@ function openDocs(): void {
                 style="border-color: var(--pg-border); color: var(--pg-text)"
                 @click="openDocs"
               >
-                Install &amp; docs
+                {{ t('hero.installDocs') }}
               </button>
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-3">
             <div
-              v-for="pillar in [
-                { color: '#A78BFA', title: '53 Components', body: 'Forms, labels, feedback, layout — interactive and accessible.' },
-                { color: '#00E5B0', title: 'Live Playgrounds', body: 'Every card is a sandbox. Change props and see updates instantly.' },
-              ]"
+              v-for="pillar in heroPillars"
               :key="pillar.title"
               class="flex flex-col gap-2 rounded-xl p-4"
               :style="{ background: pillar.color + '08', border: `1px solid ${pillar.color}15` }"
@@ -219,32 +239,30 @@ function openDocs(): void {
         </div>
 
         <div class="pg-border-top mt-8 flex flex-wrap gap-4 pt-8">
-          <StatPill label="Components" :target="53" color="#00D4FF" />
-          <StatPill label="Test coverage" :target="94" suffix="%" color="#00E5B0" />
+          <StatPill :label="t('hero.statComponents')" :target="53" color="#00D4FF" />
+          <StatPill :label="t('hero.statCoverage')" :target="94" suffix="%" color="#00E5B0" />
         </div>
         </div>
 
-      <!-- Mobile category nav -->
       <div class="mb-6 flex flex-wrap gap-2 md:hidden">
         <button
-          v-for="cat in categories"
+          v-for="cat in CATEGORY_KEYS"
           :key="cat"
           type="button"
           class="rounded-lg px-3 py-1.5 text-xs"
           :class="activeCat === cat ? 'bg-primary/15 text-primary' : 'text-muted-foreground'"
           @click="activeCat = cat"
         >
-          {{ cat }}
+          {{ t(`categories.${cat}`) }}
         </button>
       </div>
 
-      <!-- Bento grid -->
       <TransitionGroup
         id="bento-grid"
         tag="div"
         name="ds-bento"
         class="ds-bento-grid"
-        :class="{ 'ds-bento-grid--focus': activeCat !== 'All' }"
+        :class="{ 'ds-bento-grid--focus': activeCat !== 'all' }"
       >
         <div
           v-for="card in visibleCards"
@@ -256,19 +274,8 @@ function openDocs(): void {
         >
           <ComponentIndexCard
             v-if="card.id === 'index'"
+            :active-cat="activeCat"
             :on-open="openDrawer"
-          />
-          <ChatPreviewCard
-            v-else-if="card.id === 'chat'"
-            @open="openDrawer('AI Chat')"
-          />
-          <LayoutCard
-            v-else-if="card.id === 'layout'"
-            @open="openDrawer('Layout')"
-          />
-          <DataTableCard
-            v-else-if="card.id === 'datatable'"
-            @open="openDrawer('DataTable')"
           />
           <component :is="card.component" v-else />
         </div>
@@ -280,7 +287,7 @@ function openDocs(): void {
       <footer class="pg-border-top mt-12 flex items-center justify-between pt-8">
         <div class="flex items-center gap-2">
           <GlowDot color="#00E5B0" />
-          <span class="pg-text-muted font-mono text-xs">All systems operational</span>
+          <span class="pg-text-muted font-mono text-xs">{{ t('app.footer') }}</span>
         </div>
       </footer>
     </main>

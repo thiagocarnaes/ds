@@ -151,6 +151,17 @@
   transition: color 0.2s ease, background-color 0.2s ease;
 }
 
+.pg-locale-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pg-locale-select__icon {
+  flex-shrink: 0;
+  color: var(--pg-text-muted);
+}
+
 .pg-theme-toggle:hover {
   color: var(--pg-accent);
   background: var(--pg-nav-active-bg);

@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { BarChart2, Loader2 } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+
+const { t, messages } = usePlaygroundLocale()
 
 const vals = ref([72, 45, 88, 23])
-const labels = ['Storage', 'CPU', 'Memory', 'Network']
 const colors = ['#00D4FF', '#00E5B0', '#2979FF', '#A78BFA']
+
+const labels = computed(() => {
+  const metrics = messages.value.loadingPlayground.metrics
+  return [metrics.storage, metrics.cpu, metrics.memory, metrics.network]
+})
 
 let timer: ReturnType<typeof setInterval> | undefined
 
@@ -21,7 +28,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <PlayCard label="Progress" accent-color="#00E5B0" tag="live">
+  <PlayCard :label="t('cards.loading.label')" accent-color="#00E5B0" :tag="t('cards.loading.tag')">
     <template #icon><BarChart2 :size="14" /></template>
     <div class="space-y-4">
       <div v-for="(label, i) in labels" :key="label">
@@ -42,7 +49,7 @@ onUnmounted(() => {
       </div>
       <div class="flex items-center gap-4 pt-2">
         <Loader2 :size="14" class="animate-spin text-primary" />
-        <span class="text-xs text-[#4D6A87]">Syncing...</span>
+        <span class="text-xs text-[#4D6A87]">{{ t('loadingPlayground.syncing') }}</span>
       </div>
     </div>
   </PlayCard>

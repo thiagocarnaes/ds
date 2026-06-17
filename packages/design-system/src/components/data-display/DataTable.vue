@@ -29,6 +29,17 @@ import {
   sortDataTableRowsMulti,
 } from './dataTableUtils'
 
+export interface DataTableLabels {
+  record?: string
+  records?: string
+  page?: string
+  pages?: string
+  pageSize?: string
+  searchAriaLabel?: string
+  loadingAriaLabel?: string
+  loadingText?: string
+}
+
 export interface DataTableProps {
   columns: DataTableColumn[]
   rows: Record<string, unknown>[]
@@ -42,7 +53,19 @@ export interface DataTableProps {
   striped?: boolean
   emptyTitle?: string
   emptyDescription?: string
+  labels?: DataTableLabels
   class?: string
+}
+
+const defaultLabels: Required<DataTableLabels> = {
+  record: 'record',
+  records: 'records',
+  page: 'page',
+  pages: 'pages',
+  pageSize: 'Rows per page',
+  searchAriaLabel: 'Search table',
+  loadingAriaLabel: 'Loading table data',
+  loadingText: 'Loading data…',
 }
 
 const props = withDefaults(defineProps<DataTableProps>(), {
@@ -55,6 +78,11 @@ const props = withDefaults(defineProps<DataTableProps>(), {
   emptyTitle: 'No results',
   emptyDescription: 'Try adjusting your search or filters.',
 })
+
+const resolvedLabels = computed(() => ({
+  ...defaultLabels,
+  ...props.labels,
+}))
 
 const search = defineModel<string>('search', { default: '' })
 const currentPage = defineModel<number>('currentPage', { default: 1 })
@@ -239,7 +267,7 @@ watch(
           v-model="search"
           :placeholder="searchPlaceholder"
           class="pl-9"
-          aria-label="Search table"
+          :aria-label="resolvedLabels.searchAriaLabel"
         />
       </div>
 
@@ -310,8 +338,8 @@ watch(
           <TableRow v-if="loading">
             <TableCell :colspan="columns.length" class="py-16 text-center">
               <div class="flex flex-col items-center gap-3">
-                <Spinner size="md" :glow="false" aria-label="Loading table data" />
-                <span class="text-sm text-muted-foreground">Loading data…</span>
+                <Spinner size="md" :glow="false" :aria-label="resolvedLabels.loadingAriaLabel" />
+                <span class="text-sm text-muted-foreground">{{ resolvedLabels.loadingText }}</span>
               </div>
             </TableCell>
           </TableRow>
@@ -354,14 +382,15 @@ watch(
       <div class="flex shrink-0 items-center gap-4 whitespace-nowrap">
         <p class="text-sm text-muted-foreground">
           <span class="font-medium text-foreground">{{ filteredTotal }}</span>
-          {{ filteredTotal === 1 ? 'record' : 'records' }}
+          {{ filteredTotal === 1 ? resolvedLabels.record : resolvedLabels.records }}
           ·
           <span class="font-medium text-foreground">{{ totalPages }}</span>
-          {{ totalPages === 1 ? 'page' : 'pages' }}
+          {{ totalPages === 1 ? resolvedLabels.page : resolvedLabels.pages }}
         </p>
         <PageSizeSelect
           v-model="pageSize"
           :options="pageSizeOptions"
+          :label="resolvedLabels.pageSize"
           :disabled="loading"
           class="shrink-0"
         />
@@ -373,7 +402,7 @@ watch(
           size="sm"
           :glow="false"
           class="shrink-0"
-          aria-label="Loading table data"
+          :aria-label="resolvedLabels.loadingAriaLabel"
         />
         <Pagination
           v-model:current-page="currentPage"

@@ -2,6 +2,7 @@
 import { computed } from 'vue'
 import { Pipette } from 'lucide-vue-next'
 import { colorPresets } from '../data/colorPresets'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
 const props = withDefaults(
   defineProps<{
@@ -16,6 +17,7 @@ const props = withDefaults(
 )
 
 const model = defineModel<string>({ required: true })
+const { t } = usePlaygroundLocale()
 
 const swatchSize = computed(() => (props.size === 'sm' ? 'size-4' : 'size-6'))
 
@@ -52,7 +54,7 @@ function isSelected(color: string): boolean {
           boxShadow: isSelected(color) ? `0 0 10px ${color}` : undefined,
           outline: isSelected(color) ? `2px solid ${color}` : undefined,
         }"
-        :aria-label="`Select color ${color}`"
+        :aria-label="t('colorPicker.selectColor', { color })"
         @click="model = color"
       />
       <label
@@ -69,7 +71,7 @@ function isSelected(color: string): boolean {
               }
             : undefined
         "
-        title="Pick a custom color"
+        :title="t('colorPicker.pickCustom')"
       >
         <input
           type="color"

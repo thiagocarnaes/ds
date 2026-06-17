@@ -3,21 +3,19 @@ import { ref, watch } from 'vue'
 import { Table2 } from 'lucide-vue-next'
 import PlayCard from '../components/PlayCard.vue'
 import DataTablePlaygroundHints from '../components/DataTablePlaygroundHints.vue'
+import { useDataTableLabels, useStatusLabel, useUserTableColumns } from '../composables/useUserTableColumns'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { DataTable, Lozenge } from '@/index'
 import type { LozengeAppearance } from '@/components/data-display/Lozenge.vue'
 import type { DataTableColumnFilters, DataTableSortEntry } from '@/components/data-display/dataTableTypes'
-import {
-  fetchUsers,
-  mockUsers,
-  userTableColumns,
-  type UserRow,
-} from '../data/mockUsers'
-
-defineEmits<{
-  open: []
-}>()
+import { fetchUsers, mockUsers, type UserRow } from '../data/mockUsers'
 
 type DataMode = 'client' | 'api'
+
+const { t } = usePlaygroundLocale()
+const userTableColumns = useUserTableColumns()
+const dataTableLabels = useDataTableLabels()
+const { formatStatus } = useStatusLabel()
 
 const mode = ref<DataMode>('api')
 const search = ref('')
@@ -73,7 +71,12 @@ function setMode(next: DataMode): void {
 </script>
 
 <template>
-  <PlayCard label="DataTable" accent-color="#2979FF" tag="multi-sort · filters" fill-height>
+  <PlayCard
+    :label="t('cards.datatable.label')"
+    accent-color="#2979FF"
+    :tag="t('cards.datatable.tag')"
+    fill-height
+  >
     <template #icon><Table2 :size="14" /></template>
 
     <div class="flex min-h-0 flex-1 flex-col gap-4">
@@ -97,7 +100,7 @@ function setMode(next: DataMode): void {
             "
             @click="setMode('client')"
           >
-            Client
+            {{ t('dataTable.modeClient') }}
           </button>
           <button
             type="button"
@@ -109,7 +112,7 @@ function setMode(next: DataMode): void {
             "
             @click="setMode('api')"
           >
-            Mock API
+            {{ t('dataTable.modeApi') }}
           </button>
         </div>
       </div>
@@ -126,24 +129,19 @@ function setMode(next: DataMode): void {
         :total="mode === 'api' ? total : undefined"
         :loading="mode === 'api' && loading"
         row-key="id"
-        search-placeholder="Filter users…"
+        :search-placeholder="t('dataTable.searchPlaceholder')"
+        :empty-title="dataTableLabels.emptyTitle"
+        :empty-description="dataTableLabels.emptyDescription"
+        :labels="dataTableLabels"
         class="min-h-0 flex-1"
         @request="loadFromApi"
       >
         <template #cell-status="{ value }">
           <Lozenge :appearance="statusAppearance[value as UserRow['status']]">
-            {{ value }}
+            {{ formatStatus(value as UserRow['status']) }}
           </Lozenge>
         </template>
       </DataTable>
-
-      <button
-        type="button"
-        class="mt-2 w-full shrink-0 rounded-md border border-[#2979FF]/30 px-3 py-2 text-xs text-[#2979FF] transition-colors hover:border-[#2979FF]/60 hover:bg-[#2979FF]/5"
-        @click="$emit('open')"
-      >
-        Open datatable playground →
-      </button>
     </div>
   </PlayCard>
 </template>
