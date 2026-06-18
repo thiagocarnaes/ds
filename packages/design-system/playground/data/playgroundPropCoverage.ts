@@ -144,7 +144,6 @@ export const playgroundPropCoverage: Record<string, readonly string[]> = {
     'showMenu',
     'showFooter',
     'settingsMenu',
-    'settingsMenuLabel',
     'footerWidth',
     'menuCollapsed',
     'panelOpen',

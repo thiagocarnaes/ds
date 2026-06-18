@@ -8,6 +8,7 @@ import {
   Info,
   Layers,
   Palette,
+  Settings,
   Target,
   Type,
   Users,
@@ -24,7 +25,6 @@ import {
   SidebarMenuGroup,
   SidebarMenuItem,
   Switch,
-  Tooltip,
 } from '@/index'
 
 const { messages, t } = usePlaygroundLocale()
@@ -34,7 +34,7 @@ const showMenu = ref(true)
 const showFooter = ref(true)
 const showPanel = ref(true)
 const settingsMenu = ref(true)
-const settingsMenuLabel = ref('Settings')
+const settingsAsGroup = ref(true)
 const footerWidth = ref<'full' | 'content'>('full')
 const menuWidthRem = ref(12)
 const menuWidth = computed(() => `${menuWidthRem.value}rem`)
@@ -76,7 +76,7 @@ const previewKey = computed(
       showFooter.value,
       showPanel.value,
       settingsMenu.value,
-      settingsMenuLabel.value,
+      settingsAsGroup.value,
       footerWidth.value,
       menuWidthRem.value,
       menuCollapsedWidthRem.value,
@@ -95,7 +95,7 @@ const code = computed(() => {
   const scriptLines = [
     '<script setup lang="ts">',
     "import { ref } from 'vue'",
-    `import { AppLayout, Button, SidebarMenuItem } from '${PACKAGE}'`,
+    `import { AppLayout, Button, SidebarMenuGroup, SidebarMenuItem } from '${PACKAGE}'`,
     '',
     `const menuCollapsed = ref(${menuCollapsed.value})`,
     `const panelOpen = ref(${panelOpen.value})`,
@@ -113,7 +113,6 @@ const code = computed(() => {
     `const showMenu = ref(${showMenu.value})`,
     `const showFooter = ref(${showFooter.value})`,
     `const settingsMenu = ref(${settingsMenu.value})`,
-    `const settingsMenuLabel = ref('${settingsMenuLabel.value.replace(/'/g, "\\'")}')`,
     `const footerWidth = ref<'full' | 'content'>('${footerWidth.value}')`,
     `const activeId = ref('${activeNav.value.replace(/'/g, "\\'")}')`,
     `const openKeys = ref<string[]>(${JSON.stringify(openKeys.value)})`,
@@ -140,7 +139,6 @@ const code = computed(() => {
     `  ${playgroundSnippetAttr('showMenu', showMenu.value)}`,
     `  ${playgroundSnippetAttr('showFooter', showFooter.value)}`,
     `  ${playgroundSnippetAttr('settingsMenu', settingsMenu.value)}`,
-    `  ${playgroundSnippetAttr('settingsMenuLabel', settingsMenuLabel.value)}`,
     `  ${playgroundSnippetAttr('footerWidth', footerWidth.value)}`,
   ]
 
@@ -166,17 +164,24 @@ const code = computed(() => {
 
   if (showMenu.value) {
     lines.push(
-      '    <template #menu-items>',
+      '    <template #menu>',
       `      <SidebarMenuItem ${templateStringAttr('id', 'dashboard')} ${templateStringAttr('label', 'Dashboard')} />`,
-      '    </template>',
     )
     if (settingsMenu.value) {
-      lines.push(
-        '    <template #settings-menu>',
-        `      <SidebarMenuItem ${templateStringAttr('id', 'settings.profile')} ${templateStringAttr('label', 'Profile')} />`,
-        '    </template>',
-      )
+      if (settingsAsGroup.value) {
+        lines.push(
+          `      <SidebarMenuGroup ${templateStringAttr('id', 'settings')} ${templateStringAttr('label', 'Settings')} flyout-placement="up">`,
+          `        <SidebarMenuItem ${templateStringAttr('id', 'settings.profile')} ${templateStringAttr('label', 'Profile')} />`,
+          `        <SidebarMenuItem ${templateStringAttr('id', 'settings.team')} ${templateStringAttr('label', 'Team')} />`,
+          '      </SidebarMenuGroup>',
+        )
+      } else {
+        lines.push(
+          `      <SidebarMenuItem ${templateStringAttr('id', 'settings')} ${templateStringAttr('label', 'Settings')} />`,
+        )
+      }
     }
+    lines.push('    </template>')
   }
 
   lines.push(
@@ -277,7 +282,6 @@ const code = computed(() => {
         :show-menu="showMenu"
         :show-footer="showFooter"
         :settings-menu="settingsMenu"
-        :settings-menu-label="settingsMenuLabel"
         :footer-width="footerWidth"
         class="min-h-[26rem] h-[26rem] border-[#00E5B0]/20"
       >
@@ -300,7 +304,7 @@ const code = computed(() => {
           </div>
         </template>
 
-        <template #menu-items>
+        <template #menu>
           <SidebarMenuItem id="dashboard" :label="sidebar.dashboard" :icon="BarChart2" />
 
           <SidebarMenuGroup id="components" :label="sidebar.components" :icon="Gem" default-open>
@@ -322,40 +326,23 @@ const code = computed(() => {
             <SidebarMenuItem id="foundations.colors" :label="sidebar.colors" :icon="Palette" />
             <SidebarMenuItem id="foundations.typography" :label="sidebar.typography" :icon="Type" />
           </SidebarMenuGroup>
-        </template>
 
-        <template v-if="settingsMenu" #settings-menu>
-          <SidebarMenuItem id="settings.profile" :label="sidebar.profile" :icon="Users" />
-          <SidebarMenuItem id="settings.team" :label="sidebar.team" :icon="Users" />
-        </template>
-
-        <template #menu-toggle="{ collapsed, toggleMenu }">
-          <div class="w-full overflow-hidden rounded" style="background: rgba(167,139,250,0.06)">
-            <Tooltip
-              :content="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
-              placement="right"
-            >
-              <button
-                type="button"
-                class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                :aria-label="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
-                :aria-expanded="!collapsed"
-                @click="toggleMenu()"
-              >
-                <svg
-                  viewBox="0 0 16 16"
-                  class="size-3.5 shrink-0 transition-transform duration-300 ease-in-out"
-                  :class="collapsed ? 'rotate-180' : ''"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  aria-hidden="true"
-                >
-                  <path d="M10 3 5 8l5 5" stroke-linecap="round" stroke-linejoin="round" />
-                </svg>
-              </button>
-            </Tooltip>
-          </div>
+          <SidebarMenuGroup
+            v-if="settingsMenu && settingsAsGroup"
+            id="settings"
+            :label="sidebar.settings"
+            :icon="Settings"
+            flyout-placement="up"
+          >
+            <SidebarMenuItem id="settings.profile" :label="sidebar.profile" :icon="Users" />
+            <SidebarMenuItem id="settings.team" :label="sidebar.team" :icon="Users" />
+          </SidebarMenuGroup>
+          <SidebarMenuItem
+            v-else-if="settingsMenu"
+            id="settings"
+            :label="sidebar.settings"
+            :icon="Settings"
+          />
         </template>
 
         <div
@@ -433,6 +420,13 @@ const code = computed(() => {
             <Switch v-model="settingsMenu" size="sm" />
             {{ propTemplateBinding('settingsMenu') }}
           </label>
+          <label
+            v-if="settingsMenu"
+            class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]"
+          >
+            <Switch v-model="settingsAsGroup" size="sm" />
+            {{ t('layoutPlayground.settingsAsGroup') }}
+          </label>
         </div>
 
         <div class="min-w-0 space-y-4">
@@ -466,14 +460,6 @@ const code = computed(() => {
             <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('menuLabel') }}</label>
             <input
               v-model="menuLabel"
-              type="text"
-              class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
-            />
-          </div>
-          <div v-if="settingsMenu">
-            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('settingsMenuLabel') }}</label>
-            <input
-              v-model="settingsMenuLabel"
               type="text"
               class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
             />

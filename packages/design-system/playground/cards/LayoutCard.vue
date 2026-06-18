@@ -49,7 +49,7 @@ const regionShellClass =
           </div>
         </template>
 
-        <template #menu-items>
+        <template #menu>
           <div
             :class="[regionShellClass, 'h-full min-h-[10rem]']"
             style="background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.35)"

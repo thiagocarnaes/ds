@@ -3,12 +3,18 @@ import { computed } from 'vue'
 
 const SHELL_INSET = '0.5rem'
 
-const props = defineProps<{
-  collapsed: boolean
-  menuLabel?: string
-  menuWidth: string
-  collapsedWidth?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    collapsed: boolean
+    menuLabel?: string
+    menuWidth: string
+    collapsedWidth?: string
+    showToggle?: boolean
+  }>(),
+  {
+    showToggle: true,
+  },
+)
 
 const contentWidth = computed(() => `calc(${props.menuWidth} - 2 * ${SHELL_INSET})`)
 
@@ -37,16 +43,26 @@ const toggleLeft = computed(() => {
 
 <template>
   <div class="flex h-full min-h-0 w-full flex-col px-2 py-2">
-    <div class="relative mb-2 h-8 w-full shrink-0">
+    <div
+      v-if="showToggle || menuLabel"
+      class="relative mb-2 w-full shrink-0"
+      :class="showToggle ? 'h-8' : 'min-h-0'"
+    >
       <span
         v-if="menuLabel"
-        class="pointer-events-none absolute left-0 top-1/2 max-w-[calc(100%-2.5rem)] -translate-y-1/2 truncate font-mono text-[8px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
-        :class="collapsed ? 'opacity-0' : 'opacity-100'"
+        class="pointer-events-none truncate font-mono text-[8px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
+        :class="[
+          showToggle
+            ? 'absolute left-0 top-1/2 max-w-[calc(100%-2.5rem)] -translate-y-1/2'
+            : 'block py-1',
+          collapsed && showToggle ? 'opacity-0' : 'opacity-100',
+        ]"
       >
         {{ menuLabel }}
       </span>
 
       <div
+        v-if="showToggle"
         class="absolute top-0 flex size-8 items-center justify-center transition-[left] duration-300 ease-in-out"
         :style="{ left: toggleLeft }"
       >

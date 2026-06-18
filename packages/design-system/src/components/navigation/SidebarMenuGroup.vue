@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
-import { computed, inject, nextTick, onMounted, onUnmounted, ref, toValue, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeMount, onMounted, onUnmounted, ref, toValue, watch } from 'vue'
 import type { Component } from 'vue'
 import { cn } from '@/lib/utils'
+import {
+  APP_LAYOUT_MENU_INJECTION_KEY,
+  isPinnedSettingsGroupId,
+} from '../layout/appLayoutMenuContext'
 import {
   sidebarMenuChevronClass,
   sidebarMenuIconClass,
@@ -39,6 +43,29 @@ if (!injectedMenu) {
 }
 
 const sidebarMenu: SidebarMenuContext = injectedMenu
+const layoutMenu = inject(APP_LAYOUT_MENU_INJECTION_KEY, null)
+
+const isPinnedSettingsGroup = computed(
+  () =>
+    Boolean(
+      layoutMenu?.settingsMenu.value
+        && isPinnedSettingsGroupId(props.id, layoutMenu.settingsMenuId),
+    ),
+)
+
+const renderInSettingsFooter = computed(() => {
+  if (!isPinnedSettingsGroup.value || !layoutMenu) {
+    return false
+  }
+
+  return layoutMenu.settingsGroupTarget.value instanceof HTMLElement
+})
+
+const renderInMain = computed(() => !isPinnedSettingsGroup.value)
+
+const settingsTeleportTarget = computed(
+  () => layoutMenu?.settingsGroupTarget.value ?? document.body,
+)
 
 const rootRef = ref<HTMLElement | null>(null)
 const buttonRef = ref<HTMLButtonElement | null>(null)
@@ -51,6 +78,12 @@ let hideTimer: ReturnType<typeof setTimeout> | undefined
 let scrollTarget: HTMLElement | Window | null = null
 
 const FLYOUT_MARGIN = 8
+
+onBeforeMount(() => {
+  if (isPinnedSettingsGroup.value && layoutMenu) {
+    layoutMenu.registerSettingsGroup()
+  }
+})
 
 onMounted(() => {
   sidebarMenu.registerFlyoutCloser(
@@ -278,12 +311,17 @@ watch(
 </script>
 
 <template>
-  <div
-    ref="rootRef"
-    class="flex w-full flex-col"
-    @mouseenter="showFlyout"
-    @mouseleave="scheduleHideFlyout($event)"
+  <Teleport
+    :disabled="!renderInSettingsFooter"
+    :to="settingsTeleportTarget"
   >
+    <div
+      v-show="renderInMain || renderInSettingsFooter"
+      ref="rootRef"
+      class="flex w-full flex-col"
+      @mouseenter="showFlyout"
+      @mouseleave="scheduleHideFlyout($event)"
+    >
     <button
       ref="buttonRef"
       type="button"
@@ -327,5 +365,6 @@ watch(
         </SidebarMenuFlyout>
       </div>
     </Teleport>
-  </div>
+    </div>
+  </Teleport>
 </template>

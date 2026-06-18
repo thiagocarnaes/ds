@@ -4,7 +4,7 @@ Monorepo do design system Vue 3 [`@tcarnaes/design-system`](https://www.npmjs.co
 
 - **Repositório:** [github.com/thiagocarnaes/ds](https://github.com/thiagocarnaes/ds)
 - **Playground (GitHub Pages):** [thiagocarnaes.github.io/ds](https://thiagocarnaes.github.io/ds/)
-- **Pacote npm:** [`@tcarnaes/design-system`](https://www.npmjs.com/package/@tcarnaes/design-system) · v0.2.6
+- **Pacote npm:** [`@tcarnaes/design-system`](https://www.npmjs.com/package/@tcarnaes/design-system) · v0.2.7
 
 ## O que tem aqui
 

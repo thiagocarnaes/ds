@@ -6,6 +6,8 @@ import Container from '@/components/layout/Container.vue'
 import Stack from '@/components/layout/Stack.vue'
 import Grid from '@/components/layout/Grid.vue'
 import AppLayout from '@/components/layout/AppLayout.vue'
+import SidebarMenuItem from '@/components/navigation/SidebarMenuItem.vue'
+import SidebarMenuGroup from '@/components/navigation/SidebarMenuGroup.vue'
 import Tooltip from '@/components/overlay/Tooltip.vue'
 import Popover from '@/components/overlay/Popover.vue'
 
@@ -102,7 +104,7 @@ describe('layout components', () => {
       props: { showHeader: true, showMenu: true, showFooter: true },
       slots: {
         header: 'Header area',
-        'menu-items': 'Menu area',
+        'menu': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -121,7 +123,7 @@ describe('layout components', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, class: 'h-96' },
       slots: {
-        'menu-items': 'Menu',
+        'menu': 'Menu',
         default: '<div data-test="content">Content</div>',
       },
     })
@@ -132,7 +134,7 @@ describe('layout components', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, showFooter: true, class: 'h-96' },
       slots: {
-        'menu-items': 'Menu',
+        'menu': 'Menu',
         default: 'Content',
         footer: '<span data-testid="footer">Footer</span>',
       },
@@ -151,7 +153,7 @@ describe('layout components', () => {
       props: { showHeader: false, showMenu: false, showFooter: false },
       slots: {
         header: 'Header area',
-        'menu-items': 'Menu area',
+        'menu': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -165,7 +167,7 @@ describe('layout components', () => {
   it('AppLayout starts collapsed when defaultMenuCollapsed is true', () => {
     const wrapper = mount(AppLayout, {
       props: { defaultMenuCollapsed: true, showMenu: true },
-      slots: { 'menu-items': 'Menu area', default: 'Content' },
+      slots: { menu: 'Menu area', default: 'Content' },
     })
     expect(wrapper.find('aside').attributes('data-menu-collapsed')).toBe('true')
   })
@@ -185,52 +187,108 @@ describe('layout components', () => {
     expect(wrapper.emitted('update:menuCollapsed')?.[0]).toEqual([true])
   })
 
-  it('AppLayout passes collapsed to menu-toggle slot', () => {
+  it('AppLayout renders built-in menu toggle with chevron icon', () => {
     const wrapper = mount(AppLayout, {
-      props: { menuCollapsed: true, showMenu: true },
-      slots: {
-        'menu-toggle': `
-          <template #default="{ collapsed }">
-            <span>{{ collapsed ? 'icons' : 'labels' }}</span>
-          </template>
-        `,
-        default: 'Content',
-      },
+      props: { showMenu: true, menuCollapsed: false },
+      slots: { default: 'Content' },
     })
-    expect(wrapper.text()).toContain('icons')
+
+    const toggle = wrapper.find('button[aria-label="Collapse menu"]')
+    expect(toggle.exists()).toBe(true)
+    expect(toggle.find('svg').exists()).toBe(true)
   })
 
-  it('AppLayout applies settingsMenuLabel to the settings group', () => {
+  it('AppLayout hides menu toggle when menuCollapsible is false', () => {
+    const wrapper = mount(AppLayout, {
+      props: { showMenu: true, menuCollapsible: false },
+      slots: { default: 'Content' },
+    })
+
+    expect(wrapper.find('button[aria-label="Collapse menu"]').exists()).toBe(false)
+    expect(wrapper.find('button[aria-label="Expand menu"]').exists()).toBe(false)
+  })
+
+  it('AppLayout pins a SidebarMenuGroup with matching settingsMenuId to the footer', async () => {
     const wrapper = mount(AppLayout, {
       props: {
         showMenu: true,
         settingsMenu: true,
-        settingsMenuLabel: 'Preferences',
         settingsMenuId: 'prefs',
       },
       slots: {
-        'settings-menu': '<span>Profile</span>',
+        menu: `
+          <SidebarMenuGroup id="prefs" label="Preferences">
+            <SidebarMenuItem id="prefs.profile" label="Profile" />
+            <SidebarMenuItem id="prefs.team" label="Team" />
+          </SidebarMenuGroup>
+        `,
         default: 'Content',
       },
+      global: {
+        components: { SidebarMenuGroup, SidebarMenuItem },
+      },
     })
+
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
     expect(wrapper.text()).toContain('Preferences')
   })
 
-  it('AppLayout renders settings group at menu bottom when settingsMenu is true', async () => {
+  it('AppLayout pins a lone SidebarMenuItem with matching settingsMenuId to the footer', async () => {
     const wrapper = mount(AppLayout, {
       props: {
         showMenu: true,
         settingsMenu: true,
-        settingsMenuLabel: 'Settings',
       },
       attachTo: document.body,
       slots: {
-        'menu-items': '<span data-testid="nav">Nav</span>',
-        'settings-menu': '<span data-testid="settings-item">Profile</span>',
+        menu: `
+          <span data-testid="nav">Nav</span>
+          <SidebarMenuItem id="settings" label="Settings" />
+        `,
         default: 'Content',
       },
+      global: {
+        components: { SidebarMenuItem },
+      },
     })
+
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
     expect(wrapper.find('[data-testid="nav"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Settings')
+
+    wrapper.unmount()
+  })
+
+  it('AppLayout renders pinned settings group children in flyout on hover', async () => {
+    const wrapper = mount(AppLayout, {
+      props: {
+        showMenu: true,
+        settingsMenu: true,
+      },
+      attachTo: document.body,
+      slots: {
+        menu: `
+          <SidebarMenuGroup id="settings" label="Settings" flyout-placement="up">
+            <SidebarMenuItem id="settings.profile" label="Profile" />
+            <SidebarMenuItem id="settings.team" label="Team" />
+          </SidebarMenuGroup>
+        `,
+        default: 'Content',
+      },
+      global: {
+        components: { SidebarMenuGroup, SidebarMenuItem },
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('Profile')
+    expect(wrapper.text()).not.toContain('Team')
     expect(wrapper.text()).toContain('Settings')
 
     const settingsTrigger = wrapper
@@ -239,8 +297,79 @@ describe('layout components', () => {
     expect(settingsTrigger).toBeDefined()
     await settingsTrigger!.trigger('mouseenter')
     await wrapper.vm.$nextTick()
+    await flushPromises()
 
-    expect(document.body.querySelector('[data-testid="settings-item"]')).toBeTruthy()
+    expect(
+      [...document.body.querySelectorAll('button')].some((button) => button.textContent?.includes('Profile')),
+    ).toBe(true)
+
+    wrapper.unmount()
+  })
+
+  it('AppLayout ignores settings ids when settingsMenu is false', () => {
+    const wrapper = mount(AppLayout, {
+      props: {
+        showMenu: true,
+        settingsMenu: false,
+      },
+      slots: {
+        menu: `
+          <SidebarMenuItem id="dashboard" label="Dashboard" />
+          <SidebarMenuItem id="settings" label="Settings" />
+        `,
+        default: 'Content',
+      },
+      global: {
+        components: { SidebarMenuItem },
+      },
+    })
+
+    expect(wrapper.text()).toContain('Dashboard')
+    expect(wrapper.text()).toContain('Settings')
+
+    wrapper.unmount()
+  })
+
+  it('AppLayout shows pinned settings group children in flyout on hover, not inline', async () => {
+    const wrapper = mount(AppLayout, {
+      props: {
+        showMenu: true,
+        menuCollapsed: false,
+        settingsMenu: true,
+      },
+      attachTo: document.body,
+      slots: {
+        menu: `
+          <SidebarMenuItem id="dashboard" label="Dashboard" />
+          <SidebarMenuGroup id="settings" label="Settings" flyout-placement="up">
+            <SidebarMenuItem id="settings.profile" label="Profile" />
+            <SidebarMenuItem id="settings.team" label="Team" />
+          </SidebarMenuGroup>
+        `,
+        default: 'Content',
+      },
+      global: {
+        components: { SidebarMenuGroup, SidebarMenuItem },
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain('Profile')
+    expect(wrapper.text()).not.toContain('Team')
+
+    const settingsTrigger = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Settings'))
+    expect(settingsTrigger).toBeDefined()
+    await settingsTrigger!.trigger('mouseenter')
+    await wrapper.vm.$nextTick()
+    await flushPromises()
+
+    expect(
+      [...document.body.querySelectorAll('button')].some((button) => button.textContent?.includes('Profile')),
+    ).toBe(true)
 
     wrapper.unmount()
   })
@@ -249,7 +378,7 @@ describe('layout components', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, showFooter: true, footerWidth: 'content' },
       slots: {
-        'menu-items': 'Menu area',
+        'menu': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -268,7 +397,7 @@ describe('layout components', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, panelOpen: true },
       slots: {
-        'menu-items': 'Menu',
+        'menu': 'Menu',
         default: 'Content area',
         panel: `
           <template #default="{ closePanel }">
@@ -292,7 +421,7 @@ describe('layout components', () => {
         'onUpdate:panelOpen': (value: boolean) => wrapper.setProps({ panelOpen: value }),
       },
       slots: {
-        'menu-items': 'Menu',
+        'menu': 'Menu',
         default: 'Content',
         panel: 'Panel',
       },
@@ -310,7 +439,7 @@ describe('layout components', () => {
         'onUpdate:panelOpen': (value: boolean) => wrapper.setProps({ panelOpen: value }),
       },
       slots: {
-        'menu-items': 'Menu',
+        'menu': 'Menu',
         default: 'Content',
         panel: 'Panel',
       },

@@ -1,8 +1,12 @@
 <script setup lang="ts">
-import { Settings } from 'lucide-vue-next'
+import { computed, provide, ref } from 'vue'
 import SidebarMenu from '../navigation/SidebarMenu.vue'
-import SidebarMenuGroup from '../navigation/SidebarMenuGroup.vue'
 import SidebarMenuShell from '../navigation/SidebarMenuShell.vue'
+import AppLayoutMenuToggle from './AppLayoutMenuToggle.vue'
+import {
+  APP_LAYOUT_MENU_INJECTION_KEY,
+  type SettingsFooterMode,
+} from './appLayoutMenuContext'
 
 const props = withDefaults(
   defineProps<{
@@ -10,20 +14,48 @@ const props = withDefaults(
     menuLabel?: string
     menuWidth: string
     menuCollapsedWidth?: string
+    menuCollapsible?: boolean
     toggleMenu: () => void
     settingsMenu?: boolean
-    settingsMenuLabel?: string
     settingsMenuId?: string
   }>(),
   {
+    menuCollapsible: true,
     settingsMenu: false,
-    settingsMenuLabel: 'Settings',
     settingsMenuId: 'settings',
   },
 )
 
 const activeId = defineModel<string>('activeId', { default: '' })
 const openKeys = defineModel<string[]>('openKeys', { default: () => [] })
+
+const settingsFooterMode = ref<SettingsFooterMode>('none')
+const settingsGroupTarget = ref<HTMLElement | null>(null)
+const settingsSingleTarget = ref<HTMLElement | null>(null)
+
+function registerSettingsGroup(): void {
+  settingsFooterMode.value = 'group'
+}
+
+function registerSettingsSingle(): void {
+  if (settingsFooterMode.value !== 'group') {
+    settingsFooterMode.value = 'single'
+  }
+}
+
+const showSettingsFooter = computed(
+  () => props.settingsMenu && settingsFooterMode.value !== 'none',
+)
+
+provide(APP_LAYOUT_MENU_INJECTION_KEY, {
+  settingsMenu: computed(() => props.settingsMenu),
+  settingsMenuId: props.settingsMenuId,
+  settingsFooterMode,
+  settingsGroupTarget,
+  settingsSingleTarget,
+  registerSettingsGroup,
+  registerSettingsSingle,
+})
 </script>
 
 <template>
@@ -33,18 +65,10 @@ const openKeys = defineModel<string[]>('openKeys', { default: () => [] })
     :menu-label="menuLabel"
     :menu-width="menuWidth"
     :collapsed-width="menuCollapsedWidth ?? menuWidth"
+    :show-toggle="menuCollapsible"
   >
-    <template #toggle>
-      <slot name="toggle" :collapsed="collapsed" :toggle-menu="toggleMenu">
-        <button
-          type="button"
-          class="inline-flex size-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent"
-          :aria-label="collapsed ? 'Expand menu' : 'Collapse menu'"
-          @click="toggleMenu()"
-        >
-          ☰
-        </button>
-      </slot>
+    <template v-if="menuCollapsible" #toggle>
+      <AppLayoutMenuToggle :collapsed="collapsed" :toggle-menu="toggleMenu" />
     </template>
 
     <SidebarMenu
@@ -58,16 +82,17 @@ const openKeys = defineModel<string[]>('openKeys', { default: () => [] })
           <slot />
         </div>
 
-        <div v-if="settingsMenu" class="mt-auto shrink-0 border-t border-border pt-2">
-          <SidebarMenuGroup
-            :id="settingsMenuId"
-            :label="settingsMenuLabel"
-            :icon="Settings"
-            flyout-placement="up"
-            default-open
-          >
-            <slot name="settings" />
-          </SidebarMenuGroup>
+        <div v-if="showSettingsFooter" class="mt-auto shrink-0 border-t border-border pt-2">
+          <div
+            v-show="settingsFooterMode === 'group'"
+            ref="settingsGroupTarget"
+            class="flex w-full flex-col"
+          />
+          <div
+            v-show="settingsFooterMode === 'single'"
+            ref="settingsSingleTarget"
+            class="flex flex-col gap-0.5"
+          />
         </div>
       </div>
     </SidebarMenu>

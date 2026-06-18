@@ -101,6 +101,7 @@ export interface PlaygroundMessages {
     menuWidthLabel: string
     startCollapsed: string
     footerWidthLabel: string
+    settingsAsGroup: string
     footerWidth: {
       full: string
       content: string

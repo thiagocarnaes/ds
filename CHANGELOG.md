@@ -4,18 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.7] - 2026-06-16
+
+### Changed
+
+- **`AppLayout` settings footer** — pin an explicit `SidebarMenuGroup` or lone `SidebarMenuItem` whose `id` matches `settingsMenuId` (default `settings`); removed `settingsMenuLabel` and automatic grouping by id prefix (`settings.*`).
+- **Playground Layout demo** — settings use `SidebarMenuGroup id="settings"` with flyout children, or a single `SidebarMenuItem id="settings"` when toggled off.
+
 ## [0.2.6] - 2026-06-16
 
 ### Added
 
-- **`AppLayout` composed menu** — `#menu-items`, optional `#settings-menu`, and `#menu-toggle` slots; built-in sidebar shell without manual `SidebarMenuShell`.
+- **`AppLayout` composed menu** — single `#menu` slot with built-in chevron toggle; items matching `settingsMenuId.*` pin to the settings footer when `:settings-menu="true"`.
 - **`AppLayout` settings footer** — `:settings-menu="true"` pins a gear-icon `SidebarMenuGroup` at the bottom of the sidebar (`settings-menu-label`, `settings-menu-id`).
 - **`AppLayout` menu models** — `v-model:active-menu-id` and `v-model:open-menu-keys` for composed sidebar state.
 - **`SidebarMenuGroup.flyoutPlacement`** — `'auto' | 'down' | 'up'`; settings group in `AppLayout` opens upward by default.
 
 ### Changed
 
-- **`AppLayout`** — removed legacy `#menu` slot; sidebar is always composed via `#menu-items`, `#settings-menu`, and `#menu-toggle`.
+- **`AppLayout`** — single `#menu` slot replaces `#menu-items` / `#settings-menu`; built-in collapse toggle; settings items identified by id prefix (`settings.*` by default).
 - **`SidebarMenu`** — selects the first registered item when `activeId` is empty; top-level items no longer activate sibling groups that share an id prefix (e.g. `todos.all` vs group `todos`).
 - **Playground Layout demo** — composed menu, settings toggle, default active item `dashboard`.
 - **Package README** — `AppLayout` examples and sidebar id conventions aligned with the playground catalog.

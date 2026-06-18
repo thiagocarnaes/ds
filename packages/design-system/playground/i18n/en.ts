@@ -164,6 +164,7 @@ export const en: PlaygroundMessages = {
     menuWidthLabel: 'menu width — {width}',
     startCollapsed: 'start collapsed',
     footerWidthLabel: 'footer width',
+    settingsAsGroup: 'Settings as SidebarMenuGroup',
     footerWidth: {
       full: '100%',
       content: 'content only',
@@ -172,7 +173,7 @@ export const en: PlaygroundMessages = {
     collapseMenu: 'Collapse menu',
     introLead: 'composes a full-page grid from four slots.',
     introBody:
-      'Header and footer span the full width by default; the menu sits beside the main content area. Put navigation in #menu-items and optional settings links in #settings-menu. Set :settings-menu="true" to pin a gear-icon settings group at the bottom. Set :footer-width="\'content\'" to keep the footer under the content column. With an empty v-model:active-menu-id, the first menu item is selected automatically.',
+      'Header and footer span the full width by default; the menu sits beside the main content area. Put all navigation in #menu. With :settings-menu="true", pin a SidebarMenuGroup or lone SidebarMenuItem whose id matches settingsMenuId (default settings) to the menu footer — group with children opens a flyout on hover; a single item is a plain link. Set :footer-width="\'content\'" to keep the footer under the content column. With an empty v-model:active-menu-id, the first menu item is selected automatically.',
     stylingNote:
       'AppLayout does not style slot content. Declare refs in script setup and wrap each region with Tailwind utility classes — see the Usage snippet below.',
     panelDescription:
@@ -180,7 +181,7 @@ export const en: PlaygroundMessages = {
     panelTag: 'panel',
     slots: {
       header: '#header — top bar',
-      menu: '#menu-items — main nav',
+      menu: '#menu — all nav items',
       content: 'content',
       panel: '#panel — overlay detail',
       footer: '#footer — bottom bar',
@@ -204,6 +205,7 @@ export const en: PlaygroundMessages = {
       'foundations.typography': 'Foundations — Typography scale',
       'settings.profile': 'Settings — Profile',
       'settings.team': 'Settings — Team members',
+      settings: 'Settings',
     },
     sidebar: {
       dashboard: 'Dashboard',

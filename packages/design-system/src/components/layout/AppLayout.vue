@@ -18,11 +18,9 @@ export interface AppLayoutProps {
   showHeader?: boolean
   showMenu?: boolean
   showFooter?: boolean
-  /** Pin a Settings group at the bottom of the composed sidebar menu. */
+  /** Pin a settings SidebarMenuGroup or SidebarMenuItem (matching settingsMenuId) to the menu footer. */
   settingsMenu?: boolean
-  /** Label for the settings group when `settingsMenu` is true. */
-  settingsMenuLabel?: string
-  /** Id prefix for the settings group when `settingsMenu` is true. */
+  /** Id of the pinned settings SidebarMenuGroup or lone SidebarMenuItem (default `settings`). */
   settingsMenuId?: string
   /** `full` spans header/menu/content; `content` keeps footer under main content only. */
   footerWidth?: 'full' | 'content'
@@ -44,7 +42,6 @@ const props = withDefaults(defineProps<AppLayoutProps>(), {
   showMenu: true,
   showFooter: true,
   settingsMenu: false,
-  settingsMenuLabel: 'Settings',
   settingsMenuId: 'settings',
   footerWidth: 'full',
 })
@@ -113,6 +110,10 @@ const gridStyle = computed(() => {
 })
 
 function toggleMenu(): void {
+  if (!props.menuCollapsible) {
+    return
+  }
+
   menuCollapsed.value = !menuCollapsed.value
 }
 
@@ -125,6 +126,15 @@ function onEscape(event: KeyboardEvent): void {
     closePanel()
   }
 }
+
+watch(
+  () => props.menuCollapsible,
+  (collapsible) => {
+    if (!collapsible && menuCollapsed.value) {
+      menuCollapsed.value = false
+    }
+  },
+)
 
 watch(panelOpen, (open) => {
   if (open) {
@@ -175,18 +185,12 @@ onUnmounted(() => {
             :menu-label="menuLabel"
             :menu-width="menuWidth"
             :menu-collapsed-width="menuCollapsedWidth"
+            :menu-collapsible="menuCollapsible"
             :toggle-menu="toggleMenu"
             :settings-menu="settingsMenu"
-            :settings-menu-label="settingsMenuLabel"
             :settings-menu-id="settingsMenuId"
           >
-            <template #toggle="toggleProps">
-              <slot name="menu-toggle" v-bind="toggleProps" />
-            </template>
-            <slot name="menu-items" />
-            <template #settings>
-              <slot name="settings-menu" />
-            </template>
+            <slot name="menu" />
           </AppLayoutSidebarMenu>
         </div>
       </aside>

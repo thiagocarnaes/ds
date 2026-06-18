@@ -365,12 +365,12 @@ import { Alert, Badge, Progress, Skeleton, Spinner } from '@tcarnaes/design-syst
 
 ### Layout
 
-`AppLayout` organiza as regiões da página (grid + painel lateral), mas **não estiliza** header, menu, conteúdo, panel ou footer. Use `#menu-items` (e opcionalmente `#settings-menu` / `#menu-toggle`) — o shell do menu, toggle e grupo de settings no rodapé já vêm montados — veja o demo **Layout** no playground.
+`AppLayout` organiza as regiões da página (grid + painel lateral), mas **não estiliza** header, menu, conteúdo, panel ou footer. Use o slot `#menu` com `SidebarMenuItem` / `SidebarMenuGroup` — o shell e **toggle com chevron** já vêm montados. Com `:settings-menu="true"`, declare um `SidebarMenuGroup` com `id="settings"` (ou `settings-menu-id`) **ou** um `SidebarMenuItem` sozinho com o mesmo id — veja o demo **Layout** no playground.
 
 ```vue
 <script setup lang="ts">
 import { ref } from 'vue'
-import { AppLayout, Button, SidebarMenuItem } from '@tcarnaes/design-system'
+import { AppLayout, Button, SidebarMenuGroup, SidebarMenuItem } from '@tcarnaes/design-system'
 
 const menuCollapsed = ref(false)
 const panelOpen = ref(false)
@@ -380,7 +380,6 @@ const menuLabel = ref('Navigation')
 const activeId = ref('dashboard')
 const openKeys = ref<string[]>([])
 const settingsMenu = ref(true)
-const settingsMenuLabel = ref('Settings')
 const pageTitle = ref('Dashboard')
 </script>
 
@@ -395,7 +394,6 @@ const pageTitle = ref('Dashboard')
     :menu-collapsed-width="menuCollapsedWidth"
     :menu-label="menuLabel"
     :settings-menu="settingsMenu"
-    :settings-menu-label="settingsMenuLabel"
   >
     <template #header>
       <div class="flex items-center justify-between border-b border-border bg-card px-4 py-3">
@@ -403,12 +401,11 @@ const pageTitle = ref('Dashboard')
       </div>
     </template>
 
-    <template #menu-items>
+    <template #menu>
       <SidebarMenuItem :id="'dashboard'" :label="'Dashboard'" />
-    </template>
-
-    <template #settings-menu>
-      <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+      <SidebarMenuGroup :id="'settings'" :label="'Settings'" flyout-placement="up">
+        <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+      </SidebarMenuGroup>
     </template>
 
     <div class="flex flex-col gap-4 p-6">
@@ -433,13 +430,13 @@ const pageTitle = ref('Dashboard')
 </template>
 ```
 
-**Settings no rodapé:** `:settings-menu="true"` fixa um grupo com ícone de engrenagem no final do menu; os itens vão em `#settings-menu`. Props: `settings-menu-label`, `settings-menu-id`.
+**Settings no rodapé:** com `:settings-menu="true"`, declare no `#menu` um `SidebarMenuGroup` com `id="settings"` (ou `settings-menu-id`) **ou** um `SidebarMenuItem` sozinho com o mesmo id. Grupo → submenu no hover; item único → link simples no rodapé.
 
 **IDs do menu lateral**
 
 - Itens de topo **fora** de um grupo não devem compartilhar o prefixo do grupo (evite `todos.all` ao lado do grupo `todos` — prefira `all` ou ids dentro do grupo, ex. `todos.active`).
 - Com `v-model:active-menu-id` vazio, o primeiro `SidebarMenuItem` registrado é selecionado automaticamente.
-- Flyouts perto do rodapé abrem para cima (`flyout-placement="up"` no settings do `AppLayout`; `SidebarMenuGroup` aceita `'auto' | 'down' | 'up'`).
+- Flyouts perto do rodapé abrem para cima — use `flyout-placement="up"` no `SidebarMenuGroup` de settings (`'auto' | 'down' | 'up'`).
 
 O slot **default** (conteúdo) ocupa 100% da altura disponível — use `class="min-h-svh"` no `AppLayout` (ou `height: 100%` em `html`, `body` e `#app`). Header, panel e footer continuam compostos por você com classes Tailwind.
 

@@ -164,6 +164,7 @@ export const ptBR: PlaygroundMessages = {
     menuWidthLabel: 'largura do menu — {width}',
     startCollapsed: 'iniciar recolhido',
     footerWidthLabel: 'largura do footer',
+    settingsAsGroup: 'Settings como SidebarMenuGroup',
     footerWidth: {
       full: '100%',
       content: 'só conteúdo',
@@ -172,7 +173,7 @@ export const ptBR: PlaygroundMessages = {
     collapseMenu: 'Recolher menu',
     introLead: 'compõe um grid de página inteira a partir de quatro slots.',
     introBody:
-      'Header e footer ocupam a largura total por padrão; o menu fica ao lado da área de conteúdo principal. Coloque a navegação em #menu-items e links de settings opcionais em #settings-menu. Com :settings-menu="true", um grupo de settings com ícone de engrenagem fica fixo no rodapé. Use :footer-width="\'content\'" para manter o footer sob a coluna de conteúdo. Com v-model:active-menu-id vazio, o primeiro item do menu é selecionado automaticamente.',
+      'Header e footer ocupam a largura total por padrão; o menu fica ao lado da área de conteúdo principal. Coloque toda a navegação em #menu. Com :settings-menu="true", fixe no rodapé um SidebarMenuGroup ou SidebarMenuItem isolado cujo id corresponda a settingsMenuId (padrão settings) — grupo com filhos abre flyout no hover; item único vira link simples. Use :footer-width="\'content\'" para manter o footer sob a coluna de conteúdo. Com v-model:active-menu-id vazio, o primeiro item do menu é selecionado automaticamente.',
     stylingNote:
       'O AppLayout não estiliza o conteúdo dos slots. Declare refs no script setup e envolva cada região com classes Tailwind — veja o snippet Usage abaixo.',
     panelDescription:
@@ -180,7 +181,7 @@ export const ptBR: PlaygroundMessages = {
     panelTag: 'painel',
     slots: {
       header: '#header — barra superior',
-      menu: '#menu-items — nav principal',
+      menu: '#menu — todos os itens',
       content: 'conteúdo',
       panel: '#panel — overlay de detalhe',
       footer: '#footer — barra inferior',
@@ -204,6 +205,7 @@ export const ptBR: PlaygroundMessages = {
       'foundations.typography': 'Fundamentos — Escala tipográfica',
       'settings.profile': 'Configurações — Perfil',
       'settings.team': 'Configurações — Equipe',
+      settings: 'Configurações',
     },
     sidebar: {
       dashboard: 'Dashboard',

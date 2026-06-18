@@ -272,7 +272,7 @@ const toast = useToast()
     `  <SidebarMenuGroup :id="'forms'" :label="'Forms'" :default-open="true">
     <SidebarMenuItem :id="'forms.input'" :label="'Input'" />
   </SidebarMenuGroup>
-  <!-- Near viewport bottom: flyout-placement="up" (AppLayout settings group uses this by default) -->`,
+  <!-- Near viewport bottom (e.g. AppLayout settings footer): flyout-placement="up" -->`,
   ),
   SidebarMenuShell: usageMany(
     ['SidebarMenu', 'SidebarMenuShell'],
@@ -477,6 +477,7 @@ import { ref } from 'vue'
 import {
   AppLayout,
   Button,
+  SidebarMenuGroup,
   SidebarMenuItem,
 } from '${PACKAGE}'
 
@@ -496,7 +497,6 @@ const showHeader = ref(true)
 const showMenu = ref(true)
 const showFooter = ref(true)
 const settingsMenu = ref(true)
-const settingsMenuLabel = ref('Settings')
 const footerWidth = ref<'full' | 'content'>('full')
 const activeId = ref('dashboard')
 const openKeys = ref<string[]>([])
@@ -524,7 +524,6 @@ const pageTitle = ref('Dashboard')
     :show-menu="showMenu"
     :show-footer="showFooter"
     :settings-menu="settingsMenu"
-    :settings-menu-label="settingsMenuLabel"
     :footer-width="footerWidth"
   >
     <template #header>
@@ -533,12 +532,12 @@ const pageTitle = ref('Dashboard')
       </div>
     </template>
 
-    <template #menu-items>
+    <template #menu>
       <SidebarMenuItem :id="'dashboard'" :label="'Dashboard'" />
-    </template>
-
-    <template #settings-menu>
-      <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+      <SidebarMenuGroup :id="'settings'" :label="'Settings'" :flyout-placement="'up'">
+        <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+      </SidebarMenuGroup>
+      <!-- Or a single item: <SidebarMenuItem :id="'settings'" :label="'Settings'" /> -->
     </template>
 
     <div class="flex flex-col gap-4 p-6">
