@@ -172,13 +172,15 @@ export const ptBR: PlaygroundMessages = {
     collapseMenu: 'Recolher menu',
     introLead: 'compõe um grid de página inteira a partir de quatro slots.',
     introBody:
-      'Header e footer ocupam a largura total por padrão; o menu fica ao lado da área de conteúdo principal. Use :footer-width="\'content\'" para manter o footer apenas sob a coluna de conteúdo, fazendo o menu esticar até o rodapé. Recolha o menu para o modo só ícones com o toggle integrado. Submenus aninhados usam SidebarMenuGroup — alguns abertos, outros fechados. Clique em um botão ou link no conteúdo para abrir o overlay #panel redimensionável à direita.',
+      'Header e footer ocupam a largura total por padrão; o menu fica ao lado da área de conteúdo principal. Coloque a navegação em #menu-items e links de settings opcionais em #settings-menu. Com :settings-menu="true", um grupo de settings com ícone de engrenagem fica fixo no rodapé. Use :footer-width="\'content\'" para manter o footer sob a coluna de conteúdo. Com v-model:active-menu-id vazio, o primeiro item do menu é selecionado automaticamente.',
+    stylingNote:
+      'O AppLayout não estiliza o conteúdo dos slots. Declare refs no script setup e envolva cada região com classes Tailwind — veja o snippet Usage abaixo.',
     panelDescription:
       'Painel secundário sobrepondo o conteúdo principal. Arraste a borda esquerda para redimensionar. Use o slot #panel e v-model:panel-open para exibir detalhes contextuais sem sair da página.',
     panelTag: 'painel',
     slots: {
       header: '#header — barra superior',
-      menu: '#menu — sidebar',
+      menu: '#menu-items — nav principal',
       content: 'conteúdo',
       panel: '#panel — overlay de detalhe',
       footer: '#footer — barra inferior',

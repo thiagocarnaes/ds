@@ -109,6 +109,7 @@ export interface PlaygroundMessages {
     collapseMenu: string
     introLead: string
     introBody: string
+    stylingNote: string
     panelDescription: string
     panelTag: string
     slots: {

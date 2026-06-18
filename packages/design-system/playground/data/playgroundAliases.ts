@@ -17,6 +17,10 @@ export const playgroundAliases: Record<string, string> = {
   Stack: 'Layout Primitives',
   Grid: 'Layout Primitives',
   Radio: 'RadioGroup',
+  Textarea: 'Textarea',
+  Label: 'Label',
+  Link: 'Link',
+  IconButton: 'IconButton',
 }
 
 export function resolvePlaygroundDemo(name: string): string {

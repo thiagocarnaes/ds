@@ -90,6 +90,7 @@ const columnFilters = ref<DataTableColumnFilters>({})
 <!-- Click header: single sort. Ctrl+click: multi-sort. Filter icon: column popover. -->`
 
 const componentGroups = [
+  { category: 'Layout', items: ['Container', 'Stack', 'Grid', 'AppLayout'] },
   { category: 'Actions', items: ['Button', 'IconButton', 'Link'] },
   {
     category: 'Forms',
@@ -108,7 +109,6 @@ const componentGroups = [
     items: ['Card', 'Divider', 'Avatar', 'AvatarGroup', 'Lozenge', 'Table*', 'DataTable', 'DataTableColumnFilterMenu', 'PageSizeSelect', 'List', 'ListItem', 'EmptyState'],
   },
   { category: 'Overlay', items: ['Modal', 'Dialog', 'Tooltip', 'Popover', 'Drawer'] },
-  { category: 'Layout', items: ['Container', 'Stack', 'Grid', 'AppLayout'] },
   { category: 'Utils', items: ['cn', 'useToast', 'buttonVariants', 'iconography'] },
 ]
 

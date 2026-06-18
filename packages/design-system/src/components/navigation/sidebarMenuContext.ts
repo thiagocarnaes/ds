@@ -8,11 +8,15 @@ export interface SidebarMenuContext {
   activeId: Ref<string>
   openKeys: Ref<string[]>
   depth: number
+  /** Set on flyout menus — items register under this group id. */
+  parentGroupId?: string
   toggleOpen: (key: string) => void
   isOpen: (key: string) => boolean
   isActive: (id: string) => boolean
   isGroupActive: (id: string) => boolean
   setActive: (id: string) => void
+  registerMenuItem: (id: string, isTopLevel?: boolean) => void
+  registerGroupItem: (groupId: string, itemId: string) => void
   registerFlyoutCloser: (id: string, depth: number, close: () => void, isOpen: () => boolean) => void
   unregisterFlyoutCloser: (id: string) => void
   closePeerFlyouts: (depth: number, exceptId: string) => void

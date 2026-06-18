@@ -102,7 +102,7 @@ describe('layout components', () => {
       props: { showHeader: true, showMenu: true, showFooter: true },
       slots: {
         header: 'Header area',
-        menu: 'Menu area',
+        'menu-items': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -117,12 +117,41 @@ describe('layout components', () => {
     expect(wrapper.find('footer').exists()).toBe(true)
   })
 
-  it('AppLayout hides regions when show props are false', () => {
+  it('AppLayout stretches default slot wrapper to full content height', () => {
+    const wrapper = mount(AppLayout, {
+      props: { showMenu: true, class: 'h-96' },
+      slots: {
+        'menu-items': 'Menu',
+        default: '<div data-test="content">Content</div>',
+      },
+    })
+    expect(wrapper.find('main > div').classes()).toContain('h-full')
+  })
+
+  it('toggles footer visibility when showFooter changes', async () => {
+    const wrapper = mount(AppLayout, {
+      props: { showMenu: true, showFooter: true, class: 'h-96' },
+      slots: {
+        'menu-items': 'Menu',
+        default: 'Content',
+        footer: '<span data-testid="footer">Footer</span>',
+      },
+    })
+    expect(wrapper.find('[data-testid="footer"]').exists()).toBe(true)
+
+    await wrapper.setProps({ showFooter: false })
+    expect(wrapper.find('[data-testid="footer"]').exists()).toBe(false)
+
+    await wrapper.setProps({ showFooter: true })
+    expect(wrapper.find('[data-testid="footer"]').exists()).toBe(true)
+  })
+
+  it('AppLayout hides regions when showProps are false', () => {
     const wrapper = mount(AppLayout, {
       props: { showHeader: false, showMenu: false, showFooter: false },
       slots: {
         header: 'Header area',
-        menu: 'Menu area',
+        'menu-items': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -136,7 +165,7 @@ describe('layout components', () => {
   it('AppLayout starts collapsed when defaultMenuCollapsed is true', () => {
     const wrapper = mount(AppLayout, {
       props: { defaultMenuCollapsed: true, showMenu: true },
-      slots: { menu: 'Menu area', default: 'Content' },
+      slots: { 'menu-items': 'Menu area', default: 'Content' },
     })
     expect(wrapper.find('aside').attributes('data-menu-collapsed')).toBe('true')
   })
@@ -149,11 +178,6 @@ describe('layout components', () => {
         'onUpdate:menuCollapsed': (value: boolean) => wrapper.setProps({ menuCollapsed: value }),
       },
       slots: {
-        menu: `
-          <template #default="{ toggleMenu }">
-            <button aria-label="Collapse menu" @click="toggleMenu()">toggle</button>
-          </template>
-        `,
         default: 'Content',
       },
     })
@@ -161,11 +185,11 @@ describe('layout components', () => {
     expect(wrapper.emitted('update:menuCollapsed')?.[0]).toEqual([true])
   })
 
-  it('AppLayout passes collapsed to menu slot', () => {
+  it('AppLayout passes collapsed to menu-toggle slot', () => {
     const wrapper = mount(AppLayout, {
       props: { menuCollapsed: true, showMenu: true },
       slots: {
-        menu: `
+        'menu-toggle': `
           <template #default="{ collapsed }">
             <span>{{ collapsed ? 'icons' : 'labels' }}</span>
           </template>
@@ -176,11 +200,56 @@ describe('layout components', () => {
     expect(wrapper.text()).toContain('icons')
   })
 
+  it('AppLayout applies settingsMenuLabel to the settings group', () => {
+    const wrapper = mount(AppLayout, {
+      props: {
+        showMenu: true,
+        settingsMenu: true,
+        settingsMenuLabel: 'Preferences',
+        settingsMenuId: 'prefs',
+      },
+      slots: {
+        'settings-menu': '<span>Profile</span>',
+        default: 'Content',
+      },
+    })
+    expect(wrapper.text()).toContain('Preferences')
+  })
+
+  it('AppLayout renders settings group at menu bottom when settingsMenu is true', async () => {
+    const wrapper = mount(AppLayout, {
+      props: {
+        showMenu: true,
+        settingsMenu: true,
+        settingsMenuLabel: 'Settings',
+      },
+      attachTo: document.body,
+      slots: {
+        'menu-items': '<span data-testid="nav">Nav</span>',
+        'settings-menu': '<span data-testid="settings-item">Profile</span>',
+        default: 'Content',
+      },
+    })
+    expect(wrapper.find('[data-testid="nav"]').exists()).toBe(true)
+    expect(wrapper.text()).toContain('Settings')
+
+    const settingsTrigger = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Settings'))
+    expect(settingsTrigger).toBeDefined()
+    await settingsTrigger!.trigger('mouseenter')
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('[data-testid="settings-item"]')).toBeTruthy()
+
+    wrapper.unmount()
+  })
+
   it('AppLayout renders content-width footer inside content column', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, showFooter: true, footerWidth: 'content' },
       slots: {
-        menu: 'Menu area',
+        'menu-items': 'Menu area',
         default: 'Content area',
         footer: 'Footer area',
       },
@@ -199,7 +268,7 @@ describe('layout components', () => {
     const wrapper = mount(AppLayout, {
       props: { showMenu: true, panelOpen: true },
       slots: {
-        menu: 'Menu',
+        'menu-items': 'Menu',
         default: 'Content area',
         panel: `
           <template #default="{ closePanel }">
@@ -223,7 +292,7 @@ describe('layout components', () => {
         'onUpdate:panelOpen': (value: boolean) => wrapper.setProps({ panelOpen: value }),
       },
       slots: {
-        menu: 'Menu',
+        'menu-items': 'Menu',
         default: 'Content',
         panel: 'Panel',
       },
@@ -241,7 +310,7 @@ describe('layout components', () => {
         'onUpdate:panelOpen': (value: boolean) => wrapper.setProps({ panelOpen: value }),
       },
       slots: {
-        menu: 'Menu',
+        'menu-items': 'Menu',
         default: 'Content',
         panel: 'Panel',
       },

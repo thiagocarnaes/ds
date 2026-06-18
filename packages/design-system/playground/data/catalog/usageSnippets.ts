@@ -63,7 +63,6 @@ export const usageSnippets: Record<string, string> = {
     `  <DateInput
     v-model="date"
     :locale="'pt-BR'"
-    :placeholder="'Select date'"
     :disabled="false"
   />`,
   ),
@@ -89,13 +88,13 @@ export const usageSnippets: Record<string, string> = {
   ),
   Radio: usage(
     'Radio',
-    '  <Radio v-model="plan" :value="\'pro\'" :label="\'Pro\'" :disabled="false" />',
+    '  <Radio :value="\'pro\'" :disabled="false">Pro</Radio>',
   ),
   RadioGroup: usageMany(
     ['Radio', 'RadioGroup'],
-    `  <RadioGroup v-model="plan" :disabled="false">
-    <Radio :value="'basic'" :label="'Basic'" />
-    <Radio :value="'pro'" :label="'Pro'" />
+    `  <RadioGroup v-model="plan" :name="'plan'" :disabled="false">
+    <Radio :value="'basic'">Basic</Radio>
+    <Radio :value="'pro'">Pro</Radio>
   </RadioGroup>`,
   ),
   Switch: usage(
@@ -107,11 +106,9 @@ export const usageSnippets: Record<string, string> = {
   ),
   Toggle: usage(
     'Toggle',
-    `  <Toggle
-    v-model="enabled"
-    :label="'Dark mode'"
-    :disabled="false"
-  />`,
+    `  <Toggle v-model="enabled" :disabled="false">
+    Dark mode
+  </Toggle>`,
   ),
   Select: usage(
     'Select',
@@ -127,7 +124,7 @@ export const usageSnippets: Record<string, string> = {
     :disabled="false"
   />`,
   ),
-  Label: usage('Label', '  <Label :for="\'email\'" :required="true">Email</Label>'),
+  Label: usage('Label', '  <Label :for="\'email\'">Email</Label>'),
   FormField: `<script setup lang="ts">
 import { Mail } from 'lucide-vue-next'
 import { FormField, Input } from '${PACKAGE}'
@@ -190,7 +187,7 @@ import { FormField, Input } from '${PACKAGE}'
   <Skeleton class="h-24 w-full rounded-lg" />`,
   ),
   Toast: `<script setup lang="ts">
-import { Button, Toast, ToastHost, useToast } from '${PACKAGE}'
+import { Button, ToastHost, useToast } from '${PACKAGE}'
 
 const toast = useToast()
 
@@ -205,20 +202,7 @@ function onSave() {
 <template>
   <ToastHost />
   <Button :variant="'primary'" @click="onSave">Save</Button>
-</template>
-
-<!-- Standalone Toast markup (ToastHost renders these via useToast) -->
-<!--
-<Toast :variant="'success'" :dismissible="true">
-  Changes saved.
-</Toast>
--->
-
-// trigger live notification
-toast.success('Changes saved.', {
-  position: 'top-right',
-  dismissible: true,
-})`,
+</template>`,
   ToastHost: `<script setup lang="ts">
 import { Button, ToastHost, useToast } from '${PACKAGE}'
 
@@ -226,15 +210,11 @@ const toast = useToast()
 <\/script>
 
 <template>
-  <!-- Mount once at app root -->
   <ToastHost />
-  <Button :variant="'primary'" @click="toast.info('Hello', { position: 'top-right' })">
+  <Button :variant="'primary'" @click="toast.info('Hello', { position: 'top-right', dismissible: true })">
     Show toast
   </Button>
-</template>
-
-// trigger live notification
-toast.info('Hello', { position: 'top-right', dismissible: true })`,
+</template>`,
   Tabs: usageMany(
     ['Tab', 'TabList', 'TabPanel', 'Tabs'],
     `  <Tabs v-model="activeTab">
@@ -290,8 +270,9 @@ toast.info('Hello', { position: 'top-right', dismissible: true })`,
   SidebarMenuGroup: usageMany(
     ['SidebarMenuGroup', 'SidebarMenuItem'],
     `  <SidebarMenuGroup :id="'forms'" :label="'Forms'" :default-open="true">
-    <SidebarMenuItem :id="'input'" :label="'Input'" />
-  </SidebarMenuGroup>`,
+    <SidebarMenuItem :id="'forms.input'" :label="'Input'" />
+  </SidebarMenuGroup>
+  <!-- Near viewport bottom: flyout-placement="up" (AppLayout settings group uses this by default) -->`,
   ),
   SidebarMenuShell: usageMany(
     ['SidebarMenu', 'SidebarMenuShell'],
@@ -491,11 +472,44 @@ toast.info('Hello', { position: 'top-right', dismissible: true })`,
     <Card />
   </Grid>`,
   ),
-  AppLayout: usage(
-    'AppLayout',
-    `  <AppLayout
+  AppLayout: `<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  AppLayout,
+  Button,
+  SidebarMenuItem,
+} from '${PACKAGE}'
+
+const menuCollapsed = ref(false)
+const panelOpen = ref(false)
+const menuWidth = ref('12rem')
+const menuCollapsedWidth = ref('3rem')
+const menuLabel = ref('Navigation')
+const menuCollapsible = ref(true)
+const defaultCollapsed = ref(false)
+const panelWidth = ref('min(24rem, 50%)')
+const panelMinWidth = ref('12rem')
+const panelMaxWidth = ref('75%')
+const panelResizable = ref(true)
+const panelBackdrop = ref(true)
+const showHeader = ref(true)
+const showMenu = ref(true)
+const showFooter = ref(true)
+const settingsMenu = ref(true)
+const settingsMenuLabel = ref('Settings')
+const footerWidth = ref<'full' | 'content'>('full')
+const activeId = ref('dashboard')
+const openKeys = ref<string[]>([])
+const pageTitle = ref('Dashboard')
+<\/script>
+
+<template>
+  <!-- AppLayout arranges regions; style each slot with Tailwind/classes -->
+  <AppLayout
     v-model:menu-collapsed="menuCollapsed"
     v-model:panel-open="panelOpen"
+    v-model:active-menu-id="activeId"
+    v-model:open-menu-keys="openKeys"
     :menu-width="menuWidth"
     :menu-collapsed-width="menuCollapsedWidth"
     :menu-label="menuLabel"
@@ -509,13 +523,44 @@ toast.info('Hello', { position: 'top-right', dismissible: true })`,
     :show-header="showHeader"
     :show-menu="showMenu"
     :show-footer="showFooter"
+    :settings-menu="settingsMenu"
+    :settings-menu-label="settingsMenuLabel"
     :footer-width="footerWidth"
   >
-    <template #header>Header</template>
-    <template #menu="{ collapsed }">Menu</template>
-    <div>Main content</div>
-    <template #panel="{ closePanel }">Panel</template>
-    <template #footer>Footer</template>
-  </AppLayout>`,
-  ),
+    <template #header>
+      <div class="flex items-center justify-between border-b border-border bg-card px-4 py-3">
+        <h1 class="text-sm font-semibold text-foreground">My App</h1>
+      </div>
+    </template>
+
+    <template #menu-items>
+      <SidebarMenuItem :id="'dashboard'" :label="'Dashboard'" />
+    </template>
+
+    <template #settings-menu>
+      <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+    </template>
+
+    <div class="flex flex-col gap-4 p-6">
+      <p class="text-sm text-muted-foreground">{{ pageTitle }}</p>
+      <Button :variant="'outline'" :size="'sm'" @click="panelOpen = true">View details</Button>
+    </div>
+
+    <template #panel="{ closePanel }">
+      <div class="flex flex-col gap-4 border-l border-border p-6">
+        <div class="flex items-center justify-between gap-2">
+          <h2 class="text-sm font-semibold text-foreground">Details</h2>
+          <button type="button" class="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground" @click="closePanel()">Close</button>
+        </div>
+        <p class="text-xs leading-relaxed text-muted-foreground">Panel content styled by your app.</p>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="flex items-center justify-between border-t border-border bg-card px-4 py-2 text-xs text-muted-foreground">
+        <span>© 2026 My App</span>
+      </div>
+    </template>
+  </AppLayout>
+</template>`,
 }

@@ -42,7 +42,9 @@ const selectDisabled = ref(false)
 const selectPlaceholderSingle = ref('')
 const selectPlaceholderMulti = ref('')
 
-const buttonVariant = ref<'primary' | 'ghost' | 'outline' | 'destructive' | 'link'>('primary')
+const buttonVariant = ref<
+  'default' | 'primary' | 'secondary' | 'ghost' | 'outline' | 'destructive' | 'link'
+>('primary')
 const buttonSize = ref<'sm' | 'md' | 'lg'>('md')
 const buttonDisabled = ref(false)
 const buttonLoading = ref(false)
@@ -318,7 +320,7 @@ function optionStyle(active: boolean) {
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.variantLabel') }}</p>
             <button
-              v-for="item in ['primary', 'ghost', 'outline', 'destructive', 'link']"
+              v-for="item in ['default', 'primary', 'secondary', 'ghost', 'outline', 'destructive', 'link']"
               :key="item"
               type="button"
               class="mb-1 block w-full rounded px-2 py-1 text-left text-xs"

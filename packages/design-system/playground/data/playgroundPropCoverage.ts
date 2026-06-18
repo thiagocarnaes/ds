@@ -9,6 +9,8 @@ export const ignoredCatalogProps = new Set([
   'isIndeterminate',
   /** Alias of bold on Lozenge. */
   'isBold',
+  /** Id prefix for settings group — rarely needs a playground toggle. */
+  'settingsMenuId',
   /** Static options in Select demo — not a meaningful toggle. */
   'options',
 ])
@@ -20,6 +22,8 @@ export const implicitPlaygroundModels = new Set([
   'currentPage',
   'menuCollapsed',
   'panelOpen',
+  'activeMenuId',
+  'openMenuKeys',
   'open',
   'search',
   'pageSize',
@@ -50,7 +54,11 @@ export const playgroundStrictDemos = [
 /** Primary catalog component validated for each interactive playground demo. */
 export const playgroundDemoPrimaryComponent: Record<string, string> = {
   Button: 'Button',
+  IconButton: 'IconButton',
+  Link: 'Link',
   Input: 'Input',
+  Textarea: 'Textarea',
+  Label: 'Label',
   DateInput: 'DateInput',
   Switch: 'Switch',
   RadioGroup: 'RadioGroup',
@@ -85,7 +93,11 @@ export const playgroundDemoPrimaryComponent: Record<string, string> = {
  */
 export const playgroundPropCoverage: Record<string, readonly string[]> = {
   Button: ['variant', 'size', 'icon', 'type', 'disabled', 'loading'],
+  IconButton: ['ariaLabel', 'variant', 'size', 'disabled', 'loading'],
+  Link: ['href', 'to', 'external'],
   Input: ['type', 'size', 'placeholder', 'disabled', 'readonly', 'error', 'success', 'message'],
+  Textarea: ['size', 'placeholder', 'rows', 'disabled', 'readonly', 'error', 'message'],
+  Label: ['for'],
   DateInput: ['size', 'locale', 'disabled', 'clearLabel', 'todayLabel'],
   Switch: ['size', 'disabled'],
   RadioGroup: ['name', 'disabled'],
@@ -131,6 +143,8 @@ export const playgroundPropCoverage: Record<string, readonly string[]> = {
     'showHeader',
     'showMenu',
     'showFooter',
+    'settingsMenu',
+    'settingsMenuLabel',
     'footerWidth',
     'menuCollapsed',
     'panelOpen',

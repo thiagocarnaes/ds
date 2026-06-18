@@ -11,6 +11,7 @@ export interface TextareaProps extends /* @vue-ignore */ FormInputVariants {
   readonly?: boolean
   error?: boolean
   message?: string
+  rows?: number
   id?: string
   class?: string
 }
@@ -21,6 +22,7 @@ const props = withDefaults(defineProps<TextareaProps>(), {
   readonly: false,
   error: false,
   size: 'md',
+  rows: undefined,
 })
 
 const emit = defineEmits<{
@@ -44,6 +46,7 @@ function onInput(event: Event): void {
       :placeholder="placeholder"
       :disabled="disabled"
       :readonly="readonly"
+      :rows="rows"
       :class="classes"
       :aria-invalid="error || undefined"
       :aria-describedby="error && message ? `${id}-error` : undefined"

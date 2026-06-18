@@ -172,13 +172,15 @@ export const en: PlaygroundMessages = {
     collapseMenu: 'Collapse menu',
     introLead: 'composes a full-page grid from four slots.',
     introBody:
-      'Header and footer span the full width by default; menu sits beside the main content area. Set :footer-width="\'content\'" to keep the footer under the content column so the menu stretches to the bottom. Collapse the menu to icon-only mode with the built-in toggle. Nested submenus use SidebarMenuGroup — some open, some closed. Click a button or link inside the content to open the resizable #panel overlay on the right.',
+      'Header and footer span the full width by default; the menu sits beside the main content area. Put navigation in #menu-items and optional settings links in #settings-menu. Set :settings-menu="true" to pin a gear-icon settings group at the bottom. Set :footer-width="\'content\'" to keep the footer under the content column. With an empty v-model:active-menu-id, the first menu item is selected automatically.',
+    stylingNote:
+      'AppLayout does not style slot content. Declare refs in script setup and wrap each region with Tailwind utility classes — see the Usage snippet below.',
     panelDescription:
       'Secondary panel overlaying the main content. Drag the left edge to resize. Use the #panel slot and v-model:panel-open to show contextual details without leaving the page.',
     panelTag: 'panel',
     slots: {
       header: '#header — top bar',
-      menu: '#menu — sidebar',
+      menu: '#menu-items — main nav',
       content: 'content',
       panel: '#panel — overlay detail',
       footer: '#footer — bottom bar',

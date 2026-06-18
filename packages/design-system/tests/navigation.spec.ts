@@ -86,6 +86,8 @@ describe('SidebarMenu', () => {
             isActive: () => false,
             isGroupActive: () => false,
             setActive: () => undefined,
+            registerMenuItem: () => undefined,
+            registerGroupItem: () => undefined,
           },
         },
       },
@@ -101,6 +103,8 @@ describe('SidebarMenu', () => {
             isActive: () => false,
             isGroupActive: () => false,
             setActive: () => undefined,
+            registerMenuItem: () => undefined,
+            registerGroupItem: () => undefined,
           },
         },
       },
@@ -110,6 +114,63 @@ describe('SidebarMenu', () => {
     expect(expanded.find('button').classes()).toContain('w-full')
     expect(collapsed.find('button').classes()).toContain('h-8')
     expect(collapsed.find('button').classes()).toContain('w-full')
+  })
+
+  it('selects the first menu item when activeId is empty', async () => {
+    const wrapper = mount(SidebarMenu, {
+      props: {
+        activeId: '',
+        openKeys: [],
+      },
+      slots: {
+        default: `
+          <SidebarMenuItem id="dashboard" label="Dashboard" />
+          <SidebarMenuItem id="reports" label="Reports" />
+        `,
+      },
+      global: {
+        components: { SidebarMenuItem },
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.emitted('update:activeId')?.[0]).toEqual(['dashboard'])
+    expect(wrapper.find('[aria-current="page"]')?.text()).toBe('Dashboard')
+    expect(wrapper.findAll('[aria-current="page"]')).toHaveLength(1)
+
+    wrapper.unmount()
+  })
+
+  it('does not highlight a group when a sibling item shares its id prefix', async () => {
+    const wrapper = mount(SidebarMenu, {
+      props: {
+        activeId: 'todos.all',
+        openKeys: ['todos'],
+      },
+      slots: {
+        default: `
+          <SidebarMenuItem id="todos.all" label="All Todos" />
+          <SidebarMenuGroup id="todos" label="Todos">
+            <SidebarMenuItem id="todos.active" label="Active" />
+            <SidebarMenuItem id="todos.completed" label="Completed" />
+          </SidebarMenuGroup>
+        `,
+      },
+      global: {
+        components: { SidebarMenuGroup, SidebarMenuItem },
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+
+    const allTodosButton = wrapper.findAll('button').find((btn) => btn.text() === 'All Todos')
+    const todosGroupButton = wrapper.findAll('button').find((btn) => btn.text()?.trim() === 'Todos')
+
+    expect(allTodosButton?.classes().join(' ')).toContain('text-primary')
+    expect(todosGroupButton?.classes().join(' ')).not.toContain('text-primary')
+
+    wrapper.unmount()
   })
 
   it('opens nested groups on hover and selects items', async () => {
@@ -389,6 +450,46 @@ describe('SidebarMenu', () => {
     expect(componentsIcon.classes()).toContain('text-primary')
     expect(componentsIcon.classes()).toContain('bg-primary/15')
 
+    wrapper.unmount()
+  })
+
+  it('opens flyout upward when flyoutPlacement is up', async () => {
+    const wrapper = mount(SidebarMenu, {
+      attachTo: document.body,
+      slots: {
+        default: `
+          <SidebarMenuGroup id="settings" label="Settings" flyout-placement="up">
+            <SidebarMenuItem id="settings.profile" label="Profile" />
+          </SidebarMenuGroup>
+        `,
+      },
+      global: {
+        components: { SidebarMenuGroup, SidebarMenuItem },
+      },
+    })
+
+    const trigger = wrapper.find('button[aria-expanded]')
+    const rectSpy = vi.spyOn(trigger.element, 'getBoundingClientRect').mockReturnValue({
+      top: 520,
+      bottom: 552,
+      left: 0,
+      right: 48,
+      width: 48,
+      height: 32,
+      x: 0,
+      y: 520,
+      toJSON: () => ({}),
+    })
+
+    await trigger.trigger('mouseenter')
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    const flyout = document.body.querySelector('[data-flyout-placement="up"]') as HTMLElement | null
+    expect(flyout).toBeTruthy()
+    expect(flyout!.dataset.flyoutPlacement).toBe('up')
+
+    rectSpy.mockRestore()
     wrapper.unmount()
   })
 })

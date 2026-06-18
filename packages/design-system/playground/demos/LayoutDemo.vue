@@ -8,12 +8,12 @@ import {
   Info,
   Layers,
   Palette,
-  Settings,
   Target,
   Type,
   Users,
 } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
+import { PACKAGE } from '../data/componentCatalogConstants'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { playgroundSnippetAttr, propTemplateBinding, templateStringAttr } from '../utils/propTemplateName'
 import { playgroundOptionStyle } from './playgroundOptionStyle'
@@ -21,10 +21,8 @@ import {
   AppLayout,
   Button,
   Lozenge,
-  SidebarMenu,
   SidebarMenuGroup,
   SidebarMenuItem,
-  SidebarMenuShell,
   Switch,
   Tooltip,
 } from '@/index'
@@ -35,6 +33,8 @@ const showHeader = ref(true)
 const showMenu = ref(true)
 const showFooter = ref(true)
 const showPanel = ref(true)
+const settingsMenu = ref(true)
+const settingsMenuLabel = ref('Settings')
 const footerWidth = ref<'full' | 'content'>('full')
 const menuWidthRem = ref(12)
 const menuWidth = computed(() => `${menuWidthRem.value}rem`)
@@ -51,11 +51,12 @@ const panelMinWidth = computed(() => `${panelMinWidthRem.value}rem`)
 const panelMaxWidth = ref('75%')
 const panelResizable = ref(true)
 const panelBackdrop = ref(true)
-const activeNav = ref('components.forms.input')
-const openKeys = ref(['components', 'components.forms'])
+const activeNav = ref('dashboard')
+const openKeys = ref<string[]>([])
 
 const navLabels = computed(() => messages.value.layoutPlayground.navLabels)
 const sidebar = computed(() => messages.value.layoutPlayground.sidebar)
+const pageTitle = computed(() => navLabels.value[activeNav.value] ?? activeNav.value)
 
 watch(defaultCollapsed, (collapsed) => {
   menuCollapsed.value = collapsed
@@ -74,6 +75,8 @@ const previewKey = computed(
       showMenu.value,
       showFooter.value,
       showPanel.value,
+      settingsMenu.value,
+      settingsMenuLabel.value,
       footerWidth.value,
       menuWidthRem.value,
       menuCollapsedWidthRem.value,
@@ -89,9 +92,40 @@ const previewKey = computed(
 )
 
 const code = computed(() => {
+  const scriptLines = [
+    '<script setup lang="ts">',
+    "import { ref } from 'vue'",
+    `import { AppLayout, Button, SidebarMenuItem } from '${PACKAGE}'`,
+    '',
+    `const menuCollapsed = ref(${menuCollapsed.value})`,
+    `const panelOpen = ref(${panelOpen.value})`,
+    `const menuWidth = ref('${menuWidth.value}')`,
+    `const menuCollapsedWidth = ref('${menuCollapsedWidth.value}')`,
+    `const menuLabel = ref('${menuLabel.value.replace(/'/g, "\\'")}')`,
+    `const menuCollapsible = ref(${menuCollapsible.value})`,
+    `const defaultCollapsed = ref(${defaultCollapsed.value})`,
+    `const panelWidth = ref('${panelWidth.value}')`,
+    `const panelMinWidth = ref('${panelMinWidth.value}')`,
+    `const panelMaxWidth = ref('${panelMaxWidth.value}')`,
+    `const panelResizable = ref(${panelResizable.value})`,
+    `const panelBackdrop = ref(${panelBackdrop.value})`,
+    `const showHeader = ref(${showHeader.value})`,
+    `const showMenu = ref(${showMenu.value})`,
+    `const showFooter = ref(${showFooter.value})`,
+    `const settingsMenu = ref(${settingsMenu.value})`,
+    `const settingsMenuLabel = ref('${settingsMenuLabel.value.replace(/'/g, "\\'")}')`,
+    `const footerWidth = ref<'full' | 'content'>('${footerWidth.value}')`,
+    `const activeId = ref('${activeNav.value.replace(/'/g, "\\'")}')`,
+    `const openKeys = ref<string[]>(${JSON.stringify(openKeys.value)})`,
+    `const pageTitle = ref('${String(pageTitle.value).replace(/'/g, "\\'")}')`,
+    '<\\/script>',
+  ]
+
   const props = [
     '  v-model:menu-collapsed="menuCollapsed"',
     '  v-model:panel-open="panelOpen"',
+    '  v-model:active-menu-id="activeId"',
+    '  v-model:open-menu-keys="openKeys"',
     `  ${playgroundSnippetAttr('menuWidth', menuWidth.value)}`,
     `  ${playgroundSnippetAttr('menuCollapsedWidth', menuCollapsedWidth.value)}`,
     `  ${playgroundSnippetAttr('menuLabel', menuLabel.value)}`,
@@ -105,38 +139,82 @@ const code = computed(() => {
     `  ${playgroundSnippetAttr('showHeader', showHeader.value)}`,
     `  ${playgroundSnippetAttr('showMenu', showMenu.value)}`,
     `  ${playgroundSnippetAttr('showFooter', showFooter.value)}`,
+    `  ${playgroundSnippetAttr('settingsMenu', settingsMenu.value)}`,
+    `  ${playgroundSnippetAttr('settingsMenuLabel', settingsMenuLabel.value)}`,
     `  ${playgroundSnippetAttr('footerWidth', footerWidth.value)}`,
   ]
 
   const lines = [
-    '<AppLayout',
+    ...scriptLines,
+    '',
+    '<template>',
+    '  <!-- AppLayout only defines page regions — style each slot with Tailwind/classes -->',
+    '  <AppLayout',
     ...props,
     '>',
-    '  <template #menu="{ collapsed }">',
-    '    <SidebarMenu v-model:active-id="activeId" v-model:open-keys="openKeys" :collapsed="collapsed">',
-    `      <SidebarMenuItem ${templateStringAttr('id', 'dashboard')} ${templateStringAttr('label', 'Dashboard')} />`,
-    '    </SidebarMenu>',
-    '  </template>',
-    '',
-    '  <div>',
-    '    <p>{{ pageTitle }}</p>',
   ]
 
-  if (showPanel.value) {
-    lines.push('    <Button @click="panelOpen = true">View details</Button>')
-  }
-
-  lines.push('  </div>', '')
-
-  if (showPanel.value) {
+  if (showHeader.value) {
     lines.push(
-      '  <template #panel="{ closePanel }">',
-      '    <div>Detail panel<button @click="closePanel()">Close</button></div>',
-      '  </template>',
+      '    <template #header>',
+      '      <div class="flex items-center justify-between border-b border-border bg-card px-4 py-3">',
+      '        <span class="text-sm font-semibold text-foreground">Design System</span>',
+      '      </div>',
+      '    </template>',
     )
   }
 
-  lines.push('</AppLayout>')
+  if (showMenu.value) {
+    lines.push(
+      '    <template #menu-items>',
+      `      <SidebarMenuItem ${templateStringAttr('id', 'dashboard')} ${templateStringAttr('label', 'Dashboard')} />`,
+      '    </template>',
+    )
+    if (settingsMenu.value) {
+      lines.push(
+        '    <template #settings-menu>',
+        `      <SidebarMenuItem ${templateStringAttr('id', 'settings.profile')} ${templateStringAttr('label', 'Profile')} />`,
+        '    </template>',
+      )
+    }
+  }
+
+  lines.push(
+    '    <div class="flex flex-col gap-4 p-6">',
+    '      <p class="text-sm text-muted-foreground">{{ pageTitle }}</p>',
+  )
+
+  if (showPanel.value) {
+    lines.push('      <Button :variant="\'outline\'" :size="\'sm\'" @click="panelOpen = true">View details</Button>')
+  }
+
+  lines.push('    </div>')
+
+  if (showPanel.value) {
+    lines.push(
+      '    <template #panel="{ closePanel }">',
+      '      <div class="flex flex-col gap-4 border-l border-border p-6">',
+      '        <div class="flex items-center justify-between gap-2">',
+      '          <h2 class="text-sm font-semibold text-foreground">Details</h2>',
+      '          <button type="button" class="rounded-md px-2 py-1 text-xs text-muted-foreground hover:bg-accent hover:text-foreground" @click="closePanel()">Close</button>',
+      '        </div>',
+      '        <p class="text-xs leading-relaxed text-muted-foreground">{{ pageTitle }}</p>',
+      '      </div>',
+      '    </template>',
+    )
+  }
+
+  if (showFooter.value) {
+    lines.push(
+      '    <template #footer>',
+      '      <div class="flex items-center justify-between border-t border-border bg-card px-4 py-2 text-xs text-muted-foreground">',
+      '        <span>Footer</span>',
+      '      </div>',
+      '    </template>',
+    )
+  }
+
+  lines.push('  </AppLayout>', '</template>')
 
   return lines.join('\n')
 })
@@ -153,6 +231,9 @@ const code = computed(() => {
       <p class="mb-3 text-xs leading-relaxed text-[#7BA3C8]">
         <strong class="text-[#E8EDF5]">AppLayout</strong> {{ t('layoutPlayground.introLead') }}
         {{ t('layoutPlayground.introBody') }}
+      </p>
+      <p class="mb-3 rounded-md border border-[#00E5B0]/20 bg-[#00E5B0]/5 px-3 py-2 text-[11px] leading-relaxed text-[#7BA3C8]">
+        {{ t('layoutPlayground.stylingNote') }}
       </p>
       <div class="grid grid-cols-1 gap-2 text-[10px] sm:grid-cols-2">
         <div class="rounded-md px-2 py-1.5" style="background: rgba(0,212,255,0.08); color: #00D4FF">
@@ -180,6 +261,8 @@ const code = computed(() => {
         :key="previewKey"
         v-model:menu-collapsed="menuCollapsed"
         v-model:panel-open="panelOpen"
+        v-model:active-menu-id="activeNav"
+        v-model:open-menu-keys="openKeys"
         :default-menu-collapsed="defaultCollapsed"
         :menu-width="menuWidth"
         :menu-collapsed-width="menuCollapsedWidth"
@@ -193,8 +276,10 @@ const code = computed(() => {
         :show-header="showHeader"
         :show-menu="showMenu"
         :show-footer="showFooter"
+        :settings-menu="settingsMenu"
+        :settings-menu-label="settingsMenuLabel"
         :footer-width="footerWidth"
-        class="min-h-[26rem] border-[#00E5B0]/20"
+        class="min-h-[26rem] h-[26rem] border-[#00E5B0]/20"
       >
         <template #header>
           <div
@@ -215,74 +300,61 @@ const code = computed(() => {
           </div>
         </template>
 
-        <template #menu="{ collapsed, toggleMenu, menuLabel, menuWidth: slotMenuWidth, menuCollapsedWidth }">
+        <template #menu-items>
+          <SidebarMenuItem id="dashboard" :label="sidebar.dashboard" :icon="BarChart2" />
+
+          <SidebarMenuGroup id="components" :label="sidebar.components" :icon="Gem" default-open>
+            <SidebarMenuItem id="components.overview" :label="sidebar.overview" :icon="Layers" />
+            <SidebarMenuItem id="components.button" :label="sidebar.button" :icon="Box" />
+
+            <SidebarMenuGroup id="components.forms" :label="sidebar.forms" :icon="Type" default-open>
+              <SidebarMenuItem id="components.forms.input" :label="sidebar.input" :icon="Type" />
+              <SidebarMenuItem id="components.forms.select" :label="sidebar.select" :icon="Target" />
+            </SidebarMenuGroup>
+
+            <SidebarMenuGroup id="components.feedback" :label="sidebar.feedback" :icon="AlertCircle">
+              <SidebarMenuItem id="components.feedback.alert" :label="sidebar.alert" :icon="AlertCircle" />
+              <SidebarMenuItem id="components.feedback.toast" :label="sidebar.toast" :icon="Info" />
+            </SidebarMenuGroup>
+          </SidebarMenuGroup>
+
+          <SidebarMenuGroup id="foundations" :label="sidebar.foundations" :icon="Palette">
+            <SidebarMenuItem id="foundations.colors" :label="sidebar.colors" :icon="Palette" />
+            <SidebarMenuItem id="foundations.typography" :label="sidebar.typography" :icon="Type" />
+          </SidebarMenuGroup>
+        </template>
+
+        <template v-if="settingsMenu" #settings-menu>
+          <SidebarMenuItem id="settings.profile" :label="sidebar.profile" :icon="Users" />
+          <SidebarMenuItem id="settings.team" :label="sidebar.team" :icon="Users" />
+        </template>
+
+        <template #menu-toggle="{ collapsed, toggleMenu }">
           <div class="w-full overflow-hidden rounded" style="background: rgba(167,139,250,0.06)">
-            <SidebarMenuShell
-              :collapsed="collapsed"
-              :menu-label="menuLabel"
-              :menu-width="slotMenuWidth"
-              :collapsed-width="menuCollapsedWidth"
+            <Tooltip
+              :content="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
+              placement="right"
             >
-              <template #toggle>
-                <Tooltip
-                  :content="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
-                  placement="right"
-                >
-                  <button
-                    type="button"
-                    class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                    :aria-label="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
-                    :aria-expanded="!collapsed"
-                    @click="toggleMenu()"
-                  >
-                    <svg
-                      viewBox="0 0 16 16"
-                      class="size-3.5 shrink-0 transition-transform duration-300 ease-in-out"
-                      :class="collapsed ? 'rotate-180' : ''"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      aria-hidden="true"
-                    >
-                      <path d="M10 3 5 8l5 5" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                  </button>
-                </Tooltip>
-              </template>
-
-              <SidebarMenu
-                v-model:active-id="activeNav"
-                v-model:open-keys="openKeys"
-                :collapsed="collapsed"
+              <button
+                type="button"
+                class="flex size-8 shrink-0 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-sm transition-colors hover:border-primary/40 hover:text-primary focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                :aria-label="collapsed ? t('layoutPlayground.expandMenu') : t('layoutPlayground.collapseMenu')"
+                :aria-expanded="!collapsed"
+                @click="toggleMenu()"
               >
-                <SidebarMenuItem id="dashboard" :label="sidebar.dashboard" :icon="BarChart2" />
-
-                <SidebarMenuGroup id="components" :label="sidebar.components" :icon="Gem" default-open>
-                  <SidebarMenuItem id="components.overview" :label="sidebar.overview" :icon="Layers" />
-                  <SidebarMenuItem id="components.button" :label="sidebar.button" :icon="Box" />
-
-                  <SidebarMenuGroup id="components.forms" :label="sidebar.forms" :icon="Type" default-open>
-                    <SidebarMenuItem id="components.forms.input" :label="sidebar.input" :icon="Type" />
-                    <SidebarMenuItem id="components.forms.select" :label="sidebar.select" :icon="Target" />
-                  </SidebarMenuGroup>
-
-                  <SidebarMenuGroup id="components.feedback" :label="sidebar.feedback" :icon="AlertCircle">
-                    <SidebarMenuItem id="components.feedback.alert" :label="sidebar.alert" :icon="AlertCircle" />
-                    <SidebarMenuItem id="components.feedback.toast" :label="sidebar.toast" :icon="Info" />
-                  </SidebarMenuGroup>
-                </SidebarMenuGroup>
-
-                <SidebarMenuGroup id="foundations" :label="sidebar.foundations" :icon="Palette">
-                  <SidebarMenuItem id="foundations.colors" :label="sidebar.colors" :icon="Palette" />
-                  <SidebarMenuItem id="foundations.typography" :label="sidebar.typography" :icon="Type" />
-                </SidebarMenuGroup>
-
-                <SidebarMenuGroup id="settings" :label="sidebar.settings" :icon="Settings">
-                  <SidebarMenuItem id="settings.profile" :label="sidebar.profile" :icon="Users" />
-                  <SidebarMenuItem id="settings.team" :label="sidebar.team" :icon="Users" />
-                </SidebarMenuGroup>
-              </SidebarMenu>
-            </SidebarMenuShell>
+                <svg
+                  viewBox="0 0 16 16"
+                  class="size-3.5 shrink-0 transition-transform duration-300 ease-in-out"
+                  :class="collapsed ? 'rotate-180' : ''"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  aria-hidden="true"
+                >
+                  <path d="M10 3 5 8l5 5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </button>
+            </Tooltip>
           </div>
         </template>
 
@@ -357,6 +429,10 @@ const code = computed(() => {
             <Switch v-model="showPanel" size="sm" />
             {{ t('layoutPlayground.panelTag') }}
           </label>
+          <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+            <Switch v-model="settingsMenu" size="sm" />
+            {{ propTemplateBinding('settingsMenu') }}
+          </label>
         </div>
 
         <div class="min-w-0 space-y-4">
@@ -390,6 +466,14 @@ const code = computed(() => {
             <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('menuLabel') }}</label>
             <input
               v-model="menuLabel"
+              type="text"
+              class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+            />
+          </div>
+          <div v-if="settingsMenu">
+            <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ propTemplateBinding('settingsMenuLabel') }}</label>
+            <input
+              v-model="settingsMenuLabel"
               type="text"
               class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
             />

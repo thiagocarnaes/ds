@@ -15,6 +15,7 @@ export interface CatalogGroup {
 }
 
 export const catalogGroups: CatalogGroup[] = [
+  { category: 'Layout', items: ['AppLayout', 'Container', 'Stack', 'Grid'] },
   { category: 'Actions', items: ['Button', 'IconButton', 'Link'] },
   {
     category: 'Forms',
@@ -75,7 +76,6 @@ export const catalogGroups: CatalogGroup[] = [
     ],
   },
   { category: 'Overlay', items: ['Modal', 'Dialog', 'Tooltip', 'Popover', 'Drawer'] },
-  { category: 'Layout', items: ['Container', 'Stack', 'Grid', 'AppLayout'] },
 ]
 
 const playgroundSet = new Set<string>(playgroundDemoComponents)

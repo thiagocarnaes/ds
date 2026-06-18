@@ -6,6 +6,7 @@ import Badge from '@/components/feedback/Badge.vue'
 import Spinner from '@/components/feedback/Spinner.vue'
 import Avatar from '@/components/data-display/Avatar.vue'
 import Button from '@/components/button/Button.vue'
+import IconButton from '@/components/button/IconButton.vue'
 
 describe('size props', () => {
   it('Input applies different height classes', () => {
@@ -48,5 +49,18 @@ describe('size props', () => {
     const lg = mount(Button, { props: { size: 'lg' }, slots: { default: 'Save' } })
     expect(sm.classes().join(' ')).toMatch(/h-8/)
     expect(lg.classes().join(' ')).toMatch(/h-10/)
+  })
+
+  it('IconButton applies size classes from size prop', () => {
+    const sm = mount(IconButton, {
+      props: { ariaLabel: 'Settings', size: 'sm' },
+      slots: { default: '•' },
+    })
+    const icon = mount(IconButton, {
+      props: { ariaLabel: 'Settings', size: 'icon' },
+      slots: { default: '•' },
+    })
+    expect(sm.classes().join(' ')).toMatch(/h-8/)
+    expect(icon.classes().join(' ')).toMatch(/size-9/)
   })
 })

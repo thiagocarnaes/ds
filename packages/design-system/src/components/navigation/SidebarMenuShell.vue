@@ -36,8 +36,8 @@ const toggleLeft = computed(() => {
 </script>
 
 <template>
-  <div class="w-full px-2 py-2">
-    <div class="relative mb-2 h-8 w-full">
+  <div class="flex h-full min-h-0 w-full flex-col px-2 py-2">
+    <div class="relative mb-2 h-8 w-full shrink-0">
       <span
         v-if="menuLabel"
         class="pointer-events-none absolute left-0 top-1/2 max-w-[calc(100%-2.5rem)] -translate-y-1/2 truncate font-mono text-[8px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
@@ -55,7 +55,7 @@ const toggleLeft = computed(() => {
     </div>
 
     <div
-      class="transition-transform duration-300 ease-in-out"
+      class="flex min-h-0 flex-1 flex-col transition-transform duration-300 ease-in-out"
       :style="{
         width: contentWidth,
         minWidth: contentWidth,

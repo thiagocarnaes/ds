@@ -26,4 +26,9 @@ describe('Textarea', () => {
     const textarea = wrapper.find('textarea')
     expect((textarea.element as HTMLTextAreaElement).value).toBe('note')
   })
+
+  it('passes rows to the textarea element', () => {
+    const wrapper = mount(Textarea, { props: { rows: 6 } })
+    expect((wrapper.find('textarea').element as HTMLTextAreaElement).getAttribute('rows')).toBe('6')
+  })
 })

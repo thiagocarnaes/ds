@@ -21,6 +21,8 @@ export interface DateInputProps extends /* @vue-ignore */ FormInputVariants {
   disabled?: boolean
   clearLabel?: string
   todayLabel?: string
+  /** Overrides locale-based placeholder when set. */
+  placeholder?: string
   id?: string
   class?: string
   'aria-label'?: string
@@ -50,7 +52,7 @@ const resolvedClearLabel = computed(() =>
 const resolvedTodayLabel = computed(() =>
   props.todayLabel ?? (props.locale === 'pt-BR' ? 'Hoje' : 'Today'),
 )
-const placeholder = computed(() => dateInputPlaceholder(props.locale))
+const placeholder = computed(() => props.placeholder ?? dateInputPlaceholder(props.locale))
 const weekdayLabels = computed(() => getWeekdayLabels(props.locale))
 
 const inputClasses = computed(() =>

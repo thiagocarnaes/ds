@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
-import { computed, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, toValue, watch } from 'vue'
 import type { Component } from 'vue'
 import { cn } from '@/lib/utils'
 import {
@@ -23,9 +23,12 @@ const props = withDefaults(
     label: string
     icon?: Component
     defaultOpen?: boolean
+    /** Flyout vertical alignment relative to the group trigger. `auto` opens upward when near the viewport bottom. */
+    flyoutPlacement?: 'auto' | 'down' | 'up'
   }>(),
   {
     defaultOpen: false,
+    flyoutPlacement: 'auto',
   },
 )
 
@@ -43,8 +46,11 @@ const iconRef = ref<HTMLElement | null>(null)
 const flyoutRef = ref<HTMLElement | null>(null)
 const flyoutOpen = ref(false)
 const flyoutCoords = ref({ top: 0, left: 0 })
+const flyoutAlign = ref<'down' | 'up'>('down')
 let hideTimer: ReturnType<typeof setTimeout> | undefined
 let scrollTarget: HTMLElement | Window | null = null
+
+const FLYOUT_MARGIN = 8
 
 onMounted(() => {
   sidebarMenu.registerFlyoutCloser(
@@ -73,6 +79,17 @@ const groupActive = computed(() => sidebarMenu.isGroupActive(props.id))
 
 const triggerClasses = computed(() =>
   cn(sidebarMenuTriggerClass(), sidebarMenuStateClass(groupActive.value)),
+)
+
+const iconClasses = computed(() =>
+  cn(
+    sidebarMenuIconClass(),
+    sidebarMenuIconStateClass(groupActive.value, toValue(sidebarMenu.collapsed)),
+  ),
+)
+
+const chevronClasses = computed(() =>
+  cn(sidebarMenuChevronClass(), groupActive.value && '!text-primary'),
 )
 
 function findScrollParent(element: HTMLElement | null): HTMLElement | Window {
@@ -107,6 +124,58 @@ function addPositionListeners(): void {
   window.addEventListener('resize', updateFlyoutPosition, { passive: true })
 }
 
+function getViewportBounds(): { top: number; bottom: number } {
+  if (scrollTarget instanceof HTMLElement) {
+    const rect = scrollTarget.getBoundingClientRect()
+    return { top: rect.top, bottom: rect.bottom }
+  }
+
+  return { top: 0, bottom: window.innerHeight }
+}
+
+function shouldOpenFlyoutUpward(rect: DOMRect, flyoutHeight: number): boolean {
+  if (props.flyoutPlacement === 'up') {
+    return true
+  }
+
+  if (props.flyoutPlacement === 'down') {
+    return false
+  }
+
+  if (flyoutHeight <= 0) {
+    return false
+  }
+
+  const bounds = getViewportBounds()
+  const spaceBelow = bounds.bottom - rect.bottom - FLYOUT_MARGIN
+  const spaceAbove = rect.top - bounds.top - FLYOUT_MARGIN
+
+  if (spaceBelow >= flyoutHeight) {
+    return false
+  }
+
+  if (spaceAbove >= flyoutHeight) {
+    return true
+  }
+
+  return spaceAbove > spaceBelow
+}
+
+function applyFlyoutPosition(rect: DOMRect, flyoutHeight: number): void {
+  const bounds = getViewportBounds()
+  const openUpward = shouldOpenFlyoutUpward(rect, flyoutHeight)
+  flyoutAlign.value = openUpward ? 'up' : 'down'
+
+  let top = openUpward ? rect.bottom - flyoutHeight : rect.top
+  const maxTop = bounds.bottom - flyoutHeight - FLYOUT_MARGIN
+  top = Math.max(bounds.top + FLYOUT_MARGIN, Math.min(top, maxTop))
+
+  flyoutCoords.value = {
+    top,
+    left: rect.right - 6,
+  }
+}
+
 async function updateFlyoutPosition(): Promise<void> {
   await nextTick()
 
@@ -123,9 +192,15 @@ async function updateFlyoutPosition(): Promise<void> {
       : button
   const rect = anchor.getBoundingClientRect()
 
-  flyoutCoords.value = {
-    top: rect.top,
-    left: rect.right - 6,
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const flyoutHeight = flyoutRef.value?.offsetHeight ?? 0
+    applyFlyoutPosition(rect, flyoutHeight)
+
+    if (flyoutHeight > 0 || props.flyoutPlacement !== 'auto') {
+      break
+    }
+
+    await nextTick()
   }
 }
 
@@ -218,21 +293,11 @@ watch(
       @mouseenter="showFlyout"
       @mouseleave="scheduleHideFlyout($event)"
     >
-      <span
-        ref="iconRef"
-        :class="
-          cn(
-            sidebarMenuIconClass(),
-            sidebarMenuIconStateClass(groupActive, sidebarMenu.collapsed.value),
-          )
-        "
-      >
+      <span ref="iconRef" :class="iconClasses">
         <component :is="icon" v-if="icon" :size="16" class="shrink-0" />
       </span>
       <span :class="sidebarMenuLabelClass()">{{ label }}</span>
-      <ChevronRight
-        :class="cn(sidebarMenuChevronClass(), groupActive && '!text-primary')"
-      />
+      <ChevronRight :class="chevronClasses" />
     </button>
 
     <Teleport to="body">
@@ -241,6 +306,7 @@ watch(
         ref="flyoutRef"
         data-sidebar-flyout
         :data-sidebar-depth="sidebarMenu.depth"
+        :data-flyout-placement="flyoutAlign"
         class="fixed min-w-[11rem] rounded-lg border border-border bg-popover py-1.5 pl-2.5 pr-1.5 shadow-lg"
         :style="{
           top: `${flyoutCoords.top}px`,
@@ -256,7 +322,7 @@ watch(
         >
           {{ label }}
         </p>
-        <SidebarMenuFlyout>
+        <SidebarMenuFlyout :parent-group-id="id">
           <slot />
         </SidebarMenuFlyout>
       </div>

@@ -26,7 +26,7 @@ const emit = defineEmits<{
 }>()
 
 const classes = computed(() =>
-  cn(buttonVariants({ variant: props.variant, size: 'icon' }), props.class),
+  cn(buttonVariants({ variant: props.variant, size: props.size }), props.class),
 )
 </script>
 
@@ -34,7 +34,7 @@ const classes = computed(() =>
   <Button
     :class="classes"
     :variant="props.variant"
-    size="icon"
+    :size="size"
     :disabled="disabled"
     :loading="loading"
     :aria-label="ariaLabel"

@@ -57,7 +57,7 @@ export const componentCatalogDescriptionsEn: Record<string, string> = {
   Container: 'Centers and constrains page content to a max width.',
   Stack: 'Flex stack helper for vertical or horizontal spacing between children.',
   Grid: 'Responsive CSS grid helper for card and dashboard layouts.',
-  AppLayout: 'Application shell with header, menu, content, footer, and optional panel regions.',
+  AppLayout: 'Application shell with header, menu, content, footer, and optional panel. Compose #menu-items, #settings-menu, and regions with Tailwind/classes.',
 }
 
 export const componentCatalogDescriptionsPtBR: Record<string, string> = {
@@ -119,5 +119,5 @@ export const componentCatalogDescriptionsPtBR: Record<string, string> = {
   Container: 'Centraliza e limita o conteúdo da página a uma largura máxima.',
   Stack: 'Helper flex para espaçamento vertical ou horizontal entre filhos.',
   Grid: 'Helper de grid CSS responsivo para cards e dashboards.',
-  AppLayout: 'Shell de aplicação com header, menu, conteúdo, footer e painel opcional.',
+  AppLayout: 'Shell de aplicação com header, menu, conteúdo, footer e painel opcional. Componha #menu-items, #settings-menu e regiões com Tailwind/classes.',
 }

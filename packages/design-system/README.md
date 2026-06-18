@@ -68,7 +68,7 @@ O playground local (`npm run dev`) inclui:
 - **Home** — cards interativos por categoria (forms, layout, feedback, foundations)
 - **Library** — catálogo dos **58 componentes** com descrição, snippet de uso e botão *Abrir playground* quando houver demo
 - **Docs** — instalação, toasts, DataTable, dark mode
-- **28 demos no drawer** — Button, Input, DateInput, FormField, DataTable, Layout, Dialog, etc.; controles atualizam o snippet **Usage** em tempo real
+- **32 demos no drawer** — Button, IconButton, Link, Input, Textarea, Label, DateInput, FormField, DataTable, Layout, Dialog, etc.; controles atualizam o snippet **Usage** em tempo real
 - **Showcase** — demos compostos (ex.: AI Chat), não exportados como componente da lib
 - **i18n** — inglês e português (pt-BR)
 
@@ -108,7 +108,7 @@ import { FormField, Input } from '@tcarnaes/design-system'
 | **`Switch`** | Controle pill on/off (`role="switch"`), tamanho `sm` / `md` |
 | **`Toggle`** | Linha de preferência: label + `Switch` (setting row com borda) |
 
-`Input`, `Textarea`, `DateInput` e `Badge` aceitam `:size` (`sm` / `md` / `lg` conforme o componente).
+`Input`, `Textarea`, `DateInput` e `Badge` aceitam `:size` (`sm` / `md` / `lg` em inputs; `Badge` só `sm` | `md`).
 
 ### DateInput
 
@@ -175,6 +175,8 @@ import { ref } from 'vue'
 
 const columns = [/* ... */]
 const rows = ref([/* ... */])
+const page = ref(1)
+const pageSize = ref(10)
 const sortStack = ref<DataTableSortEntry[]>([])
 const columnFilters = ref<DataTableColumnFilters>({})
 </script>
@@ -352,7 +354,8 @@ import { Alert, Badge, Progress, Skeleton, Spinner } from '@tcarnaes/design-syst
 <template>
   <Alert :variant="'success'">Deploy concluído.</Alert>
   <Alert :variant="'error'" :dismissible="true">Falha na build.</Alert>
-  <Badge :value="12" :variant="'primary'" />
+  <Badge :value="12" :variant="'primary'" :size="'md'" />
+  <Lozenge :variant="'success'">Ativo</Lozenge>
   <Progress :value="72" />
   <Skeleton class="h-8 w-full" />
   <Spinner :aria-label="'Carregando'" />
@@ -362,30 +365,89 @@ import { Alert, Badge, Progress, Skeleton, Spinner } from '@tcarnaes/design-syst
 
 ### Layout
 
+`AppLayout` organiza as regiões da página (grid + painel lateral), mas **não estiliza** header, menu, conteúdo, panel ou footer. Use `#menu-items` (e opcionalmente `#settings-menu` / `#menu-toggle`) — o shell do menu, toggle e grupo de settings no rodapé já vêm montados — veja o demo **Layout** no playground.
+
 ```vue
 <script setup lang="ts">
-import { AppLayout, Container, Stack } from '@tcarnaes/design-system'
+import { ref } from 'vue'
+import { AppLayout, Button, SidebarMenuItem } from '@tcarnaes/design-system'
+
+const menuCollapsed = ref(false)
+const panelOpen = ref(false)
+const menuWidth = ref('12rem')
+const menuCollapsedWidth = ref('3rem')
+const menuLabel = ref('Navigation')
+const activeId = ref('dashboard')
+const openKeys = ref<string[]>([])
+const settingsMenu = ref(true)
+const settingsMenuLabel = ref('Settings')
+const pageTitle = ref('Dashboard')
 </script>
 
 <template>
-  <AppLayout>
-    <template #header>Header</template>
-    <template #menu>Menu</template>
-    <template #default>
-      <Container>
-        <Stack :gap="4">
-          <p>Conteúdo principal</p>
-        </Stack>
-      </Container>
+  <AppLayout
+    v-model:menu-collapsed="menuCollapsed"
+    v-model:panel-open="panelOpen"
+    v-model:active-menu-id="activeId"
+    v-model:open-menu-keys="openKeys"
+    class="min-h-svh"
+    :menu-width="menuWidth"
+    :menu-collapsed-width="menuCollapsedWidth"
+    :menu-label="menuLabel"
+    :settings-menu="settingsMenu"
+    :settings-menu-label="settingsMenuLabel"
+  >
+    <template #header>
+      <div class="flex items-center justify-between border-b border-border bg-card px-4 py-3">
+        <h1 class="text-sm font-semibold text-foreground">My App</h1>
+      </div>
     </template>
-    <template #footer>Footer</template>
+
+    <template #menu-items>
+      <SidebarMenuItem :id="'dashboard'" :label="'Dashboard'" />
+    </template>
+
+    <template #settings-menu>
+      <SidebarMenuItem :id="'settings.profile'" :label="'Profile'" />
+    </template>
+
+    <div class="flex flex-col gap-4 p-6">
+      <p class="text-sm text-muted-foreground">{{ pageTitle }}</p>
+      <Button :variant="'outline'" :size="'sm'" @click="panelOpen = true">View details</Button>
+    </div>
+
+    <template #panel="{ closePanel }">
+      <div class="flex flex-col gap-4 border-l border-border p-6">
+        <button type="button" class="self-end text-xs text-muted-foreground hover:text-foreground" @click="closePanel()">
+          Close
+        </button>
+      </div>
+    </template>
+
+    <template #footer>
+      <div class="border-t border-border bg-card px-4 py-2 text-xs text-muted-foreground">
+        Footer
+      </div>
+    </template>
   </AppLayout>
 </template>
 ```
 
+**Settings no rodapé:** `:settings-menu="true"` fixa um grupo com ícone de engrenagem no final do menu; os itens vão em `#settings-menu`. Props: `settings-menu-label`, `settings-menu-id`.
+
+**IDs do menu lateral**
+
+- Itens de topo **fora** de um grupo não devem compartilhar o prefixo do grupo (evite `todos.all` ao lado do grupo `todos` — prefira `all` ou ids dentro do grupo, ex. `todos.active`).
+- Com `v-model:active-menu-id` vazio, o primeiro `SidebarMenuItem` registrado é selecionado automaticamente.
+- Flyouts perto do rodapé abrem para cima (`flyout-placement="up"` no settings do `AppLayout`; `SidebarMenuGroup` aceita `'auto' | 'down' | 'up'`).
+
+O slot **default** (conteúdo) ocupa 100% da altura disponível — use `class="min-h-svh"` no `AppLayout` (ou `height: 100%` em `html`, `body` e `#app`). Header, panel e footer continuam compostos por você com classes Tailwind.
+
 ### Ícones no Button
 
-Variantes: `primary` | `ghost` | `outline` | `destructive` | `link` · tamanhos: `sm` | `md` | `lg`.
+Variantes: `default` | `primary` | `secondary` | `outline` | `ghost` | `destructive` | `link` · tamanhos: `default` | `sm` | `md` | `lg` | `icon`.
+
+`appearance` ainda funciona em runtime como alias legado (`danger` → `destructive`, `primary` → `primary`, etc.), mas prefira `:variant`.
 
 ```vue
 <script setup lang="ts">

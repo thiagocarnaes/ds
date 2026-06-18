@@ -5,6 +5,10 @@ import {
   type SidebarMenuContext,
 } from './sidebarMenuContext'
 
+const props = defineProps<{
+  parentGroupId: string
+}>()
+
 const parent = inject(SIDEBAR_MENU_INJECTION_KEY)
 
 if (!parent) {
@@ -18,11 +22,14 @@ const flyoutContext: SidebarMenuContext = {
   activeId: parent.activeId,
   openKeys: parent.openKeys,
   depth: parent.depth + 1,
+  parentGroupId: props.parentGroupId,
   toggleOpen: parent.toggleOpen,
   isOpen: parent.isOpen,
   isActive: parent.isActive,
   isGroupActive: parent.isGroupActive,
   setActive: parent.setActive,
+  registerMenuItem: parent.registerMenuItem,
+  registerGroupItem: parent.registerGroupItem,
   registerFlyoutCloser: parent.registerFlyoutCloser,
   unregisterFlyoutCloser: parent.unregisterFlyoutCloser,
   closePeerFlyouts: parent.closePeerFlyouts,

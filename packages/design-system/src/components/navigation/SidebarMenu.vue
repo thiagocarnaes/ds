@@ -26,6 +26,9 @@ interface FlyoutRegistration {
 }
 
 const flyoutRegistry = new Map<string, FlyoutRegistration>()
+const groupItemIds = new Map<string, Set<string>>()
+const topLevelItemIds = new Set<string>()
+let firstRegisteredItemId: string | null = null
 
 function toggleOpen(key: string): void {
   if (openKeys.value.includes(key)) {
@@ -41,15 +44,63 @@ function isOpen(key: string): boolean {
 }
 
 function isActive(id: string): boolean {
+  if (!activeId.value) {
+    return false
+  }
+
   return activeId.value === id
 }
 
 function isGroupActive(id: string): boolean {
+  if (!activeId.value) {
+    return false
+  }
+
   if (activeId.value === id) {
     return true
   }
 
-  return activeId.value.startsWith(`${id}.`)
+  const directMembers = groupItemIds.get(id)
+  if (directMembers?.has(activeId.value)) {
+    return true
+  }
+
+  for (const [groupId, members] of groupItemIds) {
+    if (groupId === id || !groupId.startsWith(`${id}.`)) {
+      continue
+    }
+
+    if (members.has(activeId.value)) {
+      return true
+    }
+  }
+
+  const prefix = `${id}.`
+  if (activeId.value.startsWith(prefix) && !topLevelItemIds.has(activeId.value)) {
+    return true
+  }
+
+  return false
+}
+
+function registerMenuItem(id: string, isTopLevel = true): void {
+  if (isTopLevel) {
+    topLevelItemIds.add(id)
+  }
+
+  if (firstRegisteredItemId === null) {
+    firstRegisteredItemId = id
+  }
+
+  if (!activeId.value && firstRegisteredItemId === id) {
+    activeId.value = id
+  }
+}
+
+function registerGroupItem(groupId: string, itemId: string): void {
+  const members = groupItemIds.get(groupId) ?? new Set<string>()
+  members.add(itemId)
+  groupItemIds.set(groupId, members)
 }
 
 function registerFlyoutCloser(
@@ -104,6 +155,8 @@ const context: SidebarMenuContext = {
   isActive,
   isGroupActive,
   setActive,
+  registerMenuItem,
+  registerGroupItem,
   registerFlyoutCloser,
   unregisterFlyoutCloser,
   closePeerFlyouts,

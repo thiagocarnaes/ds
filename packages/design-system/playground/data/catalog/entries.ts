@@ -6,7 +6,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Button: {
     usage: usageSnippets.Button!,
     props: [
-      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style / button variant'),
+      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style / button variant. Prefer over deprecated runtime alias `appearance` (danger → destructive).'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'default', 'Button size'),
       p('icon', 'ButtonIconName', undefined, 'Leading icon by registered name'),
       p('type', "'button' | 'submit' | 'reset'", 'button', 'Native button type'),
@@ -21,7 +21,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   IconButton: {
     usage: usageSnippets.IconButton!,
     props: [
-      p('ariaLabel', 'string', undefined, 'Accessible label for icon-only buttons (maps to aria-label)'),
+      p('ariaLabel', 'string', undefined, 'Accessible label for icon-only buttons (required; maps to aria-label)'),
       p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Button variant'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'icon', 'Button size (defaults to icon)'),
       p('disabled', 'boolean', 'false', 'Disables interaction'),
@@ -67,6 +67,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     props: [
       p('size', "'sm' | 'md' | 'lg'", 'md', 'Input size'),
       p('locale', 'string', 'en', 'Locale for formatting and calendar labels'),
+      p('placeholder', 'string', undefined, 'Input placeholder (defaults by locale when omitted)'),
       p('disabled', 'boolean', 'false', 'Disables the date picker'),
       p('clearLabel', 'string', undefined, 'Label for the clear button (defaults by locale)'),
       p('todayLabel', 'string', undefined, 'Label for the today button (defaults by locale)'),
@@ -87,6 +88,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('readonly', 'boolean', 'false', 'Makes the textarea read-only'),
       p('error', 'boolean', 'false', 'Error validation state'),
       p('message', 'string', undefined, 'Error message shown when :error is true'),
+      p('rows', 'number', undefined, 'Visible textarea rows (native rows attribute)'),
       p('id', 'string', undefined, 'Textarea element id'),
       cls(),
     ],
@@ -218,7 +220,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     usage: usageSnippets.Badge!,
     props: [
       p('value', 'number', undefined, 'Numeric value — renders as text (99+ when above 99)'),
-      p('variant', "'default' | 'primary' | 'important' | 'added' | 'removed'", 'default', 'Badge color variant'),
+      p('variant', "'default' | 'primary' | 'important' | 'added' | 'removed' | 'success' | 'warning' | 'destructive' | 'secondary' | 'outline'", 'default', 'Badge color variant. Legacy names (success, warning, destructive, secondary, outline) map to canonical appearances.'),
       p('size', "'sm' | 'md'", 'md', 'Badge size'),
       cls(),
     ],
@@ -376,7 +378,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       cls(),
     ],
     models: [
-      m('activeId', 'string', "''", 'Active menu item id (v-model:active-id)'),
+      m('activeId', 'string', "''", 'Active menu item id — auto-selects the first SidebarMenuItem when empty'),
       m('openKeys', 'string[]', '[]', 'Expanded group keys (v-model:open-keys)'),
     ],
     slots: [s('default', undefined, 'SidebarMenuItem and SidebarMenuGroup children')],
@@ -385,7 +387,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   SidebarMenuItem: {
     usage: usageSnippets.SidebarMenuItem!,
     props: [
-      p('id', 'string', undefined, 'Unique item identifier (required)'),
+      p('id', 'string', undefined, 'Unique item identifier (required) — top-level items should not share a group id prefix (use all not todos.all beside group todos)'),
       p('label', 'string', undefined, 'Item label (required)'),
       p('icon', 'Component', undefined, 'Optional Lucide or custom icon component'),
     ],
@@ -398,6 +400,12 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('label', 'string', undefined, 'Group label (required)'),
       p('icon', 'Component', undefined, 'Optional icon component'),
       p('defaultOpen', 'boolean', 'false', 'Expand group on mount'),
+      p(
+        'flyoutPlacement',
+        "'auto' | 'down' | 'up'",
+        'auto',
+        'Vertical flyout alignment — auto opens upward when the group is near the viewport bottom',
+      ),
     ],
     slots: [s('default', undefined, 'Nested SidebarMenuItem children')],
   },
@@ -520,7 +528,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('serverSide', 'boolean', 'false', 'Emit request events instead of client filtering/sorting'),
       p('striped', 'boolean', 'true', 'Striped table rows'),
       p('emptyTitle', 'string', 'No results', 'Empty state title'),
-      p('emptyDescription', 'string', undefined, 'Empty state description'),
+      p('emptyDescription', 'string', 'Try adjusting your search or filters.', 'Empty state description'),
       p('labels', 'DataTableLabels', undefined, 'Localized label overrides'),
       p('locale', 'string', 'en', 'Locale for formatting'),
       cls(),
@@ -736,19 +744,40 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('showHeader', 'boolean', 'true', 'Render header region'),
       p('showMenu', 'boolean', 'true', 'Render sidebar menu region'),
       p('showFooter', 'boolean', 'true', 'Render footer region'),
+      p('settingsMenu', 'boolean', 'false', 'Pin a settings group with gear icon at the bottom of the composed sidebar menu'),
+      p('settingsMenuLabel', 'string', 'Settings', 'Label for the pinned settings group when settingsMenu is true'),
+      p('settingsMenuId', 'string', 'settings', 'Id prefix for the settings SidebarMenuGroup'),
       p('footerWidth', "'full' | 'content'", 'full', 'Footer spans full width or content column only'),
-      cls(),
+      cls('Shell sizing — use class="min-h-svh" (or h-full on #app) for full-viewport apps; does not style slot content'),
     ],
     models: [
       m('menuCollapsed', 'boolean', 'false', 'Sidebar collapsed state (v-model:menu-collapsed)'),
       m('panelOpen', 'boolean', 'false', 'Side panel open state (v-model:panel-open)'),
+      m('activeMenuId', 'string', "''", 'Active sidebar item id — auto-selects first menu item when empty (v-model:active-menu-id)'),
+      m('openMenuKeys', 'string[]', '[]', 'Expanded sidebar group keys (v-model:open-menu-keys)'),
     ],
     slots: [
-      s('header', undefined, 'Top header bar content'),
-      s('menu', '{ collapsed, menuWidth, menuCollapsedWidth, toggleMenu, menuLabel }', 'Sidebar menu area'),
-      s('default', undefined, 'Main content area'),
-      s('panel', '{ closePanel }', 'Resizable side panel content'),
-      s('footer', undefined, 'Bottom footer bar content'),
+      s('header', undefined, 'Top header bar — compose markup and Tailwind classes inside the slot'),
+      s('menu-items', undefined, 'Main navigation items (SidebarMenuItem / SidebarMenuGroup)'),
+      s('settings-menu', undefined, 'Items inside the pinned settings group when settingsMenu is true'),
+      s('menu-toggle', '{ collapsed, toggleMenu }', 'Custom collapse toggle; omit for default toggle'),
+      s('default', undefined, 'Main content — fills available height by default; add your layout/spacing classes inside'),
+      s('panel', '{ closePanel }', 'Resizable side panel — compose header, body, and actions with Tailwind classes'),
+      s('footer', undefined, 'Bottom footer bar — compose markup and Tailwind classes inside the slot'),
     ],
+    composition: {
+      description:
+        'AppLayout only arranges page regions (grid + panel overlay). It does not ship styled header, menu, content, or footer — wrap each slot with Tailwind utility classes in your app. Declare refs for v-model and layout props in script setup (see Usage).',
+      parts: [
+        c('script refs', 'menuCollapsed, panelOpen, activeId, openKeys, settingsMenu, pageTitle, etc.'),
+        c('header slot', 'Brand bar with border-b, px-4 py-3, typography classes'),
+        c('menu-items slot', 'SidebarMenuItem / SidebarMenuGroup — main navigation'),
+        c('settings-menu slot', 'Items inside pinned settings group when settingsMenu is true', true),
+        c('menu-toggle slot', 'Custom collapse button; omit for default toggle', true),
+        c('default slot', 'Main page body — AppLayout stretches this region to full content height'),
+        c('panel slot', 'Optional detail drawer with border-l, padding, and close action', true),
+        c('footer slot', 'Status/meta row with border-t and muted text', true),
+      ],
+    },
   },
 }

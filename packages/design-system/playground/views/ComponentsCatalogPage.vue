@@ -19,7 +19,7 @@ const emit = defineEmits<{
 
 const { messages, t } = usePlaygroundLocale()
 
-const selectedName = ref(catalogGroups[0]?.items[0] ?? 'Button')
+const selectedName = ref(catalogGroups[0]?.items[0] ?? 'AppLayout')
 const navScrollEl = ref<HTMLElement | null>(null)
 const navEl = ref<HTMLElement | null>(null)
 const detailEl = ref<HTMLElement | null>(null)

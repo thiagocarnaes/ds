@@ -7,6 +7,10 @@ import DateInputDemo from './DateInputDemo.vue'
 import DialogDemo from './DialogDemo.vue'
 import FormFieldDemo from './FormFieldDemo.vue'
 import InputDemo from './InputDemo.vue'
+import IconButtonDemo from './IconButtonDemo.vue'
+import LabelDemo from './LabelDemo.vue'
+import LinkDemo from './LinkDemo.vue'
+import TextareaDemo from './TextareaDemo.vue'
 import LayoutDemo from './LayoutDemo.vue'
 import LayoutPrimitivesDemo from './LayoutPrimitivesDemo.vue'
 import LozengeDemo from './LozengeDemo.vue'
@@ -24,7 +28,11 @@ import ToggleDemo from './ToggleDemo.vue'
 import TooltipDemo from './TooltipDemo.vue'
 
 export const playgroundDemoRegistry: Record<string, Component> = {
+  IconButton: IconButtonDemo,
+  Link: LinkDemo,
   Input: InputDemo,
+  Textarea: TextareaDemo,
+  Label: LabelDemo,
   Badge: BadgeDemo,
   Avatar: AvatarDemo,
   Tabs: TabsDemo,

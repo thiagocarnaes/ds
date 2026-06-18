@@ -2,6 +2,7 @@
 import { computed, onBeforeMount, onUnmounted, watch } from 'vue'
 import { cn } from '@/lib/utils'
 import AppLayoutPanelOverlay from './AppLayoutPanelOverlay.vue'
+import AppLayoutSidebarMenu from './AppLayoutSidebarMenu.vue'
 
 export interface AppLayoutProps {
   menuWidth?: string
@@ -17,6 +18,12 @@ export interface AppLayoutProps {
   showHeader?: boolean
   showMenu?: boolean
   showFooter?: boolean
+  /** Pin a Settings group at the bottom of the composed sidebar menu. */
+  settingsMenu?: boolean
+  /** Label for the settings group when `settingsMenu` is true. */
+  settingsMenuLabel?: string
+  /** Id prefix for the settings group when `settingsMenu` is true. */
+  settingsMenuId?: string
   /** `full` spans header/menu/content; `content` keeps footer under main content only. */
   footerWidth?: 'full' | 'content'
   class?: string
@@ -36,11 +43,16 @@ const props = withDefaults(defineProps<AppLayoutProps>(), {
   showHeader: true,
   showMenu: true,
   showFooter: true,
+  settingsMenu: false,
+  settingsMenuLabel: 'Settings',
+  settingsMenuId: 'settings',
   footerWidth: 'full',
 })
 
 const menuCollapsed = defineModel<boolean>('menuCollapsed', { default: false })
 const panelOpen = defineModel<boolean>('panelOpen', { default: false })
+const activeMenuId = defineModel<string>('activeMenuId', { default: '' })
+const openMenuKeys = defineModel<string[]>('openMenuKeys', { default: () => [] })
 
 onBeforeMount(() => {
   if (props.defaultMenuCollapsed) {
@@ -130,7 +142,7 @@ onUnmounted(() => {
 
 <template>
   <div
-    :class="cn('grid min-h-0 overflow-hidden rounded-lg border border-border bg-background', props.class)"
+    :class="cn('grid h-full min-h-0 overflow-hidden rounded-lg border border-border bg-background', props.class)"
     :style="gridStyle"
   >
     <header
@@ -143,34 +155,48 @@ onUnmounted(() => {
 
     <div
       v-if="showMenu"
-      class="relative flex min-h-0 flex-1"
-      style="grid-area: shell"
+      class="relative grid min-h-0 min-w-0 overflow-hidden bg-background"
+      style="grid-area: shell; grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr)"
     >
       <aside
         :class="
           cn(
-            'flex h-full min-h-0 shrink-0 flex-col overflow-x-hidden overflow-y-auto border-r border-border bg-card/60 px-0 py-0 transition-[width] duration-300 ease-in-out',
+            'flex h-full min-h-0 shrink-0 flex-col overflow-hidden border-r border-border bg-card/60 px-0 py-0 transition-[width] duration-300 ease-in-out',
           )
         "
         :style="{ width: activeMenuWidth }"
         :data-menu-collapsed="menuCollapsed ? 'true' : 'false'"
       >
         <div class="flex min-h-0 h-full w-full flex-1 flex-col">
-          <slot
-            name="menu"
+          <AppLayoutSidebarMenu
+            v-model:active-id="activeMenuId"
+            v-model:open-keys="openMenuKeys"
             :collapsed="menuCollapsed"
+            :menu-label="menuLabel"
             :menu-width="menuWidth"
             :menu-collapsed-width="menuCollapsedWidth"
             :toggle-menu="toggleMenu"
-            :menu-label="menuLabel"
-          />
+            :settings-menu="settingsMenu"
+            :settings-menu-label="settingsMenuLabel"
+            :settings-menu-id="settingsMenuId"
+          >
+            <template #toggle="toggleProps">
+              <slot name="menu-toggle" v-bind="toggleProps" />
+            </template>
+            <slot name="menu-items" />
+            <template #settings>
+              <slot name="settings-menu" />
+            </template>
+          </AppLayoutSidebarMenu>
         </div>
       </aside>
 
-      <div class="relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
-        <div class="relative min-h-0 flex-1 overflow-hidden">
-          <main class="h-full min-h-0 overflow-y-auto">
-            <slot />
+      <div class="relative flex min-h-0 min-w-0 flex-col overflow-hidden">
+        <div class="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+          <main class="flex h-full min-h-0 flex-1 flex-col overflow-y-auto">
+            <div class="flex h-full min-h-0 flex-1 flex-col">
+              <slot />
+            </div>
           </main>
 
           <AppLayoutPanelOverlay
@@ -198,11 +224,13 @@ onUnmounted(() => {
 
     <div
       v-else
-      class="relative min-h-0 overflow-hidden bg-background"
+      class="relative flex h-full min-h-0 flex-col overflow-hidden bg-background"
       style="grid-area: content"
     >
-      <main class="h-full min-h-0 overflow-y-auto">
-        <slot />
+      <main class="flex h-full min-h-0 flex-1 flex-col overflow-y-auto">
+        <div class="flex h-full min-h-0 flex-1 flex-col">
+          <slot />
+        </div>
       </main>
 
       <AppLayoutPanelOverlay

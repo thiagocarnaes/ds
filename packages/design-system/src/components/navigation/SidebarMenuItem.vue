@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject } from 'vue'
+import { computed, inject, onBeforeMount, toValue } from 'vue'
 import type { Component } from 'vue'
 import { cn } from '@/lib/utils'
 import { SIDEBAR_MENU_INJECTION_KEY } from './sidebarMenuContext'
@@ -30,6 +30,22 @@ const active = computed(() => menu.isActive(props.id))
 const classes = computed(() =>
   cn(sidebarMenuTriggerClass(), sidebarMenuStateClass(active.value)),
 )
+
+const iconClasses = computed(() =>
+  cn(
+    sidebarMenuIconClass(),
+    sidebarMenuIconStateClass(active.value, toValue(menu.collapsed)),
+  ),
+)
+
+onBeforeMount(() => {
+  const isTopLevel = !menu.parentGroupId
+  menu.registerMenuItem(props.id, isTopLevel)
+
+  if (menu.parentGroupId) {
+    menu.registerGroupItem(menu.parentGroupId, props.id)
+  }
+})
 </script>
 
 <template>
@@ -40,14 +56,7 @@ const classes = computed(() =>
     :aria-current="active ? 'page' : undefined"
     @click="menu.setActive(id)"
   >
-    <span
-      :class="
-        cn(
-          sidebarMenuIconClass(),
-          sidebarMenuIconStateClass(active, menu.collapsed.value),
-        )
-      "
-    >
+    <span :class="iconClasses">
       <component :is="icon" v-if="icon" :size="16" class="shrink-0" />
     </span>
     <span :class="sidebarMenuLabelClass()">{{ label }}</span>

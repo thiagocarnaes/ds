@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.6] - 2026-06-16
+
+### Added
+
+- **`AppLayout` composed menu** — `#menu-items`, optional `#settings-menu`, and `#menu-toggle` slots; built-in sidebar shell without manual `SidebarMenuShell`.
+- **`AppLayout` settings footer** — `:settings-menu="true"` pins a gear-icon `SidebarMenuGroup` at the bottom of the sidebar (`settings-menu-label`, `settings-menu-id`).
+- **`AppLayout` menu models** — `v-model:active-menu-id` and `v-model:open-menu-keys` for composed sidebar state.
+- **`SidebarMenuGroup.flyoutPlacement`** — `'auto' | 'down' | 'up'`; settings group in `AppLayout` opens upward by default.
+
+### Changed
+
+- **`AppLayout`** — removed legacy `#menu` slot; sidebar is always composed via `#menu-items`, `#settings-menu`, and `#menu-toggle`.
+- **`SidebarMenu`** — selects the first registered item when `activeId` is empty; top-level items no longer activate sibling groups that share an id prefix (e.g. `todos.all` vs group `todos`).
+- **Playground Layout demo** — composed menu, settings toggle, default active item `dashboard`.
+- **Package README** — `AppLayout` examples and sidebar id conventions aligned with the playground catalog.
+
+### Fixed
+
+- **`SidebarMenuGroup`** — icon/chevron active styles no longer treat all groups as selected on first paint.
+- **`AppLayout`** — content region height, footer visibility, and settings submenu flyout direction near the viewport bottom.
+
 ## [0.1.8] - 2026-06-16
 
 ### Added

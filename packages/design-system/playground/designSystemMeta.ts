@@ -10,7 +10,11 @@ export const designSystemLibraryComponentCount = 58
 /** Interactive demos for Library components (drawer). */
 export const playgroundDemoComponents = [
   'Button',
+  'IconButton',
+  'Link',
   'Input',
+  'Textarea',
+  'Label',
   'DateInput',
   'Switch',
   'RadioGroup',
