@@ -54,7 +54,7 @@ const regionShellClass =
             :class="[regionShellClass, 'h-full min-h-[10rem]']"
             style="background: rgba(167,139,250,0.08); border-color: rgba(167,139,250,0.35)"
           >
-            <span class="font-mono text-[8px] uppercase tracking-wider text-[#A78BFA]">
+            <span class="font-mono text-[10px] uppercase tracking-wider text-[#A78BFA]">
               {{ t('layoutPlayground.regions.menu.label') }}
             </span>
           </div>

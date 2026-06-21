@@ -290,6 +290,11 @@ const toast = useToast()
     <template #header>Title</template>
     Body content
     <template #footer>Footer actions</template>
+  </Card>
+
+  <!-- Ghost variant - minimal style -->
+  <Card :variant="'ghost'">
+    <p>Transparent background</p>
   </Card>`,
   ),
   Divider: usage('Divider', '  <Divider :orientation="\'horizontal\'" />'),

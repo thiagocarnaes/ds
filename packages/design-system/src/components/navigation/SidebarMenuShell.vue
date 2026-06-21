@@ -50,7 +50,7 @@ const toggleLeft = computed(() => {
     >
       <span
         v-if="menuLabel"
-        class="pointer-events-none truncate font-mono text-[8px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
+        class="pointer-events-none truncate font-mono text-[10px] uppercase tracking-wider text-[#A78BFA] transition-opacity duration-300 ease-in-out"
         :class="[
           showToggle
             ? 'absolute left-0 top-1/2 max-w-[calc(100%-2.5rem)] -translate-y-1/2'

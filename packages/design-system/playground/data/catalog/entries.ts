@@ -427,7 +427,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Card: {
     usage: usageSnippets.Card!,
     props: [
-      p('variant', "'elevated' | 'outlined' | 'flat'", 'outlined', 'Card surface style'),
+      p('variant', "'elevated' | 'outlined' | 'flat' | 'ghost'", 'outlined', 'Card surface style'),
       cls(),
     ],
     slots: [

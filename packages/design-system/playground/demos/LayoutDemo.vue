@@ -291,7 +291,7 @@ const code = computed(() => {
             style="background: rgba(0,212,255,0.06)"
           >
             <div class="flex items-center gap-2">
-              <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.regions.header.label') }}</span>
+              <span class="font-mono text-[10px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.regions.header.label') }}</span>
               <span
                 class="flex size-6 items-center justify-center rounded-md text-[10px] font-bold text-[#060D18]"
                 style="background: linear-gradient(135deg, #0052CC, #00D4FF)"
@@ -349,7 +349,7 @@ const code = computed(() => {
           class="flex h-full min-h-0 w-full flex-col rounded p-2"
           style="background: rgba(0,229,176,0.06)"
         >
-          <p class="mb-2 font-mono text-[8px] uppercase tracking-wider text-[#00E5B0]">{{ t('layoutPlayground.slots.content') }}</p>
+          <p class="mb-2 font-mono text-[10px] uppercase tracking-wider text-[#00E5B0]">{{ t('layoutPlayground.slots.content') }}</p>
           <div
             class="pg-playground-preview flex flex-1 flex-col items-center justify-center gap-3 rounded-lg px-4 py-6 text-center"
           >
@@ -368,7 +368,7 @@ const code = computed(() => {
             style="background: rgba(0,212,255,0.06)"
           >
             <div class="mb-3 flex items-center justify-between gap-2 border-b border-[#00D4FF]/20 pb-2">
-              <span class="font-mono text-[8px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.panelTag') }}</span>
+              <span class="font-mono text-[10px] uppercase tracking-wider text-[#00D4FF]">{{ t('layoutPlayground.panelTag') }}</span>
               <button
                 type="button"
                 class="rounded px-2 py-0.5 font-mono text-[10px] text-[#4D6A87] transition-colors hover:bg-muted/40 hover:text-foreground"
@@ -391,7 +391,7 @@ const code = computed(() => {
             class="flex w-full items-center justify-between gap-3 rounded p-2 text-xs"
             style="background: rgba(255,139,0,0.06)"
           >
-            <span class="font-mono text-[8px] uppercase tracking-wider text-[#FF8B00]">{{ t('layoutPlayground.regions.footer.label') }}</span>
+            <span class="font-mono text-[10px] uppercase tracking-wider text-[#FF8B00]">{{ t('layoutPlayground.regions.footer.label') }}</span>
             <span class="font-mono text-[10px] text-[#4D6A87]">{{ t('app.footer') }}</span>
           </div>
         </template>
