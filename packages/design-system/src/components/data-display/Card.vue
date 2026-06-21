@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { cn } from '@/lib/utils'
+import { semanticSurfaceClasses } from '@/lib/semanticSurfaceClasses'
 
 export type CardVariant = 'elevated' | 'outlined' | 'flat' | 'ghost'
 
@@ -13,10 +14,10 @@ const props = withDefaults(defineProps<CardProps>(), {
 })
 
 const variantClasses: Record<CardVariant, string> = {
-  elevated: 'bg-card text-card-foreground shadow-md',
+  elevated: 'bg-card text-card-foreground shadow-lg',
   outlined: 'border border-border bg-card text-card-foreground shadow-sm',
   flat: 'bg-card text-card-foreground',
-  ghost: 'bg-transparent text-foreground',
+  ghost: semanticSurfaceClasses.ghost,
 }
 
 const classes = computed(() =>

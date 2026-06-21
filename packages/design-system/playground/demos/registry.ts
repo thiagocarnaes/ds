@@ -1,6 +1,7 @@
 import type { Component } from 'vue'
 import AvatarDemo from './AvatarDemo.vue'
 import BadgeDemo from './BadgeDemo.vue'
+import CardDemo from './CardDemo.vue'
 import CheckboxDemo from './CheckboxDemo.vue'
 import DataTableDemo from './DataTableDemo.vue'
 import DateInputDemo from './DateInputDemo.vue'
@@ -35,6 +36,7 @@ export const playgroundDemoRegistry: Record<string, Component> = {
   Label: LabelDemo,
   Badge: BadgeDemo,
   Avatar: AvatarDemo,
+  Card: CardDemo,
   Tabs: TabsDemo,
   Pagination: PaginationDemo,
   DataTable: DataTableDemo,

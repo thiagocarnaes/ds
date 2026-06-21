@@ -51,6 +51,7 @@ export const en: PlaygroundMessages = {
   },
   cards: {
     button: { label: 'Button', tag: 'interactive' },
+    card: { label: 'Card', tag: '4 variants · ghost' },
     controls: { label: 'Controls', tag: 'toggle · checkbox' },
     inputs: { label: 'Text Field', tag: 'with icon · plain' },
     color: { label: 'Color Tokens', tag: '8 tokens' },

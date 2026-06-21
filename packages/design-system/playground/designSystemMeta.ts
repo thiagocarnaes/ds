@@ -25,6 +25,7 @@ export const playgroundDemoComponents = [
   'Badge',
   'Lozenge',
   'Avatar',
+  'Card',
   'Tabs',
   'Breadcrumbs',
   'Pagination',

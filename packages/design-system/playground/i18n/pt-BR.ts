@@ -51,6 +51,7 @@ export const ptBR: PlaygroundMessages = {
   },
   cards: {
     button: { label: 'Botão', tag: 'interativo' },
+    card: { label: 'Card', tag: '4 variantes · ghost' },
     controls: { label: 'Controles', tag: 'interruptor · checkbox' },
     inputs: { label: 'Campo de texto', tag: 'com ícone · simples' },
     color: { label: 'Tokens de cor', tag: '8 tokens' },

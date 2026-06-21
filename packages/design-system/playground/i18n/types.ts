@@ -59,6 +59,7 @@ export interface PlaygroundMessages {
   }
   cards: {
     button: { label: string; tag: string }
+    card: { label: string; tag: string }
     controls: { label: string; tag: string }
     inputs: { label: string; tag: string }
     color: { label: string; tag: string }
