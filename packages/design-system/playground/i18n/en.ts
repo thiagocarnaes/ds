@@ -80,6 +80,7 @@ export const en: PlaygroundMessages = {
     items: {
       Button: { count: '6 variants', category: 'forms' },
       Input: { count: '4 states', category: 'forms' },
+      Chip: { count: 'removable tags', category: 'forms' },
       DateInput: { count: 'locale', category: 'forms' },
       Switch: { count: 'on/off', category: 'forms' },
       RadioGroup: { count: 'exclusive', category: 'forms' },

@@ -94,7 +94,7 @@ const componentGroups = [
   { category: 'Actions', items: ['Button', 'IconButton', 'Link'] },
   {
     category: 'Forms',
-    items: ['Input', 'Textarea', 'Checkbox', 'Radio', 'RadioGroup', 'Switch', 'Toggle', 'Select', 'Label', 'FormField'],
+    items: ['Input', 'Textarea', 'Checkbox', 'Radio', 'RadioGroup', 'Switch', 'Toggle', 'Select', 'Label', 'FormField', 'Chip'],
   },
   {
     category: 'Feedback',

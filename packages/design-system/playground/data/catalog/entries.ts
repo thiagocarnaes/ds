@@ -49,6 +49,8 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('type', "'text' | 'email' | 'password' | 'search' | 'date'", 'text', 'Native input type'),
       p('size', "'sm' | 'md' | 'lg'", 'md', 'Input size'),
       p('placeholder', 'string', undefined, 'Placeholder text'),
+      p('minLength', 'number', undefined, 'Minimum allowed input length (native minlength attribute)'),
+      p('maxLength', 'number', undefined, 'Maximum allowed input length (native maxlength attribute)'),
       p('disabled', 'boolean', 'false', 'Disables the input'),
       p('readonly', 'boolean', 'false', 'Makes the input read-only'),
       p('error', 'boolean', 'false', 'Error validation state'),
@@ -202,6 +204,22 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       cls(),
     ],
     slots: [s('default', '{ id: string }', 'Form control; receives auto-generated id for label association')],
+  },
+
+  Chip: {
+    usage: usageSnippets.Chip!,
+    props: [
+      p('size', "'sm' | 'md' | 'lg'", 'md', 'Input and chip size'),
+      p('placeholder', 'string', undefined, 'Placeholder text for the input'),
+      p('disabled', 'boolean', 'false', 'Disables adding/removing chips'),
+      p('error', 'boolean', 'false', 'Error validation state'),
+      p('message', 'string', undefined, 'Error message shown when :error is true'),
+      p('variant', "'default' | 'success' | 'danger' | 'progress' | 'warning' | 'new'", 'progress', 'Visual variant for chip lozenges'),
+      p('id', 'string', undefined, 'Input element id'),
+      cls(),
+    ],
+    models: [m('modelValue', 'string[]', '[]', 'Array of chip values')],
+    events: [e('update:modelValue', 'string[]', 'Emitted when chips are added or removed')],
   },
 
   Alert: {

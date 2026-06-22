@@ -20,6 +20,8 @@ const value = ref('Ana Martins')
 const type = ref<InputType>('text')
 const size = ref<InputSize>('md')
 const placeholder = ref('Full name')
+const minLength = ref(0)
+const maxLength = ref(0)
 const readonly = ref(false)
 const state = ref<InputState>('default')
 
@@ -34,6 +36,8 @@ const code = computed(() => {
     `  ${playgroundSnippetAttr('placeholder', placeholder.value)}`,
   ]
 
+  if (minLength.value > 0) lines.push(`  ${templateStringAttr('minLength', minLength.value)}`)
+  if (maxLength.value > 0) lines.push(`  ${templateStringAttr('maxLength', maxLength.value)}`)
   if (readonly.value) lines.push(`  ${templateBooleanAttr('readonly', true)}`)
   if (state.value === 'error') {
     lines.push(`  ${templateBooleanAttr('error', true)}`)
@@ -55,11 +59,13 @@ const code = computed(() => {
     <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-4">
       <div class="pg-playground-preview flex items-center justify-center rounded-xl">
         <Input
-          :key="`${type}-${size}-${state}-${readonly}`"
+          :key="`${type}-${size}-${state}-${readonly}-${minLength}-${maxLength}`"
           v-model="value"
           :type="type"
           :size="size"
           :placeholder="placeholder"
+          :min-length="minLength || undefined"
+          :max-length="maxLength || undefined"
           class="max-w-xs"
           :readonly="readonly"
           :error="state === 'error'"
@@ -107,6 +113,27 @@ const code = computed(() => {
           type="text"
           class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
         />
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <div>
+          <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">minLength</label>
+          <input
+            v-model.number="minLength"
+            type="number"
+            min="0"
+            class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+          />
+        </div>
+        <div>
+          <label class="mb-2 block font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">maxLength</label>
+          <input
+            v-model.number="maxLength"
+            type="number"
+            min="0"
+            class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+          />
+        </div>
       </div>
 
       <label class="flex cursor-pointer items-center gap-2 text-xs text-[#4D6A87]">

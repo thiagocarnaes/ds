@@ -8,6 +8,8 @@ export interface InputProps extends /* @vue-ignore */ FormInputVariants {
   modelValue?: string
   type?: 'text' | 'email' | 'password' | 'search' | 'date'
   placeholder?: string
+  minLength?: number
+  maxLength?: number
   disabled?: boolean
   readonly?: boolean
   error?: boolean
@@ -55,6 +57,8 @@ function onInput(event: Event): void {
       :type="type"
       :value="modelValue"
       :placeholder="placeholder"
+      :minlength="minLength"
+      :maxlength="maxLength"
       :disabled="disabled"
       :readonly="readonly"
       :lang="lang"

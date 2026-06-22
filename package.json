@@ -8,5 +8,8 @@
     "build": "npm run build -w @tcarnaes/design-system",
     "test": "npm run test -w @tcarnaes/design-system",
     "dev": "npm run dev -w @tcarnaes/design-system"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^3.2.6"
   }
 }

@@ -80,6 +80,7 @@ export const ptBR: PlaygroundMessages = {
     items: {
       Button: { count: '6 variantes', category: 'forms' },
       Input: { count: '4 estados', category: 'forms' },
+      Chip: { count: 'tags removíveis', category: 'forms' },
       DateInput: { count: 'locale', category: 'forms' },
       Switch: { count: 'on/off', category: 'forms' },
       RadioGroup: { count: 'exclusivo', category: 'forms' },

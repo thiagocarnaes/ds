@@ -8,6 +8,7 @@ import Switch from '@/components/form/Switch.vue'
 import Select from '@/components/form/Select.vue'
 import FormField from '@/components/form/FormField.vue'
 import Input from '@/components/form/Input.vue'
+import Chip from '@/components/form/Chip.vue'
 
 describe('Checkbox', () => {
   it('toggles value', async () => {
@@ -169,5 +170,36 @@ describe('FormField', () => {
     })
     expect(wrapper.text()).toContain('Email')
     expect(wrapper.text()).toContain('Required field')
+  })
+})
+
+describe('Chip', () => {
+  it('adds chip on enter key', async () => {
+    const wrapper = mount(Chip, { props: { modelValue: [] } })
+    const input = wrapper.find('input')
+    
+    await input.setValue('React')
+    await input.trigger('keyup.enter')
+    
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([['React']])
+  })
+
+  it('removes chip on button click', async () => {
+    const wrapper = mount(Chip, { props: { modelValue: ['Vue', 'React'] } })
+    const buttons = wrapper.findAll('button')
+    
+    await buttons[0].trigger('click')
+    
+    const emitted = wrapper.emitted('update:modelValue')?.[0]
+    expect(emitted).toEqual([['React']])
+  })
+
+  it('removes last chip on backspace with empty input', async () => {
+    const wrapper = mount(Chip, { props: { modelValue: ['Vue'] } })
+    const input = wrapper.find('input')
+    
+    await input.trigger('keydown', { key: 'Backspace' })
+    
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([[]])
   })
 })

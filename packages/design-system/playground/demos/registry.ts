@@ -3,6 +3,7 @@ import AvatarDemo from './AvatarDemo.vue'
 import BadgeDemo from './BadgeDemo.vue'
 import CardDemo from './CardDemo.vue'
 import CheckboxDemo from './CheckboxDemo.vue'
+import ChipDemo from './ChipDemo.vue'
 import DataTableDemo from './DataTableDemo.vue'
 import DateInputDemo from './DateInputDemo.vue'
 import DialogDemo from './DialogDemo.vue'
@@ -32,6 +33,7 @@ export const playgroundDemoRegistry: Record<string, Component> = {
   IconButton: IconButtonDemo,
   Link: LinkDemo,
   Input: InputDemo,
+  Chip: ChipDemo,
   Textarea: TextareaDemo,
   Label: LabelDemo,
   Badge: BadgeDemo,

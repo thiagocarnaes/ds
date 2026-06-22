@@ -52,6 +52,8 @@ export const usageSnippets: Record<string, string> = {
     :type="'email'"
     :size="'md'"
     :placeholder="'you@company.com'"
+    :min-length="6"
+    :max-length="64"
     :error="false"
     :success="false"
     :message="'Helper or validation text'"
@@ -149,6 +151,15 @@ import { FormField, Input } from '${PACKAGE}'
     </template>
   </FormField>
 </template>`,
+  Chip: usage(
+    'Chip',
+    `  <Chip
+    v-model="tags"
+    :size="'md'"
+    :placeholder="'Add a tag...'"
+    :variant="'progress'"
+  />`,
+  ),
   Alert: usage(
     'Alert',
     `  <Alert :variant="'success'" :dismissible="true">

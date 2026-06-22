@@ -14,5 +14,21 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     include: ['tests/**/*.spec.ts'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'dist/',
+        'tests/',
+        '**/*.spec.ts',
+        '**/*.config.*',
+        '**/types.ts',
+      ],
+      lines: true,
+      statements: true,
+      functions: false,
+      branches: false,
+    },
   },
 })

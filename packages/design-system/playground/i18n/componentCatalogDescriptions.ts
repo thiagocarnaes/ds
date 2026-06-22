@@ -6,6 +6,7 @@ export const componentCatalogDescriptionsEn: Record<string, string> = {
   DateInput: 'Date picker with locale-aware display (dd/mm/aaaa in pt-BR) and custom calendar.',
   Textarea: 'Multi-line text field for longer form content and notes.',
   Checkbox: 'Binary or multi-select control. Supports indeterminate state for partial selections.',
+  Chip: 'Input field with removable tag chips. Type and press Enter to add tags, press Backspace to remove.',
   Radio: 'Single option within a radio group for mutually exclusive choices.',
   RadioGroup: 'Groups radio buttons and manages the selected value for the set.',
   Switch: 'On/off control for settings that take effect immediately.',

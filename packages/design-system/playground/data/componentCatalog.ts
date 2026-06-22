@@ -31,6 +31,7 @@ export const catalogGroups: CatalogGroup[] = [
       'Select',
       'Label',
       'FormField',
+      'Chip',
     ],
   },
   {
