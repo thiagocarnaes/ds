@@ -18,7 +18,7 @@ type ChipsInputVariant = (typeof variantOptions)[number]
 
 const chips = ref(['Vue', 'TypeScript'])
 const size = ref<ChipsInputSize>('md')
-const placeholder = ref('Digite e pressione Enter...')
+const placeholder = ref(t('drawer.playgroundPlaceholders.Chip'))
 const state = ref<ChipsInputState>('default')
 const chipVariant = ref<ChipsInputVariant>('progress')
 
@@ -107,6 +107,15 @@ const code = computed(() => {
             {{ item }}
           </button>
         </div>
+      </div>
+
+      <div>
+        <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">placeholder</p>
+        <input
+          v-model="placeholder"
+          type="text"
+          class="w-full rounded-md border border-border bg-background px-2 py-1.5 text-xs text-foreground"
+        />
       </div>
     </div>
 

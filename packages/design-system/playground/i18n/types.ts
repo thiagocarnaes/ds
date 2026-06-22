@@ -448,6 +448,7 @@ export interface PlaygroundMessages {
     livePlayground: string
     previewFallback: string
     descriptions: Record<string, string>
+    playgroundPlaceholders: Record<string, string>
   }
   usage: {
     label: string

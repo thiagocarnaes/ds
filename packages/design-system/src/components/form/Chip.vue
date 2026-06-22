@@ -90,10 +90,15 @@ function handleKeyDown(event: KeyboardEvent): void {
           type="button"
           :disabled="props.disabled"
           @click="removeChip(index)"
-          class="ml-1 cursor-pointer hover:opacity-70 transition-opacity font-semibold disabled:cursor-not-allowed"
+          class="ml-1 -mr-1 inline-flex items-center justify-center rounded-full cursor-pointer transition-colors disabled:cursor-not-allowed bg-black/10 hover:bg-black/30"
+          :class="{ 
+            'w-4 h-4': props.size === 'sm',
+            'w-5 h-5': props.size === 'md',
+            'w-6 h-6': props.size === 'lg'
+          }"
           :aria-label="`Remove ${chip}`"
         >
-          ×
+          <span :style="{ fontSize: props.size === 'sm' ? '0.75rem' : props.size === 'md' ? '1rem' : '1.5rem' }" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; line-height: 1">×</span>
         </button>
       </Lozenge>
 

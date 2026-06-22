@@ -526,6 +526,9 @@ export const ptBR: PlaygroundMessages = {
     component: 'Componente',
     livePlayground: 'Playground ao vivo',
     previewFallback: 'Preview de {name}',
+    playgroundPlaceholders: {
+      Chip: 'Digite e pressione Enter...',
+    },
     descriptions: {
       Button: 'Dispara um evento ou ação. Use :variant para comunicar hierarquia.',
       Input: 'Campo de texto com estados de erro, sucesso e desabilitado.',

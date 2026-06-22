@@ -526,6 +526,9 @@ export const en: PlaygroundMessages = {
     component: 'Component',
     livePlayground: 'Live Playground',
     previewFallback: '{name} preview',
+    playgroundPlaceholders: {
+      Chip: 'Type and press Enter...',
+    },
     descriptions: {
       Button: 'Triggers an event or action. Use :variant to communicate hierarchy.',
       Input: 'Text field with error, success, and disabled states.',
