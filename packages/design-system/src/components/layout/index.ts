@@ -4,3 +4,5 @@ export { default as Grid } from './Grid.vue'
 export { default as AppLayout } from './AppLayout.vue'
 
 export type { AppLayoutProps } from './AppLayout.vue'
+export type { ContainerMaxWidth } from './Container.vue'
+export type { StackDirection, StackGap, StackAlign, StackJustify } from './Stack.vue'

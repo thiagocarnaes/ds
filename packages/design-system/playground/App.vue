@@ -58,29 +58,29 @@ const { t } = providePlaygroundLocale()
 const { viewportCols } = usePlaygroundGrid(activeCat)
 
 const cards = [
-  { id: 'button', cats: ['forms'], span: 1, component: ButtonCard },
-  { id: 'controls', cats: ['forms'], span: 1, component: ControlsCard },
-  { id: 'inputs', cats: ['forms'], span: 3, component: InputsCard },
-  { id: 'color', cats: ['foundations'], span: 4, component: ColorCard },
-  { id: 'typography', cats: ['foundations'], span: 1, component: TypographyCard },
-  { id: 'spacing', cats: ['foundations'], span: 1, component: SpacingCard },
-  { id: 'icons', cats: ['foundations'], span: 4, component: IconsCard },
-  { id: 'labels', cats: ['labels'], span: 1, component: LabelsCard },
-  { id: 'avatar', cats: ['labels'], span: 1, component: AvatarCard },
-  { id: 'loading', cats: ['feedback'], span: 1, component: LoadingCard },
-  { id: 'messages', cats: ['feedback'], span: 1, component: MessagesCard },
-  { id: 'chat', cats: ['feedback'], span: 4, component: ChatPreviewCard },
-  { id: 'layout', cats: ['layout'], span: 3, component: LayoutCard, tall: true },
-  { id: 'datatable', cats: ['layout'], span: 4, component: DataTableCard, tall: true },
-  { id: 'index', cats: ['forms', 'labels', 'feedback', 'layout'], span: 3, component: ComponentIndexCard, tall: true },
-] as const
+  { id: 'button', cats: ['forms'] as string[], span: 1, component: ButtonCard, tall: false },
+  { id: 'controls', cats: ['forms'] as string[], span: 1, component: ControlsCard, tall: false },
+  { id: 'inputs', cats: ['forms'] as string[], span: 3, component: InputsCard, tall: false },
+  { id: 'color', cats: ['foundations'] as string[], span: 4, component: ColorCard, tall: false },
+  { id: 'typography', cats: ['foundations'] as string[], span: 1, component: TypographyCard, tall: false },
+  { id: 'spacing', cats: ['foundations'] as string[], span: 1, component: SpacingCard, tall: false },
+  { id: 'icons', cats: ['foundations'] as string[], span: 4, component: IconsCard, tall: false },
+  { id: 'labels', cats: ['labels'] as string[], span: 1, component: LabelsCard, tall: false },
+  { id: 'avatar', cats: ['labels'] as string[], span: 1, component: AvatarCard, tall: false },
+  { id: 'loading', cats: ['feedback'] as string[], span: 1, component: LoadingCard, tall: false },
+  { id: 'messages', cats: ['feedback'] as string[], span: 1, component: MessagesCard, tall: false },
+  { id: 'chat', cats: ['feedback'] as string[], span: 4, component: ChatPreviewCard, tall: false },
+  { id: 'layout', cats: ['layout'] as string[], span: 3, component: LayoutCard, tall: true },
+  { id: 'datatable', cats: ['layout'] as string[], span: 4, component: DataTableCard, tall: true },
+  { id: 'index', cats: ['forms', 'labels', 'feedback', 'layout'] as string[], span: 3, component: ComponentIndexCard, tall: true },
+]
 
 type PlaygroundCard = (typeof cards)[number]
 
 const visibleCards = computed(() =>
   activeCat.value === 'all'
     ? [...cards]
-    : cards.filter((c) => c.cats.includes(activeCat.value)),
+    : cards.filter((c) => c.cats.includes(activeCat.value as string)),
 )
 
 const hasPlaygroundSection = computed(

@@ -73,22 +73,22 @@ describe('HomeChangelogSection — entry count (Requirement 7.1)', () => {
       {
         version: '1.0.0',
         date: '2025-01-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0170.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
       {
         version: '0.9.0',
         date: '2024-12-01',
-        changes: [{ type: 'Fixed', descKey: 'changelog.v0160.fixed1' }],
+        changes: [{ type: 'Fixed', desc: 'Test change description' }],
       },
       {
         version: '0.8.0',
         date: '2024-11-01',
-        changes: [{ type: 'Changed', descKey: 'changelog.v0140.changed1' }],
+        changes: [{ type: 'Changed', desc: 'Test change description' }],
       },
       {
         version: '0.7.0',
         date: '2024-10-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0150.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
     ]
 
@@ -118,27 +118,27 @@ describe('HomeChangelogSection — entry count (Requirement 7.1)', () => {
       {
         version: '1.0.0',
         date: '2025-01-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0170.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
       {
         version: '0.9.0',
         date: '2024-12-01',
-        changes: [{ type: 'Fixed', descKey: 'changelog.v0160.fixed1' }],
+        changes: [{ type: 'Fixed', desc: 'Test change description' }],
       },
       {
         version: '0.8.0',
         date: '2024-11-01',
-        changes: [{ type: 'Changed', descKey: 'changelog.v0140.changed1' }],
+        changes: [{ type: 'Changed', desc: 'Test change description' }],
       },
       {
         version: '0.7.0',
         date: '2024-10-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0150.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
       {
         version: '0.6.0',
         date: '2024-09-01',
-        changes: [{ type: 'Fixed', descKey: 'changelog.v0140.fixed1' }],
+        changes: [{ type: 'Fixed', desc: 'Test change description' }],
       },
     ]
 
@@ -167,7 +167,7 @@ describe('HomeChangelogSection — empty changes filter (Requirement 7.1)', () =
       {
         version: '1.0.0',
         date: '2025-01-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0170.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
       {
         // This entry has no changes — should be filtered out
@@ -178,7 +178,7 @@ describe('HomeChangelogSection — empty changes filter (Requirement 7.1)', () =
       {
         version: '0.8.0',
         date: '2024-11-01',
-        changes: [{ type: 'Changed', descKey: 'changelog.v0140.changed1' }],
+        changes: [{ type: 'Changed', desc: 'Test change description' }],
       },
     ]
 
@@ -204,14 +204,14 @@ describe('HomeChangelogSection — empty changes filter (Requirement 7.1)', () =
       {
         version: '1.0.0',
         date: '2025-01-01',
-        changes: [{ type: 'Added', descKey: 'changelog.v0170.added1' }],
+        changes: [{ type: 'Added', desc: 'Test change description' }],
       },
       { version: '0.9.0', date: '2024-12-01', changes: [] },
       { version: '0.8.0', date: '2024-11-01', changes: [] },
       {
         version: '0.7.0',
         date: '2024-10-01',
-        changes: [{ type: 'Fixed', descKey: 'changelog.v0160.fixed1' }],
+        changes: [{ type: 'Fixed', desc: 'Test change description' }],
       },
     ]
 
@@ -245,8 +245,8 @@ describe('HomeChangelogSection — badge color per type (Requirement 7.2)', () =
         version: '1.0.0',
         date: '2025-01-01',
         changes: [
-          { type: 'Added', descKey: 'changelog.v0170.added1' },
-          { type: 'Fixed', descKey: 'changelog.v0160.fixed1' },
+          { type: 'Added', desc: 'Test change description' },
+          { type: 'Fixed', desc: 'Test change description' },
         ],
       },
     ]
@@ -289,9 +289,9 @@ describe('HomeChangelogSection — badge color per type (Requirement 7.2)', () =
         version: '1.0.0',
         date: '2025-01-01',
         changes: [
-          { type: 'Added', descKey: 'changelog.v0170.added1' },
-          { type: 'Changed', descKey: 'changelog.v0170.changed1' },
-          { type: 'Fixed', descKey: 'changelog.v0160.fixed1' },
+          { type: 'Added', desc: 'Test change description' },
+          { type: 'Changed', desc: 'Test change description' },
+          { type: 'Fixed', desc: 'Test change description' },
         ],
       },
     ]

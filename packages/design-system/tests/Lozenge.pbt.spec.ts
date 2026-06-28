@@ -26,9 +26,11 @@ const boldArbitrary = fc.boolean()
  * Using `attachTo: document.body` is not required here — happy-dom's
  * computed style is not needed because Lozenge applies inline styles directly.
  */
+import type { LozengeAppearance } from '@/components/data-display/Lozenge.vue'
+
 function renderLozenge(appearance: string, bold: boolean) {
   const wrapper = mount(Lozenge, {
-    props: { appearance, bold },
+    props: { appearance: appearance as LozengeAppearance, bold },
     slots: { default: 'Label' },
   })
   const span = wrapper.find('span')

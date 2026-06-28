@@ -17,6 +17,7 @@ export interface UserRow {
   role: string
   status: 'active' | 'inactive' | 'pending'
   lastLogin: string
+  [key: string]: unknown
 }
 
 export const mockUsers: UserRow[] = [

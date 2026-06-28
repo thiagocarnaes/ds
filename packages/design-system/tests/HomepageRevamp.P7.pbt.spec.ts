@@ -28,7 +28,7 @@ const validTypeArb = fc.constantFrom<ChangelogType>('Added', 'Changed', 'Fixed')
 /** Generates a ChangelogChange with a valid type */
 const changelogChangeArb: fc.Arbitrary<ChangelogChange> = fc.record({
   type: validTypeArb,
-  descKey: fc.string({ minLength: 1, maxLength: 64 }),
+  desc: fc.string({ minLength: 1, maxLength: 64 }),
 })
 
 /** Generates a ChangelogEntry with 1–3 changes */

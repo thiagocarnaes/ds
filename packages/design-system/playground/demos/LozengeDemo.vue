@@ -25,6 +25,9 @@ const variantStatusKey: Record<LozengeAppearance, keyof typeof messages.value.la
   progress: 'inProgress',
   warning: 'review',
   new: 'new',
+  inprogress: 'inProgress',
+  moved: 'review',
+  removed: 'blocked',
 }
 
 const variant = ref<LozengeAppearance>('success')
