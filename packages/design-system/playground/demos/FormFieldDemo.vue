@@ -51,7 +51,7 @@ const code = computed(() => {
     lines.push(
       '      <Mail',
       '        :size="14"',
-      '        class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"',
+      '        class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground"',
       '      />',
     )
   }
@@ -129,7 +129,7 @@ const code = computed(() => {
             <Mail
               v-if="withIcon"
               :size="14"
-              class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+              class="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               :id="id"

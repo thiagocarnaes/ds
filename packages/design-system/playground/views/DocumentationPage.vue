@@ -3,9 +3,10 @@ import { computed } from 'vue'
 import { BookOpen, ExternalLink, Package } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import packageJson from '../../package.json'
 
 const PACKAGE = '@tcarnaes/design-system'
-const VERSION = '0.1.2'
+const VERSION = packageJson.version
 
 const { messages, t, locale } = usePlaygroundLocale()
 

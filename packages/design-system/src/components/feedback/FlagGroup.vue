@@ -42,7 +42,7 @@ provide(FLAG_GROUP_KEY, { register, unregister, isVisible })
 <template>
   <Teleport to="body">
     <div
-      class="fixed top-4 right-4 z-[--ds-z-notification] flex flex-col gap-2"
+      class="fixed top-4 right-4 z-[var(--ds-z-notification)] flex flex-col gap-2"
       aria-label="Notificações"
       role="region"
     >

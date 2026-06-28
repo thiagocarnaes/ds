@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.1] - 2026-06-28
+
+### Added
+
+- **Playground locale switcher** — language selector in the header now works correctly; switching between English and Português (Brasil) updates all UI text reactively without a page reload.
+- **`FoundationsPage` Iconography tab** — new tab with searchable icon grid, size selector, color picker, and click-to-copy `<ComponentName />` snippet.
+- **`FoundationsPage` translations** — all tab labels, section headings, and hint texts are now fully translated via the i18n system (en / pt-BR).
+- **`ComponentsCatalogPage` Showcases section** — sidebar nav group and mobile `<optgroup>` listing showcase demos (e.g. AI Chat) separately from library components; selecting a showcase renders `ChatPreviewCard` without API/Usage tables.
+- **`FlagGroupDemo` `isDismissible` toggle** — live Switch control and reactive code snippet that conditionally includes `:is-dismissible="true"` on each `<Flag>`.
+- **`foundationsPage` i18n keys** — `badge`, `title`, `subtitle`, `tabs.*`, and `sections.*` added to both `en.ts` and `pt-BR.ts`.
+- **`HomeChangelogSection`** — reads real entries from `changelogData.ts`; date formatted according to active locale.
+
+### Changed
+
+- **`Select` / `Drawer` / `Modal` / `Tooltip` / `Popover` / `FlagGroup` / `ToastHost` / `DataTableColumnFilterMenu` / `DateInput`** — replaced `z-[--ds-z-*]` Tailwind arbitrary values with `z-[var(--ds-z-*)]`; Tailwind v4 was generating invalid `z-index: --ds-z-dropdown` (no `var()`) causing dropdowns and overlays to render behind the sticky header.
+- **`FoundationsPage` header** — aligned with `ComponentsCatalogPage` and `DocumentationPage` style: `Layers` icon, `md:p-8` padding, `max-w-2xl` subtitle, `mb-4` badge row spacing.
+- **`FoundationsPage` color tokens grid** — switched from `flex flex-wrap` to CSS grid (`minmax(180px, 1fr)`) so token names and resolved values are always fully visible without truncation.
+- **`FoundationsPage` motion grid** — switched from `flex flex-wrap gap-8` to CSS grid (`minmax(160px, 1fr)`); all five easing buttons stay on one consistent row.
+- **`ColorSwatch`** — width fills grid cell; token name and resolved value use `break-all` so long values like `color-mix(in srgb, ...)` wrap naturally instead of overflowing.
+- **`ShadowCard`** — width fills grid cell; token name uses `break-all`; preview card scales to cell width.
+- **`MotionDemo`** — changed from `inline-flex items-center` to `flex items-start`; button has `self-start`; label text left-aligned.
+- **`HomeQuickStartSection` copy button** — replaced custom `.copy-btn` styles with `pg-usage-copy` class to match `UsageBlock` appearance on `DocumentationPage`.
+- **`HomeChangelogSection`** — `changelogData.ts` rewritten with real versions from `CHANGELOG.md` (`0.2.7`, `0.2.6`, `0.1.8`, `0.1.0`) replacing placeholder i18n keys with inline `desc` strings.
+- **`App.vue`** — GitHub link uses `<Github>` icon instead of `<ArrowUpRight>`; removed stable badge and version span from header.
+- **`PlaygroundHero`** — removed version line and CTA buttons block; hero shows only logo, title, subtitle, and stat pills.
+- **i18n** — removed residual `":appearance"` prop references in `en.ts`, `pt-BR.ts`, and `componentCatalogDescriptions.ts` for `Button`, `Flag`, and `SectionMessage`; replaced with `"variant"`.
+- **`FormFieldDemo`** — `z-10` added to `<Mail>` icon to ensure visibility when `withIcon=true`; `inputPaddingClass` verified to return `pl-9`.
+
+### Fixed
+
+- **Dropdown/overlay z-index** — `z-[var(--ds-z-dropdown)]` (200) now resolves correctly in browser, fixing `PlaygroundLocaleSelect`, column filter menus, tooltips, and modals being hidden behind the sticky header (`z-40`).
+- **`PlaygroundLocaleSelect`** — locale change now updates all translated text reactively; root cause was the invalid z-index preventing interaction with the dropdown panel.
+
 ## [0.2.7] - 2026-06-16
 
 ### Changed

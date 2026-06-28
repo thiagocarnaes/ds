@@ -69,7 +69,7 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="open" class="fixed inset-0 z-[--ds-z-modal]">
+    <div v-if="open" class="fixed inset-0 z-[var(--ds-z-modal)]">
       <div
         class="fixed inset-0 bg-black/60"
         aria-hidden="true"

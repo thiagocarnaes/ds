@@ -3,7 +3,7 @@ import { computed } from 'vue'
 import { changelogEntries, type ChangelogType } from '../data/changelogData'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
-const { t } = usePlaygroundLocale()
+const { t, locale } = usePlaygroundLocale()
 
 // Show at most 4 entries, filter out any with empty changes arrays
 const entries = computed(() =>
@@ -40,11 +40,12 @@ function typeLabel(type: ChangelogType): string {
   }
 }
 
-// Format ISO date string to a readable form (e.g. "Jan 15, 2025")
+// Format ISO date string to a readable form (e.g. "Jun 16, 2026")
 function formatDate(iso: string): string {
   const [year, month, day] = iso.split('-').map(Number)
   const date = new Date(year, month - 1, day)
-  return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  const localeStr = locale.value === 'pt-BR' ? 'pt-BR' : 'en-US'
+  return date.toLocaleDateString(localeStr, { year: 'numeric', month: 'short', day: 'numeric' })
 }
 </script>
 
@@ -102,7 +103,7 @@ function formatDate(iso: string): string {
               class="text-xs leading-relaxed"
               style="color: var(--pg-text-subtle)"
             >
-              {{ t(change.descKey) }}
+              {{ change.desc }}
             </span>
           </li>
         </ul>

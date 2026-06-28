@@ -1,10 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import { Layers } from 'lucide-vue-next'
 import ColorSwatch from '../../src/stories/foundations/ColorSwatch.vue'
 import GradientSwatch from '../../src/stories/foundations/GradientSwatch.vue'
 import ShadowCard from '../../src/stories/foundations/ShadowCard.vue'
 import RadiusPreview from '../../src/stories/foundations/RadiusPreview.vue'
 import MotionDemo from '../../src/stories/foundations/MotionDemo.vue'
+import { iconography } from '@/icons/iconography'
+import ColorPalettePicker from '../components/ColorPalettePicker.vue'
+import { useCopy } from '../composables/useCopy'
+import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
 // ── Tab navigation ──────────────────────────────────────────────────────────
 type TabId =
@@ -17,20 +22,42 @@ type TabId =
   | 'motion'
   | 'zindex'
   | 'borders'
+  | 'iconography'
 
-const tabs: { id: TabId; label: string }[] = [
-  { id: 'colors',     label: 'Colors' },
-  { id: 'gradients',  label: 'Gradients' },
-  { id: 'typography', label: 'Typography' },
-  { id: 'spacing',    label: 'Spacing' },
-  { id: 'radius',     label: 'Border Radius' },
-  { id: 'shadows',    label: 'Shadows' },
-  { id: 'motion',     label: 'Motion' },
-  { id: 'zindex',     label: 'Z-Index' },
-  { id: 'borders',    label: 'Border Widths' },
-]
+const tabs = computed<{ id: TabId; label: string }[]>(() => [
+  { id: 'colors',      label: t('foundationsPage.tabs.colors') },
+  { id: 'gradients',   label: t('foundationsPage.tabs.gradients') },
+  { id: 'typography',  label: t('foundationsPage.tabs.typography') },
+  { id: 'spacing',     label: t('foundationsPage.tabs.spacing') },
+  { id: 'radius',      label: t('foundationsPage.tabs.radius') },
+  { id: 'shadows',     label: t('foundationsPage.tabs.shadows') },
+  { id: 'motion',      label: t('foundationsPage.tabs.motion') },
+  { id: 'zindex',      label: t('foundationsPage.tabs.zindex') },
+  { id: 'borders',     label: t('foundationsPage.tabs.borders') },
+  { id: 'iconography', label: t('foundationsPage.tabs.iconography') },
+])
 
 const activeTab = ref<TabId>('colors')
+
+const { t } = usePlaygroundLocale()
+
+// ── Iconography ──────────────────────────────────────────────────────────────
+const iconQuery = ref('')
+const iconSize = ref(20)
+const iconColor = ref('#00D4FF')
+const iconSizes = [12, 16, 20, 24]
+const copy = useCopy('')
+
+const filteredIcons = computed(() =>
+  iconography.filter((item) =>
+    item.label.toLowerCase().includes(iconQuery.value.toLowerCase()) ||
+    item.name.includes(iconQuery.value.toLowerCase()),
+  ),
+)
+
+async function copyIcon(label: string): Promise<void> {
+  await copy.copy(`<${label.replace(/\s+/g, '')} />`)
+}
 
 // ── Color token groups ───────────────────────────────────────────────────────
 const colorGroups: { label: string; tokens: string[] }[] = [
@@ -258,13 +285,14 @@ const borderWidthTokens: { token: string; px: string }[] = [
 <template>
   <div class="pg-foundations">
     <!-- Page header -->
-    <div class="pg-foundations-hero pg-playground-panel rounded-2xl p-4 sm:p-6 mb-6">
-      <div class="mb-2 flex items-center gap-2">
-        <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">Design Tokens</span>
+    <div class="pg-foundations-hero pg-playground-panel rounded-2xl p-4 sm:p-6 md:p-8 mb-6">
+      <div class="mb-4 flex items-center gap-2">
+        <Layers :size="16" class="text-primary" />
+        <span class="pg-text-muted font-mono text-[10px] uppercase tracking-wider">{{ t('foundationsPage.badge') }}</span>
       </div>
-      <h2 class="mb-1 text-xl font-bold sm:text-2xl" style="color: var(--pg-text)">Foundations</h2>
-      <p class="pg-text-subtle text-sm leading-relaxed">
-        Visual reference for all design tokens — colors, spacing, typography, motion, and more. Switch themes to see values update in real time.
+      <h2 class="mb-2 text-xl font-bold sm:text-2xl" style="color: var(--pg-text)">{{ t('foundationsPage.title') }}</h2>
+      <p class="pg-text-subtle max-w-2xl text-sm leading-relaxed">
+        {{ t('foundationsPage.subtitle') }}
       </p>
     </div>
 
@@ -293,14 +321,14 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── COLORS ─────────────────────────────────────────────────────────── -->
     <section v-if="activeTab === 'colors'" aria-labelledby="section-colors">
-      <h3 id="section-colors" class="pg-section-heading">Color Tokens</h3>
+      <h3 id="section-colors" class="pg-section-heading">{{ t('foundationsPage.sections.colors') }}</h3>
       <div
         v-for="group in colorGroups"
         :key="group.label"
         class="mb-8"
       >
         <p class="pg-group-label mb-3">{{ group.label }}</p>
-        <div class="flex flex-wrap gap-6">
+        <div class="grid gap-x-4 gap-y-6" style="grid-template-columns: repeat(auto-fill, minmax(180px, 1fr))">
           <ColorSwatch
             v-for="token in group.tokens"
             :key="token"
@@ -312,7 +340,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── GRADIENTS ──────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'gradients'" aria-labelledby="section-gradients">
-      <h3 id="section-gradients" class="pg-section-heading">Gradient Tokens</h3>
+      <h3 id="section-gradients" class="pg-section-heading">{{ t('foundationsPage.sections.gradients') }}</h3>
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <GradientSwatch
           v-for="token in gradientTokens"
@@ -324,7 +352,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── TYPOGRAPHY ─────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'typography'" aria-labelledby="section-typography">
-      <h3 id="section-typography" class="pg-section-heading">Typography Scale</h3>
+      <h3 id="section-typography" class="pg-section-heading">{{ t('foundationsPage.sections.typography') }}</h3>
       <div class="pg-playground-panel rounded-xl overflow-hidden">
         <div
           v-for="size in fontSizes"
@@ -362,7 +390,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── SPACING ────────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'spacing'" aria-labelledby="section-spacing">
-      <h3 id="section-spacing" class="pg-section-heading">Spacing Scale</h3>
+      <h3 id="section-spacing" class="pg-section-heading">{{ t('foundationsPage.sections.spacing') }}</h3>
       <div class="pg-playground-panel rounded-xl overflow-hidden">
         <div
           v-for="item in spacingTokens"
@@ -391,8 +419,8 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── BORDER RADIUS ──────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'radius'" aria-labelledby="section-radius">
-      <h3 id="section-radius" class="pg-section-heading">Border Radius</h3>
-      <div class="flex flex-wrap gap-8">
+      <h3 id="section-radius" class="pg-section-heading">{{ t('foundationsPage.sections.radius') }}</h3>
+      <div class="flex flex-wrap items-start content-start gap-8">
         <RadiusPreview
           v-for="token in radiusTokens"
           :key="token"
@@ -403,14 +431,14 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── SHADOWS ────────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'shadows'" aria-labelledby="section-shadows">
-      <h3 id="section-shadows" class="pg-section-heading">Shadows</h3>
+      <h3 id="section-shadows" class="pg-section-heading">{{ t('foundationsPage.sections.shadows') }}</h3>
       <div
         v-for="group in shadowGroups"
         :key="group.label"
         class="mb-8"
       >
         <p class="pg-group-label mb-3">{{ group.label }}</p>
-        <div class="flex flex-wrap gap-6">
+        <div class="grid gap-x-4 gap-y-5" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr))">
           <ShadowCard
             v-for="token in group.tokens"
             :key="token"
@@ -422,9 +450,9 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── MOTION ─────────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'motion'" aria-labelledby="section-motion">
-      <h3 id="section-motion" class="pg-section-heading">Motion</h3>
+      <h3 id="section-motion" class="pg-section-heading">{{ t('foundationsPage.sections.motion') }}</h3>
       <p class="pg-text-subtle text-sm mb-6">
-        Click each button to preview the animation. Uses <code class="font-mono text-xs" style="color: var(--pg-accent)">prefers-reduced-motion</code> — durations resolve to <code class="font-mono text-xs" style="color: var(--pg-accent)">0ms</code> for users who prefer reduced motion.
+        {{ t('foundationsPage.sections.motionHint') }}
       </p>
       <div
         v-for="dur in durationTokens"
@@ -432,7 +460,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
         class="mb-8"
       >
         <p class="pg-group-label mb-3">{{ dur.label }} · <code class="font-mono" style="color: var(--pg-accent)">{{ dur.token }}</code></p>
-        <div class="flex flex-wrap gap-8">
+        <div class="grid gap-x-6 gap-y-4" style="grid-template-columns: repeat(auto-fill, minmax(160px, 1fr))">
           <MotionDemo
             v-for="easing in easingTokens"
             :key="easing"
@@ -445,9 +473,9 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── Z-INDEX ────────────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'zindex'" aria-labelledby="section-zindex">
-      <h3 id="section-zindex" class="pg-section-heading">Z-Index Scale</h3>
+      <h3 id="section-zindex" class="pg-section-heading">{{ t('foundationsPage.sections.zindex') }}</h3>
       <p class="pg-text-subtle text-sm mb-6">
-        Visual hierarchy of stacking layers from base (0) to tooltip (700).
+        {{ t('foundationsPage.sections.zindexHint') }}
       </p>
       <div class="pg-playground-panel rounded-xl overflow-hidden">
         <div
@@ -477,7 +505,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
 
     <!-- ── BORDER WIDTHS ──────────────────────────────────────────────────── -->
     <section v-else-if="activeTab === 'borders'" aria-labelledby="section-borders">
-      <h3 id="section-borders" class="pg-section-heading">Border Widths</h3>
+      <h3 id="section-borders" class="pg-section-heading">{{ t('foundationsPage.sections.borders') }}</h3>
       <div class="pg-playground-panel rounded-xl overflow-hidden">
         <div
           v-for="item in borderWidthTokens"
@@ -501,6 +529,46 @@ const borderWidthTokens: { token: string; px: string }[] = [
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- ── ICONOGRAPHY ────────────────────────────────────────────────────── -->
+    <section v-else-if="activeTab === 'iconography'" aria-labelledby="section-iconography">
+      <h3 id="section-iconography" class="pg-section-heading">{{ t('foundationsPage.tabs.iconography') }}</h3>
+      <input
+        v-model="iconQuery"
+        :placeholder="t('iconsPlayground.searchPlaceholder')"
+        class="mb-3 w-full rounded-lg border border-border bg-input px-3 py-2 text-xs text-foreground outline-none focus:ring-2 focus:ring-ring/30"
+      />
+      <div class="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            v-for="s in iconSizes"
+            :key="s"
+            type="button"
+            class="rounded px-2 py-0.5 font-mono text-[10px] transition-colors"
+            :style="iconSize === s ? { background: 'rgba(0,212,255,0.15)', color: '#00D4FF' } : { color: '#4D6A87' }"
+            @click="iconSize = s"
+          >
+            {{ s }}
+          </button>
+        </div>
+        <ColorPalettePicker v-model="iconColor" size="sm" />
+      </div>
+      <div class="playground-scroll max-h-[420px] overflow-y-auto pr-1">
+        <div class="grid grid-cols-6 gap-1.5 sm:grid-cols-8 lg:grid-cols-10">
+          <button
+            v-for="item in filteredIcons"
+            :key="item.name"
+            type="button"
+            class="flex flex-col items-center gap-1 rounded-lg p-1.5 transition-colors hover:bg-primary/10"
+            @click="copyIcon(item.label)"
+          >
+            <component :is="item.component" :size="iconSize" :style="{ color: iconColor }" />
+            <span class="max-w-full truncate text-[7px] text-[#4D6A87]">{{ item.label }}</span>
+          </button>
+        </div>
+      </div>
+      <p class="mt-3 text-[10px] text-[#4D6A87]">{{ t('iconsPlayground.footerHint') }}</p>
     </section>
   </div>
 </template>

@@ -34,7 +34,7 @@ function toastsAt(position: ToastPosition) {
     <div
       v-for="position in activePositions"
       :key="position"
-      class="pointer-events-none fixed z-[--ds-z-raised] flex w-full max-w-sm flex-col gap-2"
+      class="pointer-events-none fixed z-[var(--ds-z-raised)] flex w-full max-w-sm flex-col gap-2"
       :class="positionClasses[position]"
       aria-live="polite"
     >

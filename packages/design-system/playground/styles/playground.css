@@ -338,6 +338,22 @@ body {
   background: var(--pg-nav-active-bg);
 }
 
+.pg-github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  transition: color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pg-github-link:hover {
+  color: var(--pg-accent);
+  background: var(--pg-nav-active-bg);
+  box-shadow: 0 0 12px var(--pg-nav-active-shadow);
+}
+
 .pg-preview-surface {
   background: var(--pg-chat-messages-bg);
   border: 1px solid var(--pg-chat-border);

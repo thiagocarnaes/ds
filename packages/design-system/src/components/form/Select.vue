@@ -209,7 +209,7 @@ onUnmounted(() => {
         v-if="open"
         ref="panelRef"
         role="presentation"
-        class="fixed z-[--ds-z-dropdown] overflow-hidden rounded-lg border border-primary bg-popover text-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+        class="fixed z-[var(--ds-z-dropdown)] overflow-hidden rounded-lg border border-primary bg-popover text-sm shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
         :style="panelStyle"
         @click.stop
       >

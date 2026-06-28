@@ -85,7 +85,7 @@ describe('HomeQuickStartSection — successful clipboard copy', () => {
     const wrapper = mountQuickStart()
     await nextTick()
 
-    const copyBtn = wrapper.find('.copy-btn')
+    const copyBtn = wrapper.find('.pg-usage-copy')
     expect(copyBtn.exists()).toBe(true)
 
     await copyBtn.trigger('click')
@@ -108,21 +108,22 @@ describe('HomeQuickStartSection — successful clipboard copy', () => {
     const wrapper = mountQuickStart()
     await nextTick()
 
-    const copyBtn = wrapper.find('.copy-btn')
+    const copyBtn = wrapper.find('.pg-usage-copy')
     expect(copyBtn.exists()).toBe(true)
 
-    // Before click: no "Copied" feedback
-    expect(copyBtn.text()).toBe('')
+    // Before click: shows "Copiar" / "Copy" — not the copied label
+    const initialText = copyBtn.text()
+    expect(initialText).not.toBe('')
 
     await copyBtn.trigger('click')
     // Let the microtask queue (Promise.resolve) flush
     await nextTick()
     await nextTick()
 
-    // After click: feedback text must be visible
+    // After click: feedback text must have changed to copiedLabel
     const quickStart = wrapper.findComponent(HomeQuickStartSection)
-    const btn = quickStart.find('.copy-btn')
-    expect(btn.text()).not.toBe('')
+    const btn = quickStart.find('.pg-usage-copy')
+    expect(btn.text()).not.toBe(initialText)
 
     wrapper.unmount()
   })
@@ -137,8 +138,10 @@ describe('HomeQuickStartSection — successful clipboard copy', () => {
     await nextTick()
 
     const quickStart = wrapper.findComponent(HomeQuickStartSection)
-    const copyBtn = quickStart.find('.copy-btn')
+    const copyBtn = quickStart.find('.pg-usage-copy')
     expect(copyBtn.exists()).toBe(true)
+
+    const initialText = copyBtn.text()
 
     await copyBtn.trigger('click')
     // Flush Promise microtasks so writeText resolves and copied = true
@@ -148,12 +151,12 @@ describe('HomeQuickStartSection — successful clipboard copy', () => {
     // Advance time by 1499ms — still showing feedback
     vi.advanceTimersByTime(1499)
     await nextTick()
-    expect(quickStart.find('.copy-btn').text()).not.toBe('')
+    expect(quickStart.find('.pg-usage-copy').text()).not.toBe(initialText)
 
-    // Advance past the 1500ms boundary — feedback must be gone
+    // Advance past the 1500ms boundary — feedback must be gone (back to initial)
     vi.advanceTimersByTime(1)
     await nextTick()
-    expect(quickStart.find('.copy-btn').text()).toBe('')
+    expect(quickStart.find('.pg-usage-copy').text()).toBe(initialText)
 
     wrapper.unmount()
   })
@@ -181,7 +184,7 @@ describe('HomeQuickStartSection — environment without clipboard', () => {
     await nextTick()
 
     // The copy button uses v-if="canCopy" — it must be absent
-    expect(wrapper.find('.copy-btn').exists()).toBe(false)
+    expect(wrapper.find('.pg-usage-copy').exists()).toBe(false)
 
     wrapper.unmount()
   })

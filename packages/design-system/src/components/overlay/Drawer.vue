@@ -22,7 +22,7 @@ const animated = ref(false)
 
 const panelClasses = computed(() => {
   const base =
-    'fixed z-[--ds-z-overlay] border-border bg-card text-card-foreground shadow-[var(--ds-shadow-modal)] outline-none transition-transform duration-300 ease-in-out'
+    'fixed z-[var(--ds-z-overlay)] border-border bg-card text-card-foreground shadow-[var(--ds-shadow-modal)] outline-none transition-transform duration-300 ease-in-out'
 
   switch (props.placement) {
     case 'left':
@@ -119,7 +119,7 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="fixed inset-0 z-[--ds-z-overlay]">
+    <div v-if="visible" class="fixed inset-0 z-[var(--ds-z-overlay)]">
       <div
         class="fixed inset-0 bg-black/60"
         aria-hidden="true"

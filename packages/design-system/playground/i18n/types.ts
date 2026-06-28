@@ -573,4 +573,34 @@ export interface PlaygroundMessages {
     typeFixed: string
     [key: string]: string
   }
+  foundationsPage: {
+    badge: string
+    title: string
+    subtitle: string
+    tabs: {
+      colors: string
+      gradients: string
+      typography: string
+      spacing: string
+      radius: string
+      shadows: string
+      motion: string
+      zindex: string
+      borders: string
+      iconography: string
+    }
+    sections: {
+      colors: string
+      gradients: string
+      typography: string
+      spacing: string
+      radius: string
+      shadows: string
+      motion: string
+      motionHint: string
+      zindex: string
+      zindexHint: string
+      borders: string
+    }
+  }
 }

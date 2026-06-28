@@ -35,7 +35,7 @@ function handleDocsClick(): void {
       {{ t('homeQuickStart.sectionTitle') }}
     </h2>
 
-    <div class="quick-start-card flex flex-col gap-5 rounded-xl p-5">
+    <div class="quick-start-card pg-usage-dark flex flex-col gap-5 rounded-xl p-5">
       <!-- Install command -->
       <div class="flex flex-col gap-2">
         <span class="text-xs font-medium" style="color: var(--pg-text-muted)">
@@ -58,7 +58,7 @@ function handleDocsClick(): void {
           <button
             v-if="canCopy"
             type="button"
-            class="copy-btn shrink-0 flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all duration-150"
+            class="pg-usage-copy shrink-0 inline-flex items-center gap-1.5 rounded-md px-2 py-1 font-mono text-[10px] transition-colors"
             :aria-label="copied ? t('homeQuickStart.copiedLabel') : t('homeQuickStart.copyAriaLabel')"
             @click="copyToClipboard(installCmd)"
           >
@@ -66,14 +66,13 @@ function handleDocsClick(): void {
               v-if="copied"
               :size="12"
               aria-hidden="true"
-              style="color: var(--pg-accent)"
             />
             <Copy
               v-else
               :size="12"
               aria-hidden="true"
             />
-            <span>{{ copied ? t('homeQuickStart.copiedLabel') : '' }}</span>
+            {{ copied ? t('homeQuickStart.copiedLabel') : t('usage.copy') }}
           </button>
         </div>
       </div>
@@ -116,25 +115,8 @@ function handleDocsClick(): void {
 }
 
 .code-block {
-  background: var(--pg-surface);
-  border: 1px solid var(--pg-border);
-}
-
-.copy-btn {
-  background: var(--pg-nav-active-bg);
-  color: var(--pg-text-muted);
-  border: 1px solid var(--pg-border);
-}
-
-.copy-btn:hover {
-  background: var(--pg-hover-bg);
-  color: var(--pg-text);
-  border-color: var(--pg-card-border-hover);
-}
-
-.copy-btn:focus-visible {
-  outline: 2px solid var(--pg-accent);
-  outline-offset: 2px;
+  background: #0a1118;
+  border: 1px solid rgba(0, 212, 255, 0.08);
 }
 
 .docs-link {

@@ -1,13 +1,15 @@
 /**
- * Unit Tests — PlaygroundHero (modified for editorial layout)
+ * Unit Tests — PlaygroundHero (post-editorial-revamp)
  *
- * Requirements 1.2, 1.3, 1.4, 6.1, 6.2
+ * Requirements 1.4, 6.1, 6.2
  *
- * 1.2 — Hero SHALL include CTA "browseComponents" that navigates to Library/Components.
- * 1.3 — Hero SHALL include CTA "installDocs" that navigates to Docs.
  * 1.4 — Hero SHALL display the version badge using designSystemVersionBadge.
  * 6.1 — Stats_Bar SHALL display exactly 4 metrics (3 StatPills + 1 version div).
  * 6.2 — Stats_Bar SHALL use StatPill component for numeric metrics.
+ *
+ * NOTE: CTA buttons (browseComponents, installDocs, playground) were removed in
+ * task 4 of the UI improvements spec. Tests for CTA events have been replaced
+ * with tests verifying CTA absence.
  */
 
 import { afterEach, describe, expect, it } from 'vitest'
@@ -50,19 +52,80 @@ afterEach(() => {
   document.querySelectorAll('[data-v-app]').forEach((el) => el.remove())
 })
 
+// ─── Tests: CTA buttons are absent (task 4 removed them) ─────────────────────
+
+describe('PlaygroundHero — no CTA buttons (task 4 removed CTAs)', () => {
+  /**
+   * After the editorial revamp in task 4, the CTA buttons (Browse, Docs, Playground)
+   * were removed from the hero. Verify no CTA-style buttons are present.
+   */
+  it('does not render a "Browse components" button', async () => {
+    const wrapper = mountHero({ fullLanding: true })
+    await nextTick()
+
+    const buttons = wrapper.findAll('button')
+    const browseBtn = buttons.find((b) =>
+      b.text().toLowerCase().includes('browse'),
+    )
+    expect(browseBtn).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('does not render an "Install & docs" button', async () => {
+    const wrapper = mountHero({ fullLanding: true })
+    await nextTick()
+
+    const buttons = wrapper.findAll('button')
+    const docsBtn = buttons.find((b) =>
+      b.text().toLowerCase().includes('install') || b.text().toLowerCase().includes('docs'),
+    )
+    expect(docsBtn).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('does not render a "Playground" CTA button', async () => {
+    const wrapper = mountHero({ fullLanding: true })
+    await nextTick()
+
+    const buttons = wrapper.findAll('button')
+    const playgroundBtn = buttons.find((b) =>
+      b.text().toLowerCase() === 'playground',
+    )
+    expect(playgroundBtn).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('does not emit "browse" when no CTA exists', async () => {
+    const wrapper = mountHero({ fullLanding: true })
+    await nextTick()
+
+    const hero = wrapper.findComponent(PlaygroundHero)
+    // No CTA exists, so no 'browse' event should ever be emitted
+    expect(hero.emitted('browse')).toBeFalsy()
+    wrapper.unmount()
+  })
+
+  it('does not emit "docs" when no CTA exists', async () => {
+    const wrapper = mountHero({ fullLanding: true })
+    await nextTick()
+
+    const hero = wrapper.findComponent(PlaygroundHero)
+    expect(hero.emitted('docs')).toBeFalsy()
+    wrapper.unmount()
+  })
+})
+
 // ─── Tests: No pillar cards ────────────────────────────────────────────────────
 
 describe('PlaygroundHero — no pillar cards (Requirement 1.8, 8.4)', () => {
   /**
    * After the editorial revamp, the pillar cards grid has been removed.
-   * Common class names for pillars: .pillar-card, .pillar, ds-pillar, hero-pillar.
    * Verify none are present.
    */
   it('does not render pillar cards in the DOM', async () => {
     const wrapper = mountHero({ fullLanding: true })
     await nextTick()
 
-    // Pillar cards were rendered as divs with class matching 'pillar'
     expect(wrapper.find('.pillar-card').exists()).toBe(false)
     expect(wrapper.find('.pillar').exists()).toBe(false)
     expect(wrapper.find('[class*="pillar"]').exists()).toBe(false)
@@ -93,9 +156,8 @@ describe('PlaygroundHero — Stats_Bar with 4 stat elements (Requirement 6.1, 6.
 
   /**
    * Requirement 6.1
-   * The Stats_Bar div itself (4th metric — version) must also be present,
+   * The Stats_Bar div (4th metric — version) must also be present,
    * making a total of 4 stat items in the stats bar.
-   * 3 StatPill components + 1 version div = 4 total.
    */
   it('renders 4 total stat items in the stats bar when fullLanding=true', async () => {
     const wrapper = mountHero({ fullLanding: true })
@@ -103,17 +165,14 @@ describe('PlaygroundHero — Stats_Bar with 4 stat elements (Requirement 6.1, 6.
 
     const hero = wrapper.findComponent(PlaygroundHero)
 
-    // 3 StatPill components confirmed in previous test
+    // 3 StatPill components
     const statPills = hero.findAllComponents(StatPill)
     expect(statPills).toHaveLength(3)
 
-    // Plus 1 version div (not a StatPill — it uses a static string without animation)
-    // The version div is inside .pg-border-top but is not a StatPill component
+    // Plus 1 version div with font-mono and the version badge string
     const statsBar = hero.find('.pg-border-top')
     expect(statsBar.exists()).toBe(true)
 
-    // The version div has font-mono class and contains the version badge (static string, not animated)
-    // StatPills animate from 0, so the version span is the only one containing 'v' prefix
     const allMonoSpans = statsBar.findAll('.font-mono.text-2xl.font-bold')
     const versionSpan = allMonoSpans.find((s) => s.text().startsWith('v'))
     expect(versionSpan).toBeDefined()
@@ -133,7 +192,6 @@ describe('PlaygroundHero — Stats_Bar with 4 stat elements (Requirement 6.1, 6.
     const hero = wrapper.findComponent(PlaygroundHero)
     const statPills = hero.findAllComponents(StatPill)
 
-    // Each StatPill must exist and have a target prop (numeric)
     for (const pill of statPills) {
       expect(typeof pill.props('target')).toBe('number')
     }
@@ -160,85 +218,44 @@ describe('PlaygroundHero — version badge (Requirement 1.4)', () => {
 
   /**
    * Requirement 1.4
-   * The version badge is present even when fullLanding=false.
+   * The version badge is present even when fullLanding=false (stats bar is still rendered,
+   * just hidden via CSS — but the DOM is still present).
    */
-  it('displays the version badge when fullLanding is false', async () => {
+  it('version div exists in DOM even when fullLanding=false', async () => {
     const wrapper = mountHero({ fullLanding: false })
     await nextTick()
 
-    expect(wrapper.text()).toContain(designSystemVersionBadge)
+    const hero = wrapper.findComponent(PlaygroundHero)
+    const statsBar = hero.find('.pg-border-top')
+    expect(statsBar.exists()).toBe(true)
 
     wrapper.unmount()
   })
 })
 
-// ─── Tests: CTA events ────────────────────────────────────────────────────────
+// ─── Tests: Heading and subtitle ─────────────────────────────────────────────
 
-describe('PlaygroundHero — CTA events (Requirements 1.2, 1.3)', () => {
-  /**
-   * Requirement 1.2
-   * Clicking the primary "browseComponents" CTA emits the `browse` event.
-   */
-  it('emits "browse" when the browseComponents CTA is clicked', async () => {
+describe('PlaygroundHero — heading and subtitle content', () => {
+  it('renders the h1 title from t("hero.titleLine1") and t("hero.titleLine2")', async () => {
     const wrapper = mountHero({ fullLanding: true })
     await nextTick()
 
-    const hero = wrapper.findComponent(PlaygroundHero)
-
-    // The primary button is variant="primary" and is the first button
-    const buttons = hero.findAll('button')
-    const primaryBtn = buttons[0]
-    expect(primaryBtn.exists()).toBe(true)
-
-    await primaryBtn.trigger('click')
-
-    const emitted = hero.emitted('browse')
-    expect(emitted).toBeTruthy()
-    expect(emitted).toHaveLength(1)
+    const h1 = wrapper.find('h1')
+    expect(h1.exists()).toBe(true)
+    // en locale: "One system." and "Every team."
+    expect(h1.text()).toContain('One system.')
+    expect(h1.text()).toContain('Every team.')
 
     wrapper.unmount()
   })
 
-  /**
-   * Requirement 1.3
-   * Clicking the "installDocs" outline CTA emits the `docs` event.
-   */
-  it('emits "docs" when the installDocs CTA is clicked', async () => {
+  it('renders the subtitle paragraph', async () => {
     const wrapper = mountHero({ fullLanding: true })
     await nextTick()
 
-    const hero = wrapper.findComponent(PlaygroundHero)
-
-    // The docs button is the second button (variant="outline", emits 'docs')
-    const buttons = hero.findAll('button')
-    const docsBtn = buttons[1]
-    expect(docsBtn.exists()).toBe(true)
-
-    await docsBtn.trigger('click')
-
-    const emitted = hero.emitted('docs')
-    expect(emitted).toBeTruthy()
-    expect(emitted).toHaveLength(1)
-
-    wrapper.unmount()
-  })
-
-  /**
-   * Requirements 1.2, 1.3
-   * Clicking browse and docs in sequence emits both events independently.
-   */
-  it('emits "browse" and "docs" independently when each CTA is clicked', async () => {
-    const wrapper = mountHero({ fullLanding: true })
-    await nextTick()
-
-    const hero = wrapper.findComponent(PlaygroundHero)
-    const buttons = hero.findAll('button')
-
-    await buttons[0].trigger('click') // browse
-    await buttons[1].trigger('click') // docs
-
-    expect(hero.emitted('browse')).toHaveLength(1)
-    expect(hero.emitted('docs')).toHaveLength(1)
+    const subtitle = wrapper.find('p.pg-text-subtle')
+    expect(subtitle.exists()).toBe(true)
+    expect(subtitle.text().length).toBeGreaterThan(10)
 
     wrapper.unmount()
   })

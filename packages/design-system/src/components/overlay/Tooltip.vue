@@ -179,7 +179,7 @@ const tooltipStyle = computed(() => ({
       role="tooltip"
       :class="
         cn(
-          'pointer-events-none fixed z-[--ds-z-tooltip] whitespace-nowrap rounded-md border px-2 py-1 text-xs shadow-[var(--ds-shadow-tooltip)]',
+          'pointer-events-none fixed z-[var(--ds-z-tooltip)] whitespace-nowrap rounded-md border px-2 py-1 text-xs shadow-[var(--ds-shadow-tooltip)]',
           variantClasses,
           props.class,
         )

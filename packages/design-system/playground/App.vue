@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, TransitionGroup } from 'vue'
-import { ArrowUpRight, Moon, Sun } from 'lucide-vue-next'
+import { Github, Moon, Sun } from 'lucide-vue-next'
 import logoUrl from './assets/logo.png?url'
 import GlowDot from './components/GlowDot.vue'
 import ComponentDrawer from './components/ComponentDrawer.vue'
@@ -30,7 +30,6 @@ import DocumentationPage from './views/DocumentationPage.vue'
 import ComponentsCatalogPage from './views/ComponentsCatalogPage.vue'
 import FoundationsPage from './views/FoundationsPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
-import { designSystemVersionBadge } from './designSystemMeta'
 import HomeQuickNavSection from './components/HomeQuickNavSection.vue'
 import HomePurposeSection from './components/HomePurposeSection.vue'
 import HomePrinciplesSection from './components/HomePrinciplesSection.vue'
@@ -176,7 +175,6 @@ defineExpose({ setCategory, activeCat, activePage, isFullLanding })
           
           <div class="min-w-0">
             <span class="block truncate text-sm font-semibold" style="color: var(--pg-text)">{{ t('app.title') }}</span>
-            <span class="pg-text-muted font-mono text-[10px]">{{ t('app.versionBadge', { version: designSystemVersionBadge }) }}</span>
           </div>
         </div>
 
@@ -205,19 +203,13 @@ defineExpose({ setCategory, activeCat, activePage, isFullLanding })
             <Sun v-if="isDark" :size="16" />
             <Moon v-else :size="16" />
           </button>
-          <span
-            class="hidden rounded-md px-2 py-1 font-mono text-[10px] xl:inline"
-            :style="{ background: 'var(--pg-stable-bg)', color: 'var(--pg-stable-text)' }"
-          >
-            {{ t('app.stable') }}
-          </span>
           <a
             href="https://github.com/thiagocarnaes/ds"
             target="_blank"
             rel="noopener noreferrer"
-            class="pg-text-muted shrink-0 transition-colors hover:text-[var(--pg-accent)]"
+            class="pg-github-link pg-text-muted shrink-0 transition-colors"
           >
-            <ArrowUpRight :size="14" />
+            <Github :size="16" />
           </a>
         </div>
       </div>
@@ -233,9 +225,6 @@ defineExpose({ setCategory, activeCat, activePage, isFullLanding })
 
       <PlaygroundHero
         :full-landing="isFullLanding"
-        @browse="openCatalog"
-        @docs="openDocs"
-        @playground="scrollToPlayground"
       />
 
       <ComponentsCatalogPage

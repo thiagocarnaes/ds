@@ -30,11 +30,11 @@ function animate() {
 </script>
 
 <template>
-  <div class="inline-flex flex-col items-center gap-2">
+  <div class="flex flex-col items-start gap-2">
     <!-- Animated button -->
     <button
       type="button"
-      class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+      class="rounded-md border border-border bg-card px-4 py-2 text-sm font-medium text-foreground hover:bg-muted self-start"
       :style="{
         transform: `scale(${scale})`,
         transition: `transform var(${durationToken}) var(${easingToken})`,
@@ -45,7 +45,7 @@ function animate() {
     </button>
 
     <!-- Token labels -->
-    <div class="text-center">
+    <div class="text-left">
       <p class="font-mono text-[10px] leading-tight text-muted-foreground">
         {{ label ?? durationToken }}
       </p>

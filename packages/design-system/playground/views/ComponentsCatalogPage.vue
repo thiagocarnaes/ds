@@ -10,8 +10,9 @@ import {
   hasPlaygroundDemo,
   playgroundDemoName,
 } from '../data/componentCatalog'
-import { designSystemLibraryComponentCount } from '../designSystemMeta'
+import { designSystemLibraryComponentCount, showcaseDemoComponents } from '../designSystemMeta'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
+import ChatPreviewCard from '../cards/ChatPreviewCard.vue'
 
 const emit = defineEmits<{
   openPlayground: [name: string]
@@ -33,12 +34,30 @@ const localizedGroups = computed(() =>
   })),
 )
 
-const allComponentNames = computed(() => localizedGroups.value.flatMap((group) => group.items))
+const allComponentNames = computed(() => [
+  ...localizedGroups.value.flatMap((group) => group.items),
+  ...(showcaseDemoComponents as readonly string[]),
+])
+
+const isShowcase = computed(() =>
+  (showcaseDemoComponents as readonly string[]).includes(selectedName.value),
+)
+
+const showcasePreviewComponent = computed(() => {
+  const map: Record<string, unknown> = {
+    'AI Chat': ChatPreviewCard,
+  }
+  return map[selectedName.value] ?? null
+})
 
 const selectedEntry = computed(() => getComponentCatalogEntry(selectedName.value))
 
 function descriptionFor(name: string): string {
   return messages.value.componentCatalog.descriptions[name] ?? name
+}
+
+function descriptionForShowcase(name: string): string {
+  return messages.value.drawer.descriptions[name] ?? name
 }
 
 function selectComponent(name: string): void {
@@ -172,6 +191,24 @@ onUnmounted(() => {
               </li>
             </ul>
           </section>
+
+          <section class="pg-catalog-nav-group">
+            <h4 class="pg-catalog-nav-group-label">Showcases</h4>
+            <ul class="pg-catalog-nav-group-items">
+              <li v-for="name in showcaseDemoComponents" :key="name">
+                <button
+                  type="button"
+                  class="pg-catalog-nav-item"
+                  :class="{ 'pg-catalog-nav-item--active': selectedName === name }"
+                  :data-nav-item="name"
+                  :aria-current="selectedName === name ? 'page' : undefined"
+                  @click="selectComponent(name)"
+                >
+                  {{ name }}
+                </button>
+              </li>
+            </ul>
+          </section>
         </nav>
       </aside>
 
@@ -198,21 +235,31 @@ onUnmounted(() => {
                     {{ name }}
                   </option>
                 </optgroup>
+                <optgroup label="Showcases">
+                  <option v-for="name in showcaseDemoComponents" :key="name" :value="name">
+                    {{ name }}
+                  </option>
+                </optgroup>
               </select>
             </label>
             <h3 class="pg-catalog-detail-title">
               {{ selectedName }}
+              <span
+                v-if="isShowcase"
+                class="ml-2 inline-flex items-center rounded-md px-2 py-0.5 font-mono text-[10px] uppercase tracking-wider"
+                style="background: var(--pg-nav-active-bg); color: var(--pg-accent)"
+              >Showcase</span>
             </h3>
             <p class="pg-text-subtle mt-2 text-sm leading-relaxed">
-              {{ descriptionFor(selectedName) }}
+              {{ isShowcase ? descriptionForShowcase(selectedName) : descriptionFor(selectedName) }}
             </p>
           </div>
           <button
-            v-if="hasPlaygroundDemo(selectedName)"
+            v-if="hasPlaygroundDemo(selectedName) || isShowcase"
             type="button"
             class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
             style="background: var(--pg-nav-active-bg); color: var(--pg-accent)"
-            @click="emit('openPlayground', playgroundDemoName(selectedName)!)"
+            @click="emit('openPlayground', isShowcase ? selectedName : playgroundDemoName(selectedName)!)"
           >
             <Maximize2 :size="12" />
             {{ t('componentCatalog.openPlayground') }}
@@ -220,25 +267,31 @@ onUnmounted(() => {
         </div>
 
         <div class="space-y-5 px-4 py-4">
-          <div>
-            <p class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
-              {{ t('componentCatalog.apiHeading') }}
-            </p>
-            <ComponentApiReference v-if="selectedEntry" :entry="selectedEntry" />
-          </div>
+          <template v-if="isShowcase">
+            <component :is="showcasePreviewComponent" v-if="showcasePreviewComponent" />
+            <p v-else class="pg-text-subtle text-sm">Preview not available</p>
+          </template>
+          <template v-else>
+            <div>
+              <p class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
+                {{ t('componentCatalog.apiHeading') }}
+              </p>
+              <ComponentApiReference v-if="selectedEntry" :entry="selectedEntry" />
+            </div>
 
-          <div>
-            <p class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
-              {{ t('componentCatalog.usageHeading') }}
-            </p>
-            <p
-              v-if="hasPlaygroundDemo(selectedName)"
-              class="pg-text-subtle mb-3 text-xs leading-relaxed"
-            >
-              {{ t('componentCatalog.playgroundHint') }}
-            </p>
-            <UsageBlock :code="getComponentUsage(selectedName)" />
-          </div>
+            <div>
+              <p class="pg-text-muted mb-2 font-mono text-[10px] uppercase tracking-wider">
+                {{ t('componentCatalog.usageHeading') }}
+              </p>
+              <p
+                v-if="hasPlaygroundDemo(selectedName)"
+                class="pg-text-subtle mb-3 text-xs leading-relaxed"
+              >
+                {{ t('componentCatalog.playgroundHint') }}
+              </p>
+              <UsageBlock :code="getComponentUsage(selectedName)" />
+            </div>
+          </template>
         </div>
       </article>
     </div>

@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import GlowDot from './GlowDot.vue'
 import StatPill from './StatPill.vue'
 import logoUrl from '../assets/logo.png?url'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
-import { Button } from '@/index'
 import {
   designSystemLibraryComponentCount,
   designSystemVersionBadge,
@@ -15,24 +13,11 @@ const props = defineProps<{
   fullLanding?: boolean
 }>()
 
-const emit = defineEmits<{
-  browse: []
-  docs: []
-  playground: []
-}>()
-
 const { t } = usePlaygroundLocale()
 </script>
 
 <template>
   <section class="mb-8 lg:mb-12">
-    <div class="mb-6 flex items-center gap-2">
-      <GlowDot />
-      <span class="pg-text-muted font-mono text-[10px] uppercase tracking-widest">
-        {{ t('hero.versionLine', { version: designSystemVersionBadge }) }}
-      </span>
-    </div>
-
     <div>
       <div class="pg-hero-headline mb-5">
         <img :src="logoUrl" alt="" class="pg-hero-logo" />
@@ -46,18 +31,6 @@ const { t } = usePlaygroundLocale()
       <p class="pg-text-subtle max-w-md text-sm leading-[1.8]">
         {{ t('hero.subtitle') }}
       </p>
-      <div class="mt-6 flex flex-wrap items-center gap-3">
-        <Button variant="primary" @click="emit('browse')">
-          {{ t('hero.browseComponents') }}
-        </Button>
-        <Button variant="outline" @click="emit('docs')">
-          {{ t('hero.installDocs') }}
-        </Button>
-        <Button variant="outline" @click="emit('playground')">
-          <GlowDot color="#00E5B0" />
-          {{ t('hero.playground') }}
-        </Button>
-      </div>
     </div>
 
     <!-- Stats_Bar: 4 StatPills — visible on all viewports when fullLanding=true, hidden on <lg when false -->

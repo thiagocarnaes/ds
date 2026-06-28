@@ -223,7 +223,7 @@ function dayButtonClass(day: { inMonth: boolean; isSelected: boolean; isToday: b
 
     <div
       v-if="open"
-      class="absolute top-[calc(100%+0.375rem)] right-0 z-[--ds-z-dropdown] w-full min-w-[16.5rem] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
+      class="absolute top-[calc(100%+0.375rem)] right-0 z-[var(--ds-z-dropdown)] w-full min-w-[16.5rem] rounded-lg border border-border bg-popover p-3 text-popover-foreground shadow-[0_12px_40px_rgba(0,0,0,0.5)]"
       @click.stop
     >
       <div class="mb-3 flex items-center justify-between gap-2">

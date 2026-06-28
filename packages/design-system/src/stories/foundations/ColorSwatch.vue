@@ -42,7 +42,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="inline-flex flex-col items-center gap-1.5">
+  <div class="flex w-full flex-col items-start gap-1.5">
     <!-- Colored swatch square -->
     <div
       class="h-12 w-12 rounded-md border border-border"
@@ -50,15 +50,15 @@ onUnmounted(() => {
       :aria-label="label ?? token"
     />
 
-    <!-- Token name -->
-    <span class="max-w-[120px] break-all text-center font-mono text-[10px] leading-tight text-muted-foreground">
+    <!-- Token name — full text, wraps if needed -->
+    <span class="w-full break-all font-mono text-[10px] leading-snug text-muted-foreground">
       {{ label ?? token }}
     </span>
 
-    <!-- Resolved value -->
+    <!-- Resolved value — full text, wraps if needed -->
     <span
       v-if="resolvedValue"
-      class="font-mono text-[10px] text-muted-foreground/70"
+      class="w-full break-all font-mono text-[10px] leading-snug text-muted-foreground/70"
     >
       {{ resolvedValue }}
     </span>
