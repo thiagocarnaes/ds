@@ -345,7 +345,7 @@ watch(
         data-sidebar-flyout
         :data-sidebar-depth="sidebarMenu.depth"
         :data-flyout-placement="flyoutAlign"
-        class="fixed min-w-[11rem] rounded-lg border border-border bg-popover py-1.5 pl-2.5 pr-1.5 shadow-lg"
+        class="fixed min-w-[11rem] rounded-lg border border-border bg-popover py-1.5 pl-2.5 pr-1.5 shadow-[var(--ds-shadow-dropdown)]"
         :style="{
           top: `${flyoutCoords.top}px`,
           left: `${flyoutCoords.left}px`,

@@ -36,7 +36,7 @@ export const catalogGroups: CatalogGroup[] = [
   },
   {
     category: 'Feedback',
-    items: ['Alert', 'Badge', 'Spinner', 'Progress', 'Skeleton', 'Toast', 'ToastHost'],
+    items: ['Alert', 'Badge', 'Flag', 'FlagGroup', 'Spinner', 'Progress', 'Skeleton', 'SectionMessage', 'Toast', 'ToastHost'],
   },
   {
     category: 'Navigation',

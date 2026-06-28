@@ -28,18 +28,24 @@ import LayoutCard from './cards/LayoutCard.vue'
 import DataTableCard from './cards/DataTableCard.vue'
 import DocumentationPage from './views/DocumentationPage.vue'
 import ComponentsCatalogPage from './views/ComponentsCatalogPage.vue'
+import FoundationsPage from './views/FoundationsPage.vue'
 import ToastHost from '@/components/feedback/ToastHost.vue'
 import { designSystemVersionBadge } from './designSystemMeta'
+import HomeQuickNavSection from './components/HomeQuickNavSection.vue'
+import HomePurposeSection from './components/HomePurposeSection.vue'
+import HomePrinciplesSection from './components/HomePrinciplesSection.vue'
+import HomeQuickStartSection from './components/HomeQuickStartSection.vue'
+import HomeChangelogSection from './components/HomeChangelogSection.vue'
 
-type PlaygroundPage = 'home' | 'docs' | 'catalog'
+type PlaygroundPage = 'home' | 'docs' | 'catalog' | 'foundations'
 
 const CATEGORY_KEYS: CategoryKey[] = [
   'all',
   'foundations',
-  'forms',
-  'labels',
-  'feedback',
-  'layout',
+  // 'forms',
+  // 'labels',
+  // 'feedback',
+  // 'layout',
   'catalog',
   'docs',
 ]
@@ -123,6 +129,7 @@ function setCategory(cat: CategoryKey): void {
   activeCat.value = cat
   if (cat === 'docs') activePage.value = 'docs'
   else if (cat === 'catalog') activePage.value = 'catalog'
+  else if (cat === 'foundations') activePage.value = 'foundations'
   else activePage.value = 'home'
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
@@ -130,7 +137,12 @@ function setCategory(cat: CategoryKey): void {
 function isNavActive(cat: CategoryKey): boolean {
   if (cat === 'docs') return activePage.value === 'docs'
   if (cat === 'catalog') return activePage.value === 'catalog'
+  if (cat === 'foundations') return activePage.value === 'foundations'
   return activePage.value === 'home' && activeCat.value === cat
+}
+
+function handleNavigate(category: 'foundations' | 'catalog' | 'docs'): void {
+  setCategory(category)
 }
 
 function scrollToPlayground(): void {
@@ -147,6 +159,11 @@ function scrollToPlayground(): void {
     document.getElementById('card-index')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
   })
 }
+
+// Expose for testing: allows tests to programmatically navigate to any category,
+// including bento-grid categories (forms, labels, feedback, layout) that are
+// intentionally commented out of the UI nav.
+defineExpose({ setCategory, activeCat, activePage, isFullLanding })
 </script>
 
 <template>
@@ -228,8 +245,19 @@ function scrollToPlayground(): void {
 
       <DocumentationPage v-else-if="activePage === 'docs'" />
 
+      <FoundationsPage v-else-if="activePage === 'foundations'" />
+
+      <template v-else-if="isFullLanding">
+        <!-- Editorial Home: only when activePage=home and activeCat=all -->
+        <HomeQuickNavSection @navigate="handleNavigate" />
+        <HomePurposeSection v-show="isFullLanding" />
+        <HomePrinciplesSection v-show="isFullLanding" />
+        <HomeQuickStartSection @docs="openDocs" />
+        <HomeChangelogSection v-show="isFullLanding" />
+      </template>
+
       <TransitionGroup
-        v-else
+        v-else-if="activePage === 'home' && !isFullLanding"
         id="bento-grid"
         tag="div"
         name="ds-bento"

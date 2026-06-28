@@ -23,6 +23,15 @@ const visible = ref(true)
 
 const classes = computed(() => cn(alertVariants({ variant: props.variant }), props.class))
 
+/**
+ * aria-live value based on variant urgency (Req 16.8).
+ * 'error' and 'warning' are urgent → assertive.
+ * All other variants ('info', 'success') → polite.
+ */
+const ariaLive = computed(() =>
+  props.variant === 'error' || props.variant === 'warning' ? 'assertive' : 'polite',
+)
+
 function dismiss(): void {
   visible.value = false
   emit('dismiss')
@@ -33,6 +42,7 @@ function dismiss(): void {
   <div
     v-if="visible"
     role="alert"
+    :aria-live="ariaLive"
     :class="classes"
   >
     <div class="flex items-start justify-between gap-3">

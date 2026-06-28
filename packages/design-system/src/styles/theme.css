@@ -86,10 +86,15 @@
   --color-ring: var(--ring);
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  --radius-none: var(--ds-radius-none);
+  --radius-xs:   var(--ds-radius-xs);
+  --radius-sm:   var(--ds-radius-sm);
+  --radius-md:   var(--ds-radius-md);
+  --radius-lg:   var(--ds-radius-lg);
+  --radius-xl:   var(--ds-radius-xl);
+  --radius-2xl:  var(--ds-radius-2xl);
+  --radius-3xl:  var(--ds-radius-3xl);
+  --radius-full: var(--ds-radius-full);
   --font-size-xs: var(--ds-font-xs);
   --font-size-sm: var(--ds-font-sm);
   --font-size-base: var(--ds-font-base);
@@ -105,12 +110,78 @@
   --shadow-primary-hover: var(--primary-shadow-hover);
   --shadow-destructive: var(--destructive-shadow);
   --shadow-destructive-hover: var(--destructive-shadow-hover);
+  /* spacing */
+  --spacing-025: var(--ds-space-025);
+  --spacing-050: var(--ds-space-050);
+  --spacing-075: var(--ds-space-075);
+  --spacing-100: var(--ds-space-100);
+  --spacing-150: var(--ds-space-150);
+  --spacing-200: var(--ds-space-200);
+  --spacing-250: var(--ds-space-250);
+  --spacing-300: var(--ds-space-300);
+  --spacing-400: var(--ds-space-400);
+  --spacing-500: var(--ds-space-500);
+  --spacing-600: var(--ds-space-600);
+  --spacing-800: var(--ds-space-800);
+  --spacing-1000: var(--ds-space-1000);
+  /* semantic colors */
+  --color-text-subtle:    var(--ds-color-text-subtle);
+  --color-text-disabled:  var(--ds-color-text-disabled);
+  --color-text-inverse:   var(--ds-color-text-inverse);
+  --color-text-brand:     var(--ds-color-text-brand);
+  --color-text-danger:    var(--ds-color-text-danger);
+  --color-text-warning:   var(--ds-color-text-warning);
+  --color-text-success:   var(--ds-color-text-success);
+  --color-text-discovery: var(--ds-color-text-discovery);
+  --color-bg-brand-bold:  var(--ds-color-bg-brand-bold);
+  --color-bg-danger:      var(--ds-color-bg-danger);
+  --color-bg-warning:     var(--ds-color-bg-warning);
+  --color-bg-success:     var(--ds-color-bg-success);
+  --color-bg-discovery:   var(--ds-color-bg-discovery);
+  --color-border-focused: var(--ds-color-border-focused);
+  /* elevation */
+  --color-surface-raised:  var(--ds-elevation-surface-raised);
+  --color-surface-overlay: var(--ds-elevation-surface-overlay);
+  --color-surface-sunken:  var(--ds-elevation-surface-sunken);
+  /* icon colors */
+  --color-icon-default:   var(--ds-color-icon-default);
+  --color-icon-subtle:    var(--ds-color-icon-subtle);
+  --color-icon-inverse:   var(--ds-color-icon-inverse);
+  --color-icon-brand:     var(--ds-color-icon-brand);
+  --color-icon-disabled:  var(--ds-color-icon-disabled);
+  --color-icon-danger:    var(--ds-color-icon-danger);
+  --color-icon-warning:   var(--ds-color-icon-warning);
+  --color-icon-success:   var(--ds-color-icon-success);
+  --color-icon-discovery: var(--ds-color-icon-discovery);
+  /* border widths */
+  --border-width-none:   var(--ds-border-width-none);
+  --border-width-thin:   var(--ds-border-width-thin);
+  --border-width-medium: var(--ds-border-width-medium);
+  --border-width-thick:  var(--ds-border-width-thick);
 }
 
 .dark {
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --ds-gradient-fade-end:    linear-gradient(to right, transparent, var(--background));
+  --ds-gradient-fade-bottom: linear-gradient(to bottom, transparent, var(--background));
+  /* ── Shadows — Override dark (opacidades aumentadas) ── */
+  --ds-shadow-xs:  0 1px 2px 0 rgba(0, 0, 0, 0.30);
+  --ds-shadow-sm:  0 1px 3px 0 rgba(0, 0, 0, 0.40), 0 1px 2px -1px rgba(0, 0, 0, 0.40);
+  --ds-shadow-md:  0 4px 6px -1px rgba(0, 0, 0, 0.40), 0 2px 4px -2px rgba(0, 0, 0, 0.40);
+  --ds-shadow-lg:  0 10px 15px -3px rgba(0, 0, 0, 0.40), 0 4px 6px -4px rgba(0, 0, 0, 0.40);
+  --ds-shadow-xl:  0 20px 25px -5px rgba(0, 0, 0, 0.40), 0 8px 10px -6px rgba(0, 0, 0, 0.40);
+  --ds-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.60);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ds-motion-duration-fast:   0ms;
+    --ds-motion-duration-normal: 0ms;
+    --ds-motion-duration-slow:   0ms;
+    --ds-motion-duration-slower: 0ms;
+  }
 }
 
 @layer base {

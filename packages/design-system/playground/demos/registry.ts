@@ -1,6 +1,8 @@
 import type { Component } from 'vue'
 import AvatarDemo from './AvatarDemo.vue'
 import BadgeDemo from './BadgeDemo.vue'
+import FlagDemo from './FlagDemo.vue'
+import FlagGroupDemo from './FlagGroupDemo.vue'
 import CardDemo from './CardDemo.vue'
 import CheckboxDemo from './CheckboxDemo.vue'
 import ChipDemo from './ChipDemo.vue'
@@ -24,6 +26,7 @@ import ProgressDemo from './ProgressDemo.vue'
 import RadioGroupDemo from './RadioGroupDemo.vue'
 import SkeletonDemo from './SkeletonDemo.vue'
 import SpinnerDemo from './SpinnerDemo.vue'
+import SectionMessageDemo from './SectionMessageDemo.vue'
 import SwitchDemo from './SwitchDemo.vue'
 import TabsDemo from './TabsDemo.vue'
 import ToggleDemo from './ToggleDemo.vue'
@@ -37,6 +40,8 @@ export const playgroundDemoRegistry: Record<string, Component> = {
   Textarea: TextareaDemo,
   Label: LabelDemo,
   Badge: BadgeDemo,
+  Flag: FlagDemo,
+  FlagGroup: FlagGroupDemo,
   Avatar: AvatarDemo,
   Card: CardDemo,
   Tabs: TabsDemo,
@@ -57,6 +62,7 @@ export const playgroundDemoRegistry: Record<string, Component> = {
   Popover: PopoverDemo,
   Progress: ProgressDemo,
   Skeleton: SkeletonDemo,
+  SectionMessage: SectionMessageDemo,
   Spinner: SpinnerDemo,
   'Layout Primitives': LayoutPrimitivesDemo,
 }

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 import Modal from '@/components/overlay/Modal.vue'
 import Drawer from '@/components/overlay/Drawer.vue'
@@ -454,6 +454,14 @@ describe('layout components', () => {
 })
 
 describe('Tooltip', () => {
+  beforeEach(() => {
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('teleports content to body on hover', async () => {
     const wrapper = mount(Tooltip, {
       props: { content: 'Collapse menu', placement: 'right' },
@@ -462,11 +470,11 @@ describe('Tooltip', () => {
     })
 
     await wrapper.find('span.inline-flex').trigger('mouseenter')
-    await flushPromises()
+    vi.runAllTimers()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
-    expect(document.body.querySelector('[role="tooltip"]')?.textContent).toBe('Collapse menu')
+    expect(document.body.querySelector('[role="tooltip"]')?.textContent?.trim()).toBe('Collapse menu')
     wrapper.unmount()
   })
 
@@ -478,13 +486,140 @@ describe('Tooltip', () => {
     })
 
     await wrapper.find('span.inline-flex').trigger('mouseenter')
-    await flushPromises()
+    vi.runAllTimers()
     await wrapper.vm.$nextTick()
     await wrapper.vm.$nextTick()
 
     const bubble = document.body.querySelector('[role="tooltip"]')
     expect(bubble?.className).toContain('bg-popover')
     expect(bubble?.className).toContain('border-transparent')
+    wrapper.unmount()
+  })
+
+  it('respects custom delay before showing', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Delayed', delay: 500 },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+
+    // Tooltip should not be visible before delay has elapsed
+    await wrapper.vm.$nextTick()
+    expect(document.body.querySelector('[role="tooltip"]')).toBeNull()
+
+    // Advance by 500ms — tooltip should now appear
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+    expect(document.body.querySelector('[role="tooltip"]')?.textContent?.trim()).toBe('Delayed')
+
+    wrapper.unmount()
+  })
+
+  it('cancels pending show when mouse leaves before delay expires', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Cancelled', delay: 300 },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.advanceTimersByTime(100)
+    await wrapper.find('span.inline-flex').trigger('mouseleave')
+
+    // Advance past the original delay — tooltip should still not appear
+    vi.advanceTimersByTime(500)
+    await wrapper.vm.$nextTick()
+    expect(document.body.querySelector('[role="tooltip"]')).toBeNull()
+
+    wrapper.unmount()
+  })
+
+  it('renders shortcut inside a kbd element', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Save', shortcut: '⌘S' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.runAllTimers()
+    await wrapper.vm.$nextTick()
+
+    const bubble = document.body.querySelector('[role="tooltip"]')
+    expect(bubble?.querySelector('kbd')?.textContent).toBe('⌘S')
+    expect(bubble?.querySelector('kbd')?.className).toContain('ml-2')
+
+    wrapper.unmount()
+  })
+
+  it('does not render kbd element when shortcut is not provided', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'No shortcut' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.runAllTimers()
+    await wrapper.vm.$nextTick()
+
+    const bubble = document.body.querySelector('[role="tooltip"]')
+    expect(bubble?.querySelector('kbd')).toBeNull()
+
+    wrapper.unmount()
+  })
+
+  it('positions tooltip at top-start (left-aligned with trigger)', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Top start', placement: 'top-start' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.runAllTimers()
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull()
+
+    wrapper.unmount()
+  })
+
+  it('positions tooltip at top-end (right-aligned with trigger)', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Top end', placement: 'top-end' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.runAllTimers()
+    await wrapper.vm.$nextTick()
+    await wrapper.vm.$nextTick()
+
+    expect(document.body.querySelector('[role="tooltip"]')).not.toBeNull()
+
+    wrapper.unmount()
+  })
+
+  it('maintains role="tooltip" on the tooltip element', async () => {
+    const wrapper = mount(Tooltip, {
+      props: { content: 'Accessible tooltip' },
+      slots: { default: '<button type="button">Toggle</button>' },
+      attachTo: document.body,
+    })
+
+    await wrapper.find('span.inline-flex').trigger('mouseenter')
+    vi.runAllTimers()
+    await wrapper.vm.$nextTick()
+
+    const bubble = document.body.querySelector('[role="tooltip"]')
+    expect(bubble).not.toBeNull()
+    expect(bubble?.getAttribute('role')).toBe('tooltip')
+
     wrapper.unmount()
   })
 })

@@ -1,4 +1,8 @@
 export { default as Modal } from './Modal.vue'
+export { default as ModalHeader } from './ModalHeader.vue'
+export { default as ModalBody } from './ModalBody.vue'
+export { default as ModalFooter } from './ModalFooter.vue'
+export { default as ModalTitle } from './ModalTitle.vue'
 export { default as Dialog } from './Dialog.vue'
 export { default as Tooltip } from './Tooltip.vue'
 export { default as Popover } from './Popover.vue'

@@ -5,7 +5,7 @@ export const designSystemVersion = packageJson.version
 export const designSystemVersionBadge = `v${packageJson.version}`
 
 /** Vue components exported from `@tcarnaes/design-system`. */
-export const designSystemLibraryComponentCount = 59
+export const designSystemLibraryComponentCount = 62
 
 /** Interactive demos for Library components (drawer). */
 export const playgroundDemoComponents = [
@@ -42,6 +42,9 @@ export const playgroundDemoComponents = [
   'Progress',
   'Skeleton',
   'Alert',
+  'Flag',
+  'FlagGroup',
+  'SectionMessage',
   'Toast',
 ] as const
 

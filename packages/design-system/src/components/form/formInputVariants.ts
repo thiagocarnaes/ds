@@ -1,10 +1,11 @@
 import { cva, type VariantProps } from 'class-variance-authority'
 
 export const formInputVariants = cva(
-  'flex w-full rounded-md border bg-input-background text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default',
+  'flex w-full rounded-[var(--ds-radius-input)] border bg-input-background text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default',
   {
     variants: {
       size: {
+        compact: 'h-7 px-2 text-xs',
         sm: 'h-8 px-2 text-xs',
         md: 'h-9 px-3 text-sm',
         lg: 'h-10 px-4 text-base',
@@ -27,7 +28,7 @@ export const formInputVariants = cva(
 )
 
 export const formTextareaVariants = cva(
-  'flex w-full rounded-md border bg-input-background text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default resize-y',
+  'flex w-full rounded-[var(--ds-radius-input)] border bg-input-background text-foreground transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 read-only:cursor-default resize-y',
   {
     variants: {
       size: {
@@ -48,3 +49,4 @@ export const formTextareaVariants = cva(
 )
 
 export type FormInputVariants = VariantProps<typeof formInputVariants>
+export type FormTextareaVariants = VariantProps<typeof formTextareaVariants>

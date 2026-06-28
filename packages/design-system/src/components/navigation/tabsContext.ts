@@ -9,3 +9,6 @@ export interface TabsContext {
 }
 
 export const TABS_INJECTION_KEY: InjectionKey<TabsContext> = Symbol('ds-tabs')
+
+/** Provided by `Tabs` to control whether `TabPanel` unmounts inactive panels */
+export const TABS_UNMOUNT_KEY: InjectionKey<boolean> = Symbol('ds-tabs-unmount')

@@ -166,6 +166,39 @@ import { FormField, Input } from '${PACKAGE}'
     Changes saved successfully.
   </Alert>`,
   ),
+  Flag: usage(
+    'Flag',
+    `  <Flag
+    :variant="'warning'"
+    :title="'Deployment failed'"
+    :description="'Push to main was rejected. Check the build logs.'"
+    :is-dismissible="true"
+  />`,
+  ),
+  FlagGroup: usageMany(
+    ['Flag', 'FlagGroup'],
+    `  <FlagGroup>
+    <Flag
+      :variant="'success'"
+      :title="'Changes saved'"
+      :description="'Your changes were saved successfully.'"
+    />
+    <Flag
+      :variant="'warning'"
+      :title="'Deploy queued'"
+      :description="'Deployment is pending. Check status in a moment.'"
+    />
+  </FlagGroup>`,
+  ),
+  SectionMessage: usage(
+    'SectionMessage',
+    `  <SectionMessage
+    :variant="'information'"
+    :title="'Important update'"
+  >
+    This feature will be deprecated in the next major release.
+  </SectionMessage>`,
+  ),
   Badge: usage(
     'Badge',
     `  <Badge

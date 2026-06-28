@@ -515,4 +515,62 @@ export interface PlaygroundMessages {
     openPlayground: string
     descriptions: Record<string, string>
   }
+  homeHero: {
+    exploreComponents: string
+    getStarted: string
+  }
+  homeQuickNav: {
+    sectionTitle: string
+    foundationsTitle: string
+    foundationsDesc: string
+    foundationsStat: string
+    componentsTitle: string
+    componentsDesc: string
+    docsTitle: string
+    docsDesc: string
+    docsStat: string
+    arrowLabel: string
+  }
+  homePurpose: {
+    sectionTitle: string
+    mission: string
+    benefit1Title: string
+    benefit1Desc: string
+    benefit2Title: string
+    benefit2Desc: string
+    benefit3Title: string
+    benefit3Desc: string
+  }
+  homePrinciples: {
+    sectionTitle: string
+    p1Title: string
+    p1Desc: string
+    p2Title: string
+    p2Desc: string
+    p3Title: string
+    p3Desc: string
+    p4Title: string
+    p4Desc: string
+  }
+  homeQuickStart: {
+    sectionTitle: string
+    installLabel: string
+    importLabel: string
+    copyAriaLabel: string
+    copiedLabel: string
+    docsLink: string
+  }
+  homeStats: {
+    components: string
+    coverage: string
+    demos: string
+    version: string
+  }
+  homeChangelog: {
+    sectionTitle: string
+    typeAdded: string
+    typeChanged: string
+    typeFixed: string
+    [key: string]: string
+  }
 }

@@ -14,14 +14,14 @@ const props = withDefaults(defineProps<CardProps>(), {
 })
 
 const variantClasses: Record<CardVariant, string> = {
-  elevated: 'bg-card text-card-foreground shadow-lg',
-  outlined: 'border border-border bg-card text-card-foreground shadow-sm',
+  elevated: 'bg-card text-card-foreground shadow-[var(--ds-shadow-card)]',
+  outlined: 'border border-border bg-card text-card-foreground shadow-[var(--ds-shadow-card)]',
   flat: 'bg-card text-card-foreground',
   ghost: semanticSurfaceClasses.ghost,
 }
 
 const classes = computed(() =>
-  cn('rounded-lg', variantClasses[props.variant]),
+  cn('rounded-[var(--ds-radius-card)]', variantClasses[props.variant]),
 )
 </script>
 

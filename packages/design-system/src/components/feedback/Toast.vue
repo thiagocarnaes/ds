@@ -40,7 +40,7 @@ function dismiss(): void {
     role="status"
     :class="
       cn(
-        'rounded-md border px-4 py-3 text-sm shadow-lg',
+        'rounded-md border px-4 py-3 text-sm shadow-[var(--ds-shadow-card)]',
         variantClasses[props.variant],
         props.class,
       )

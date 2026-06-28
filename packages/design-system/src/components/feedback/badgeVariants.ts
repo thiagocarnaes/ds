@@ -6,6 +6,15 @@ export const badgeAppearances = [
   'important',
   'added',
   'removed',
+  'modified',
+  'inprogress',
+  'moved',
+  'new',
+  'discovery',
+  'success',
+  'warning',
+  'danger',
+  'information',
 ] as const
 
 export type BadgeAppearance = (typeof badgeAppearances)[number]
@@ -22,6 +31,13 @@ export const badgeVariantToAppearance: Record<string, BadgeAppearance> = {
   added: 'added',
   warning: 'removed',
   removed: 'removed',
+  modified: 'modified',
+  inprogress: 'inprogress',
+  moved: 'moved',
+  new: 'new',
+  discovery: 'discovery',
+  danger: 'danger',
+  information: 'information',
 }
 
 export const badgeAppearanceStyles: Record<
@@ -53,10 +69,65 @@ export const badgeAppearanceStyles: Record<
     glow: 'rgba(255, 139, 0, 0.45)',
     bg: 'rgba(255, 139, 0, 0.1)',
   },
+  // ── New ADS-aligned appearances ──
+  /** Req 4.5 — moved/modified → --warning (amber) */
+  modified: {
+    color: '#FF8B00',
+    glow: 'rgba(255, 139, 0, 0.45)',
+    bg: 'rgba(255, 139, 0, 0.1)',
+  },
+  /** cyan */
+  inprogress: {
+    color: '#00D4FF',
+    glow: 'rgba(0, 212, 255, 0.45)',
+    bg: 'rgba(0, 212, 255, 0.1)',
+  },
+  /** Req 4.5 — moved/modified → --warning (amber) */
+  moved: {
+    color: '#FF8B00',
+    glow: 'rgba(255, 139, 0, 0.45)',
+    bg: 'rgba(255, 139, 0, 0.1)',
+  },
+  /** purple */
+  new: {
+    color: '#A78BFA',
+    glow: 'rgba(167, 139, 250, 0.45)',
+    bg: 'rgba(167, 139, 250, 0.1)',
+  },
+  /** Req 4.4 — discovery → --ds-color-purple-400 */
+  discovery: {
+    color: '#A78BFA',
+    glow: 'rgba(167, 139, 250, 0.45)',
+    bg: 'rgba(167, 139, 250, 0.1)',
+  },
+  /** Req 4.2 — success → --success (teal) */
+  success: {
+    color: '#00E5B0',
+    glow: 'rgba(0, 229, 176, 0.45)',
+    bg: 'rgba(0, 229, 176, 0.1)',
+  },
+  /** amber */
+  warning: {
+    color: '#FF8B00',
+    glow: 'rgba(255, 139, 0, 0.45)',
+    bg: 'rgba(255, 139, 0, 0.1)',
+  },
+  /** Req 4.3 — danger → --destructive (red) */
+  danger: {
+    color: '#FF3D57',
+    glow: 'rgba(255, 61, 87, 0.45)',
+    bg: 'rgba(255, 61, 87, 0.1)',
+  },
+  /** cyan */
+  information: {
+    color: '#00D4FF',
+    glow: 'rgba(0, 212, 255, 0.45)',
+    bg: 'rgba(0, 212, 255, 0.1)',
+  },
 }
 
 export const badgeVariants = cva(
-  'inline-flex items-center justify-center rounded-full font-semibold tabular-nums leading-none',
+  'inline-flex items-center justify-center rounded-[var(--ds-radius-badge)] font-semibold tabular-nums leading-none',
   {
     variants: {
       size: {

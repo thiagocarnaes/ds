@@ -67,7 +67,7 @@ onUnmounted(() => {
       ref="contentRef"
       :class="
         cn(
-          'absolute left-0 top-full z-50 mt-2 min-w-32 rounded-md border p-4 shadow-lg',
+          'absolute left-0 top-full z-[--ds-z-dropdown] mt-2 min-w-32 rounded-md border p-4 shadow-[var(--ds-shadow-dropdown)]',
           variantClasses,
           props.class,
         )

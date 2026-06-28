@@ -3,11 +3,12 @@ import { mount } from '@vue/test-utils'
 import IconButton from '@/components/button/IconButton.vue'
 
 describe('IconButton', () => {
-  it('has accessible name', () => {
+  it('has accessible name via aria-label prop', () => {
     const wrapper = mount(IconButton, {
-      props: { ariaLabel: 'Close' },
+      props: { 'aria-label': 'Close' },
       slots: { default: 'X' },
     })
-    expect(wrapper.attributes('aria-label')).toBe('Close')
+    // aria-label passes through attrs chain down to the native <button>
+    expect(wrapper.find('button').attributes('aria-label')).toBe('Close')
   })
 })

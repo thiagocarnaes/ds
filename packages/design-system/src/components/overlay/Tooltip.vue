@@ -12,16 +12,22 @@ export type { TooltipAppearance }
 const props = withDefaults(
   defineProps<{
     content: string
-    placement?: 'top' | 'bottom' | 'left' | 'right'
+    placement?: 'top' | 'bottom' | 'left' | 'right' | 'top-start' | 'top-end'
     variant?: OverlayAppearance
     /** @deprecated Use `variant` instead. */
     appearance?: OverlayAppearance
     class?: string
+    /** Delay in milliseconds before showing the tooltip. Default: 300ms */
+    delay?: number
+    /** Keyboard shortcut to display alongside the tooltip content */
+    shortcut?: string
   }>(),
   {
     placement: 'top',
     variant: undefined,
     appearance: undefined,
+    delay: 300,
+    shortcut: undefined,
   },
 )
 
@@ -35,6 +41,7 @@ const triggerRef = ref<HTMLElement | null>(null)
 const tooltipRef = ref<HTMLElement | null>(null)
 const visible = ref(false)
 const coords = ref({ top: 0, left: 0 })
+let showTimer: ReturnType<typeof setTimeout> | null = null
 
 function computePosition(
   trigger: DOMRect,
@@ -57,6 +64,16 @@ function computePosition(
       return {
         top: trigger.bottom + gap,
         left: trigger.left + trigger.width / 2 - tooltip.width / 2,
+      }
+    case 'top-start':
+      return {
+        top: trigger.top - tooltip.height - gap,
+        left: trigger.left,
+      }
+    case 'top-end':
+      return {
+        top: trigger.top - tooltip.height - gap,
+        left: trigger.right - tooltip.width,
       }
     default:
       return {
@@ -83,10 +100,20 @@ async function updatePosition(): Promise<void> {
 }
 
 function show(): void {
-  visible.value = true
+  if (showTimer !== null) {
+    clearTimeout(showTimer)
+  }
+  showTimer = setTimeout(() => {
+    visible.value = true
+    showTimer = null
+  }, props.delay)
 }
 
 function hide(): void {
+  if (showTimer !== null) {
+    clearTimeout(showTimer)
+    showTimer = null
+  }
   visible.value = false
 }
 
@@ -117,6 +144,10 @@ if (typeof window !== 'undefined') {
 }
 
 onUnmounted(() => {
+  if (showTimer !== null) {
+    clearTimeout(showTimer)
+    showTimer = null
+  }
   if (typeof window !== 'undefined') {
     window.removeEventListener('scroll', onViewportChange, true)
     window.removeEventListener('resize', onViewportChange)
@@ -148,7 +179,7 @@ const tooltipStyle = computed(() => ({
       role="tooltip"
       :class="
         cn(
-          'pointer-events-none fixed z-[200] whitespace-nowrap rounded-md border px-2 py-1 text-xs shadow-md',
+          'pointer-events-none fixed z-[--ds-z-tooltip] whitespace-nowrap rounded-md border px-2 py-1 text-xs shadow-[var(--ds-shadow-tooltip)]',
           variantClasses,
           props.class,
         )
@@ -156,6 +187,7 @@ const tooltipStyle = computed(() => ({
       :style="tooltipStyle"
     >
       {{ content }}
+      <kbd v-if="shortcut" class="ml-2 rounded border px-1 text-[10px]">{{ shortcut }}</kbd>
     </span>
   </Teleport>
 </template>

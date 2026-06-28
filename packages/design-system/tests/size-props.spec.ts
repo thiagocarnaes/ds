@@ -53,11 +53,11 @@ describe('size props', () => {
 
   it('IconButton applies size classes from size prop', () => {
     const sm = mount(IconButton, {
-      props: { ariaLabel: 'Settings', size: 'sm' },
+      props: { 'aria-label': 'Settings', size: 'sm' },
       slots: { default: '•' },
     })
     const icon = mount(IconButton, {
-      props: { ariaLabel: 'Settings', size: 'icon' },
+      props: { 'aria-label': 'Settings', size: 'icon' },
       slots: { default: '•' },
     })
     expect(sm.classes().join(' ')).toMatch(/h-8/)

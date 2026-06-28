@@ -638,4 +638,76 @@ export const en: PlaygroundMessages = {
     openPlayground: 'Open playground',
     descriptions: componentCatalogDescriptionsEn,
   },
+  homeHero: {
+    exploreComponents: 'Explore Components',
+    getStarted: 'Get Started',
+  },
+  homeQuickNav: {
+    sectionTitle: 'Navigate the Design System',
+    foundationsTitle: 'Foundations',
+    foundationsDesc: 'Color tokens, typography, spacing and icons that ground every component.',
+    foundationsStat: '4 token groups',
+    componentsTitle: 'Components',
+    componentsDesc: 'Accessible, composable UI building blocks ready to use in your product.',
+    docsTitle: 'Docs',
+    docsDesc: 'Installation guide, theming, and full API reference.',
+    docsStat: 'Full reference',
+    arrowLabel: 'Navigate to',
+  },
+  homePurpose: {
+    sectionTitle: 'Why This Design System',
+    mission:
+      'A cohesive set of principles, tokens and components that helps teams build consistent, accessible interfaces faster.',
+    benefit1Title: 'Ship Faster',
+    benefit1Desc:
+      'Pre-built, tested components let you focus on product logic instead of reinventing UI primitives.',
+    benefit2Title: 'Stay Consistent',
+    benefit2Desc:
+      'Shared tokens and patterns ensure visual coherence across every surface of your product.',
+    benefit3Title: 'Built for Scale',
+    benefit3Desc:
+      'From single pages to multi-team platforms — the system grows with your product.',
+  },
+  homePrinciples: {
+    sectionTitle: 'Design Principles',
+    p1Title: 'Accessibility First',
+    p1Desc:
+      'Every component meets WCAG 2.1 AA standards — keyboard navigation, ARIA and color contrast included.',
+    p2Title: 'Visual Consistency',
+    p2Desc:
+      'A single token layer drives color, spacing and type across the entire system.',
+    p3Title: 'Developer Productivity',
+    p3Desc:
+      'Typed props, sensible defaults and rich playground examples reduce integration time.',
+    p4Title: 'Flexible Composition',
+    p4Desc:
+      'Primitive slots and composables let you assemble complex UIs without fighting the system.',
+  },
+  homeQuickStart: {
+    sectionTitle: 'Quick Start',
+    installLabel: 'Install',
+    importLabel: 'Import',
+    copyAriaLabel: 'Copy install command',
+    copiedLabel: 'Copied!',
+    docsLink: 'View full docs',
+  },
+  homeStats: {
+    components: 'Components',
+    coverage: 'Test Coverage',
+    demos: 'Interactive Demos',
+    version: 'Version',
+  },
+  homeChangelog: {
+    sectionTitle: "What's New",
+    typeAdded: 'Added',
+    typeChanged: 'Changed',
+    typeFixed: 'Fixed',
+    'v0170.added1': 'New DataTable component with client-side and API pagination modes.',
+    'v0170.changed1': 'StatPill animation now uses CSS transitions for smoother performance.',
+    'v0160.added1': 'HomeQuickNavSection editorial cards with keyboard navigation support.',
+    'v0160.fixed1': 'Fixed tooltip z-index conflict with modal overlay.',
+    'v0150.added1': 'Chat playground with model selector and suggestion chips.',
+    'v0140.changed1': 'Revised color token naming to align with Tailwind 4 conventions.',
+    'v0140.fixed1': 'Fixed focus ring visibility in dark mode for Button and Input.',
+  },
 }

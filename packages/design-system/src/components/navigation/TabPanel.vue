@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue'
 import { cn } from '@/lib/utils'
-import { TABS_INJECTION_KEY } from './tabsContext'
+import { TABS_INJECTION_KEY, TABS_UNMOUNT_KEY } from './tabsContext'
 
 export interface TabPanelProps {
   value: string
@@ -15,6 +15,8 @@ if (!tabsContext) {
 }
 const ctx = tabsContext
 
+const shouldUnmount = inject(TABS_UNMOUNT_KEY, false)
+
 const isActive = computed(() => ctx.activeTab.value === props.value)
 const tabId = computed(() => `ds-tab-${props.value}`)
 const panelId = computed(() => `ds-tabpanel-${props.value}`)
@@ -22,7 +24,8 @@ const panelId = computed(() => `ds-tabpanel-${props.value}`)
 
 <template>
   <div
-    v-show="isActive"
+    v-if="shouldUnmount ? isActive : true"
+    v-show="!shouldUnmount || isActive"
     :id="panelId"
     role="tabpanel"
     :aria-labelledby="tabId"

@@ -86,6 +86,9 @@ export const playgroundDemoPrimaryComponent: Record<string, string> = {
   Skeleton: 'Skeleton',
   Alert: 'Alert',
   Toast: 'Toast',
+  Flag: 'Flag',
+  FlagGroup: 'FlagGroup',
+  SectionMessage: 'SectionMessage',
 }
 
 /**
@@ -94,7 +97,7 @@ export const playgroundDemoPrimaryComponent: Record<string, string> = {
  */
 export const playgroundPropCoverage: Record<string, readonly string[]> = {
   Button: ['variant', 'size', 'icon', 'type', 'disabled', 'loading'],
-  IconButton: ['ariaLabel', 'variant', 'size', 'disabled', 'loading'],
+  IconButton: ['aria-label', 'variant', 'size', 'disabled', 'loading'],
   Link: ['href', 'to', 'external'],
   Input: ['type', 'size', 'placeholder', 'minLength', 'maxLength', 'disabled', 'readonly', 'error', 'success', 'message'],
   Textarea: ['size', 'placeholder', 'rows', 'disabled', 'readonly', 'error', 'message'],
@@ -161,4 +164,7 @@ export const playgroundPropCoverage: Record<string, readonly string[]> = {
   Skeleton: [],
   Alert: ['variant', 'title', 'dismissible'],
   Toast: ['variant', 'dismissible', 'position'],
+  Flag: ['variant', 'isDismissible'],
+  FlagGroup: [],
+  SectionMessage: ['variant'],
 }

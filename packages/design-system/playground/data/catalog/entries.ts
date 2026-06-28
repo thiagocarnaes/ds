@@ -6,7 +6,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Button: {
     usage: usageSnippets.Button!,
     props: [
-      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style / button variant. Prefer over deprecated runtime alias `appearance` (danger → destructive).'),
+      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style of the button.'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'default', 'Button size'),
       p('icon', 'ButtonIconName', undefined, 'Leading icon by registered name'),
       p('type', "'button' | 'submit' | 'reset'", 'button', 'Native button type'),
@@ -21,7 +21,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   IconButton: {
     usage: usageSnippets.IconButton!,
     props: [
-      p('ariaLabel', 'string', undefined, 'Accessible label for icon-only buttons (required; maps to aria-label)'),
+      p('aria-label', 'string', undefined, 'Accessible label for icon-only buttons (required via TypeScript — Required<>)'),
       p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Button variant'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'icon', 'Button size (defaults to icon)'),
       p('disabled', 'boolean', 'false', 'Disables interaction'),
@@ -243,6 +243,39 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       cls(),
     ],
     slots: [s('default', undefined, 'Custom badge content (falls back to formatted value)')],
+  },
+
+  Flag: {
+    usage: usageSnippets.Flag!,
+    props: [
+      p('title', 'string', undefined, 'Flag heading (required)'),
+      p('description', 'string', undefined, 'Optional supporting text below the title'),
+      p('variant', "'normal' | 'warning' | 'error' | 'success' | 'discovery'", 'normal', 'Color variant for the left border and icon'),
+      p('actions', 'FlagAction[]', undefined, 'Action buttons — each { label: string; onClick: () => void }'),
+      p('isDismissible', 'boolean', 'false', 'Shows a close button that emits dismiss when clicked'),
+      p('flagId', 'string', undefined, 'Unique id used by FlagGroup to manage the visible queue; auto-generated if omitted'),
+      cls(),
+    ],
+    events: [e('dismiss', undefined, 'Fired when the dismiss button is clicked (only when isDismissible is true)')],
+  },
+
+  FlagGroup: {
+    usage: usageSnippets.FlagGroup!,
+    props: [],
+    slots: [s('default', undefined, 'Flag children managed in a visible queue (max 3 at a time via internal MAX_VISIBLE constant)')],
+  },
+
+  SectionMessage: {
+    usage: usageSnippets.SectionMessage!,
+    props: [
+      p('variant', "'information' | 'warning' | 'error' | 'success' | 'discovery' | 'change'", 'information', 'Color variant. Sets aria-live="assertive" when "error", "polite" for all others.'),
+      p('title', 'string', undefined, 'Optional bold heading above the body slot'),
+      cls(),
+    ],
+    slots: [
+      s('default', undefined, 'Body content — rendered below the title'),
+      s('actions', undefined, 'Action buttons shown below the body (optional)'),
+    ],
   },
 
   Spinner: {

@@ -638,4 +638,75 @@ export const ptBR: PlaygroundMessages = {
     openPlayground: 'Abrir playground',
     descriptions: componentCatalogDescriptionsPtBR,
   },
+  homeHero: {
+    exploreComponents: 'Explorar Componentes',
+    getStarted: 'Começar Agora',
+  },
+  homeQuickNav: {
+    sectionTitle: 'Navegar pelo Design System',
+    foundationsTitle: 'Fundações',
+    foundationsDesc: 'Tokens de cor, tipografia, espaçamento e ícones que sustentam cada componente.',
+    foundationsStat: '4 grupos de tokens',
+    componentsTitle: 'Componentes',
+    componentsDesc: 'Blocos de construção de UI acessíveis e composáveis, prontos para usar.',
+    docsTitle: 'Documentação',
+    docsDesc: 'Guia de instalação, temas e referência completa de API.',
+    docsStat: 'Referência completa',
+    arrowLabel: 'Navegar para',
+  },
+  homePurpose: {
+    sectionTitle: 'Por que este Design System',
+    mission:
+      'Um conjunto coeso de princípios, tokens e componentes que ajuda equipes a criar interfaces consistentes e acessíveis com mais rapidez.',
+    benefit1Title: 'Entregue Mais Rápido',
+    benefit1Desc: 'Componentes pré-construídos e testados permitem que você foque na lógica do produto.',
+    benefit2Title: 'Mantenha a Consistência',
+    benefit2Desc:
+      'Tokens e padrões compartilhados garantem coerência visual em toda a superfície do produto.',
+    benefit3Title: 'Feito para Crescer',
+    benefit3Desc:
+      'De páginas únicas a plataformas multi-equipe — o sistema evolui com o seu produto.',
+  },
+  homePrinciples: {
+    sectionTitle: 'Princípios de Design',
+    p1Title: 'Acessibilidade Primeiro',
+    p1Desc:
+      'Cada componente atende aos padrões WCAG 2.1 AA — navegação por teclado, ARIA e contraste incluídos.',
+    p2Title: 'Consistência Visual',
+    p2Desc:
+      'Uma única camada de tokens governa cor, espaçamento e tipografia em todo o sistema.',
+    p3Title: 'Produtividade do Desenvolvedor',
+    p3Desc:
+      'Props tipadas, padrões sensatos e exemplos ricos no playground reduzem o tempo de integração.',
+    p4Title: 'Composição Flexível',
+    p4Desc:
+      'Slots primitivos e composables permitem montar UIs complexas sem resistência do sistema.',
+  },
+  homeQuickStart: {
+    sectionTitle: 'Início Rápido',
+    installLabel: 'Instalar',
+    importLabel: 'Importar',
+    copyAriaLabel: 'Copiar comando de instalação',
+    copiedLabel: 'Copiado!',
+    docsLink: 'Ver documentação completa',
+  },
+  homeStats: {
+    components: 'Componentes',
+    coverage: 'Cobertura de Testes',
+    demos: 'Demos Interativos',
+    version: 'Versão',
+  },
+  homeChangelog: {
+    sectionTitle: 'Novidades',
+    typeAdded: 'Adicionado',
+    typeChanged: 'Alterado',
+    typeFixed: 'Corrigido',
+    'v0170.added1': 'Novo componente DataTable com modos de paginação client-side e via API.',
+    'v0170.changed1': 'Animação do StatPill agora usa transições CSS para melhor desempenho.',
+    'v0160.added1': 'Cards editoriais HomeQuickNavSection com suporte a navegação por teclado.',
+    'v0160.fixed1': 'Corrigido conflito de z-index do tooltip com o overlay do modal.',
+    'v0150.added1': 'Playground de chat com seletor de modelo e chips de sugestão.',
+    'v0140.changed1': 'Nomenclatura de tokens de cor revisada para alinhar com convenções do Tailwind 4.',
+    'v0140.fixed1': 'Corrigida visibilidade do anel de foco no modo escuro para Button e Input.',
+  },
 }

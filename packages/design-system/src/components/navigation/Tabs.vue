@@ -1,18 +1,21 @@
 <script setup lang="ts">
 import { provide, ref } from 'vue'
 import { cn } from '@/lib/utils'
-import { TABS_INJECTION_KEY } from './tabsContext'
+import { TABS_INJECTION_KEY, TABS_UNMOUNT_KEY } from './tabsContext'
 
 export interface TabsProps {
+  shouldUnmountTabPanelOnChange?: boolean
   class?: string
 }
 
 const props = defineProps<TabsProps>()
+const emit = defineEmits<{ change: [value: string] }>()
 const activeTab = defineModel<string>({ required: true })
 const tabIds = ref<string[]>([])
 
 function setActiveTab(value: string): void {
   activeTab.value = value
+  emit('change', value)
 }
 
 function registerTab(value: string): void {
@@ -32,6 +35,8 @@ provide(TABS_INJECTION_KEY, {
   unregisterTab,
   tabIds,
 })
+
+provide(TABS_UNMOUNT_KEY, props.shouldUnmountTabPanelOnChange ?? false)
 </script>
 
 <template>

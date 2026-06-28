@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { cn } from '@/lib/utils'
-import { formTextareaVariants, type FormInputVariants } from './formInputVariants'
+import { formTextareaVariants, type FormTextareaVariants } from './formInputVariants'
 
-export interface TextareaProps extends /* @vue-ignore */ FormInputVariants {
-  size?: FormInputVariants['size']
+export interface TextareaProps {
+  size?: FormTextareaVariants['size']
   modelValue?: string
   placeholder?: string
   disabled?: boolean

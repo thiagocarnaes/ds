@@ -8,6 +8,9 @@ export interface SpinnerProps {
   size?: SpinnerSize
   color?: string
   glow?: boolean
+  /** Accessible label for the spinner. Alias: `ariaLabel`. Default: "Carregando…" */
+  label?: string
+  /** @deprecated Use `label` instead */
   ariaLabel?: string
   class?: string
 }
@@ -18,7 +21,6 @@ const props = withDefaults(defineProps<SpinnerProps>(), {
   size: 'md',
   color: 'var(--primary)',
   glow: true,
-  ariaLabel: 'Loading',
 })
 
 const attrs = useAttrs()
@@ -27,7 +29,9 @@ const attrs = useAttrs()
 const resolvedAriaLabel = computed(() => {
   const fromAttr = attrs['aria-label']
   if (typeof fromAttr === 'string' && fromAttr.length > 0) return fromAttr
-  return props.ariaLabel
+  if (props.label && props.label.length > 0) return props.label
+  if (props.ariaLabel && props.ariaLabel.length > 0) return props.ariaLabel
+  return 'Carregando…'
 })
 
 const sizeClasses: Record<SpinnerSize, string> = {
