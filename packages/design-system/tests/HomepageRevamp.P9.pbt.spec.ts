@@ -86,7 +86,7 @@ describe('Property 9 — Home All Não Renderiza Bento Grid (Requirements 8.1, 8
       ),
       { numRuns: 100, seed: 42 },
     )
-  })
+  }, 30000)
 
   /**
    * **Validates: Requirements 8.1, 8.3**

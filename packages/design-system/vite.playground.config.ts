@@ -8,6 +8,10 @@ export default defineConfig({
   base: process.env.PAGES_BASE ?? '/',
   server: {
     open: true,
+    fs: {
+      // Allow reading files from the monorepo root (needed for CHANGELOG.md?raw)
+      allow: [resolve(__dirname, '../..')],
+    },
   },
   plugins: [vue(), tailwindcss()],
   resolve: {

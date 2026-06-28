@@ -188,7 +188,8 @@ describe('Bug Condition — Flag: variant ignorada, appearance controla visual',
         fc.constant('warning' as const),
         async (variantValue) => {
           const wrapper = mount(Flag, {
-            props: { title: 't', variant: variantValue } as Record<string, unknown>,
+            // @ts-expect-error intentional bug exploration — passing variant as unknown prop
+            props: { title: 't', variant: variantValue as string } as Parameters<typeof mount>[1]['props'],
           })
           await nextTick()
 
@@ -233,7 +234,8 @@ describe('Bug Condition — Flag: variant ignorada, appearance controla visual',
         flagVariants,
         async (variantValue) => {
           const wrapper = mount(Flag, {
-            props: { title: 't', variant: variantValue } as Record<string, unknown>,
+            // @ts-expect-error intentional bug exploration — passing variant as unknown prop
+            props: { title: 't', variant: variantValue as string } as Parameters<typeof mount>[1]['props'],
           })
           await nextTick()
 
@@ -267,7 +269,8 @@ describe('Bug Condition — Flag: variant ignorada, appearance controla visual',
         fc.constant('error' as const),
         async (variantValue) => {
           const wrapper = mount(Flag, {
-            props: { title: 't', variant: variantValue } as Record<string, unknown>,
+            // @ts-expect-error intentional bug exploration — passing variant as unknown prop
+            props: { title: 't', variant: variantValue as string } as Parameters<typeof mount>[1]['props'],
           })
           await nextTick()
 

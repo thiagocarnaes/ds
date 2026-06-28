@@ -10,6 +10,12 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
+  server: {
+    fs: {
+      // Allow reading files from the monorepo root (needed for CHANGELOG.md?raw)
+      allow: [resolve(__dirname, '../..')],
+    },
+  },
   test: {
     environment: 'happy-dom',
     globals: true,
