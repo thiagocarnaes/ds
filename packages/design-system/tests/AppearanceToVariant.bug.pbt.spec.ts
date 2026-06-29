@@ -342,7 +342,7 @@ describe('Bug Condition — Button: appearance tem precedência sobre variant em
 
           // Verificar que as classes de variant estão aplicadas (não as de appearance)
           const variantClassMarkers: Record<string, string> = {
-            ghost:  'hover:bg-[--ds-color-bg-hovered] hover:text-accent-foreground',
+            ghost:  'hover:bg-[--ds-color-bg-hovered] hover:text-text-hovered',
             link:   'underline-offset-4',
             subtle: 'hover:bg-[--ds-color-bg-hovered]',
           }

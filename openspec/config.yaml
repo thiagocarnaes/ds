@@ -35,7 +35,7 @@ rules:
 
     # Integração com o Graphify
     - Sempre olhar para a pasta do graphify antes de iniciar o trabalho de planejamento de mudanças e criação de tasks para ser mais eficiente e identificar possíveis dependências e impactos das mudanças propostas.
-    - Sempre que finalizar todas as tarefas planejadas, você DEVE executar o comando graphify . no terminal integrado antes de encerrar a tarefa, garantindo a atualização do grafo de conhecimento arquitetural do repositório.
+    - Sempre que finalizar todas as tarefas planejadas, você DEVE executar o comando graphify update . no terminal integrado antes de encerrar a tarefa, garantindo a atualização do grafo de conhecimento arquitetural do repositório.
 
   tasks:
     - Dividir as tarefas em blocos de no máximo 10 minutos de trabalho.
@@ -47,4 +47,4 @@ rules:
     - Sempre executar os testes automatizados logo após escrever o código para garantir que as mudanças não introduziram regressões ou falhas.
     - Manter um arquivo de CHANGELOG na raiz do projeto, contendo a descrição clara da mudança, data, versão e autor.
     - Sempre atualizar este arquivo de CHANGELOG após qualquer modificação na base de código (novas funcionalidades, correções ou refatorações aprovadas).
-    - Sempre rodar o comando graphify . no terminal integrado após finalizar, aplicar ou arquivar qualquer proposta de mudança (change proposal) para garantir a atualização do grafo de conhecimento arquitetural do repositório.
+    - Sempre rodar o comando graphify update . no terminal integrado após finalizar, aplicar ou arquivar qualquer proposta de mudança (change proposal) para garantir a atualização do grafo de conhecimento arquitetural do repositório.

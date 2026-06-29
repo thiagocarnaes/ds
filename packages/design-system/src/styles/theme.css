@@ -133,6 +133,7 @@
   --color-text-warning:   var(--ds-color-text-warning);
   --color-text-success:   var(--ds-color-text-success);
   --color-text-discovery: var(--ds-color-text-discovery);
+  --color-text-hovered:   var(--ds-color-text-hovered);
   --color-bg-brand-bold:  var(--ds-color-bg-brand-bold);
   --color-bg-danger:      var(--ds-color-bg-danger);
   --color-bg-warning:     var(--ds-color-bg-warning);
