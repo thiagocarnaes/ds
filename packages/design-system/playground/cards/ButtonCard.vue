@@ -16,7 +16,7 @@ const { t } = usePlaygroundLocale()
 
 const sizes = ['sm', 'md', 'lg'] as const
 
-type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'destructive' | 'link'
+type ButtonVariant = 'primary' | 'ghost' | 'outline' | 'destructive' | 'clean' | 'link'
 type Size = (typeof sizes)[number]
 
 const variant = ref<ButtonVariant>('primary')
@@ -30,6 +30,7 @@ const variants = [
   { id: 'ghost', variant: 'ghost' as const },
   { id: 'outline', variant: 'outline' as const },
   { id: 'destructive', variant: 'destructive' as const },
+  { id: 'clean', variant: 'clean' as const },
   { id: 'link', variant: 'link' as const },
 ] as const
 
@@ -59,7 +60,6 @@ function optionStyle(active: boolean) {
           :icon="icon"
           :disabled="disabled"
           :loading="loading"
-          :class="variant === 'primary' ? 'ds-glow-primary' : undefined"
         >
           {{ t('buttonPlayground.previewAction') }}
         </Button>

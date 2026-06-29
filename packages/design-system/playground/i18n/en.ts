@@ -297,7 +297,7 @@ export const en: PlaygroundMessages = {
   },
   iconsPlayground: {
     searchPlaceholder: 'Search icons...',
-    footerHint: 'Click any icon to copy JSX snippet · sourced from Lucide',
+    footerHint: 'Click any icon to copy import · sourced from Lucide',
   },
   colorPlayground: {
     footerHint: 'Click any swatch to copy hex value',

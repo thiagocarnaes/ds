@@ -297,7 +297,7 @@ export const ptBR: PlaygroundMessages = {
   },
   iconsPlayground: {
     searchPlaceholder: 'Buscar ícones...',
-    footerHint: 'Clique em um ícone para copiar o snippet JSX · fonte: Lucide',
+    footerHint: 'Clique em um ícone para copiar o import · fonte: Lucide',
   },
   colorPlayground: {
     footerHint: 'Clique em uma amostra para copiar o valor hex',

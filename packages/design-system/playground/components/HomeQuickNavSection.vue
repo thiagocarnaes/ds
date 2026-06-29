@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { useRouter } from 'vue-router'
 import { Layers, LayoutGrid, BookOpen, ArrowRight } from 'lucide-vue-next'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { designSystemLibraryComponentCount } from '../designSystemMeta'
 
-const emit = defineEmits<{
-  navigate: [category: 'foundations' | 'catalog' | 'docs']
-}>()
-
+const router = useRouter()
 const { t } = usePlaygroundLocale()
 
 interface QuickNavCard {
@@ -16,7 +14,7 @@ interface QuickNavCard {
   titleKey: string
   descKey: string
   stat: string | number
-  category: 'foundations' | 'catalog' | 'docs'
+  path: string
 }
 
 const cards: QuickNavCard[] = [
@@ -26,7 +24,7 @@ const cards: QuickNavCard[] = [
     titleKey: 'homeQuickNav.foundationsTitle',
     descKey: 'homeQuickNav.foundationsDesc',
     stat: t('homeQuickNav.foundationsStat'),
-    category: 'foundations',
+    path: '/foundations',
   },
   {
     id: 'catalog',
@@ -34,7 +32,7 @@ const cards: QuickNavCard[] = [
     titleKey: 'homeQuickNav.componentsTitle',
     descKey: 'homeQuickNav.componentsDesc',
     stat: designSystemLibraryComponentCount,
-    category: 'catalog',
+    path: '/catalog',
   },
   {
     id: 'docs',
@@ -42,18 +40,18 @@ const cards: QuickNavCard[] = [
     titleKey: 'homeQuickNav.docsTitle',
     descKey: 'homeQuickNav.docsDesc',
     stat: t('homeQuickNav.docsStat'),
-    category: 'docs',
+    path: '/docs',
   },
 ]
 
-function handleCardClick(category: 'foundations' | 'catalog' | 'docs'): void {
-  emit('navigate', category)
+function handleCardClick(path: string): void {
+  router.push(path)
 }
 
-function handleCardKeydown(event: KeyboardEvent, category: 'foundations' | 'catalog' | 'docs'): void {
+function handleCardKeydown(event: KeyboardEvent, path: string): void {
   if (event.key === 'Enter' || event.key === ' ') {
     event.preventDefault()
-    emit('navigate', category)
+    router.push(path)
   }
 }
 </script>
@@ -72,8 +70,8 @@ function handleCardKeydown(event: KeyboardEvent, category: 'foundations' | 'cata
         :tabindex="0"
         class="quick-nav-card group relative flex cursor-pointer flex-col gap-4 rounded-xl p-5 outline-none transition-all duration-200"
         :aria-label="`${t(card.titleKey)} — ${t('homeQuickNav.arrowLabel')}`"
-        @click="handleCardClick(card.category)"
-        @keydown="handleCardKeydown($event, card.category)"
+        @click="handleCardClick(card.path)"
+        @keydown="handleCardKeydown($event, card.path)"
       >
         <!-- Icon -->
         <div

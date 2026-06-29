@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import router from './router'
 import '../src/styles/index.css'
 import './styles/playground.css'
 
@@ -12,4 +13,6 @@ const savedLocale = localStorage.getItem('ds-playground-locale')
 const locale = savedLocale === 'en' || savedLocale === 'pt-BR' ? savedLocale : 'en'
 document.documentElement.lang = locale === 'pt-BR' ? 'pt-BR' : 'en'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(router)
+app.mount('#app')

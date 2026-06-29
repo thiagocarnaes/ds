@@ -1,17 +1,31 @@
 <script setup lang="ts">
-import type { CategoryKey } from '../i18n/types'
+import { useRoute, useRouter } from 'vue-router'
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 
-defineProps<{
-  categories: CategoryKey[]
-  isActive: (cat: CategoryKey) => boolean
-}>()
-
-const emit = defineEmits<{
-  select: [cat: CategoryKey]
-}>()
-
+const route = useRoute()
+const router = useRouter()
 const { t } = usePlaygroundLocale()
+
+interface NavItem {
+  path: string
+  labelKey: string
+}
+
+const items: NavItem[] = [
+  { path: '/', labelKey: 'categories.all' },
+  { path: '/foundations', labelKey: 'categories.foundations' },
+  { path: '/catalog', labelKey: 'categories.catalog' },
+  { path: '/docs', labelKey: 'categories.docs' },
+]
+
+function isActive(path: string): boolean {
+  if (path === '/') return route.path === '/'
+  return route.path.startsWith(path)
+}
+
+function navigate(path: string): void {
+  router.push(path)
+}
 </script>
 
 <template>
@@ -20,14 +34,14 @@ const { t } = usePlaygroundLocale()
     aria-label="Playground categories"
   >
     <button
-      v-for="cat in categories"
-      :key="cat"
+      v-for="item in items"
+      :key="item.path"
       type="button"
       class="pg-nav-btn shrink-0 rounded-lg px-3 py-1.5 text-xs font-medium"
-      :class="{ 'pg-nav-btn--active': isActive(cat) }"
-      @click="emit('select', cat)"
+      :class="{ 'pg-nav-btn--active': isActive(item.path) }"
+      @click="navigate(item.path)"
     >
-      {{ t(`categories.${cat}`) }}
+      {{ t(item.labelKey) }}
     </button>
   </nav>
 </template>

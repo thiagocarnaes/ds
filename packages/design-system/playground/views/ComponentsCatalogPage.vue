@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { Box, Maximize2 } from 'lucide-vue-next'
 import UsageBlock from '../components/UsageBlock.vue'
 import ComponentApiReference from '../components/ComponentApiReference.vue'
@@ -14,10 +15,9 @@ import { designSystemLibraryComponentCount, showcaseDemoComponents } from '../de
 import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import ChatPreviewCard from '../cards/ChatPreviewCard.vue'
 
-const emit = defineEmits<{
-  openPlayground: [name: string]
-}>()
-
+const route = useRoute()
+const router = useRouter()
+const openDrawer = inject<((name: string) => void) | null>('openDrawer', null)
 const { messages, t } = usePlaygroundLocale()
 
 const selectedName = ref(catalogGroups[0]?.items[0] ?? 'AppLayout')
@@ -62,9 +62,7 @@ function descriptionForShowcase(name: string): string {
 
 function selectComponent(name: string): void {
   selectedName.value = name
-  if (typeof window !== 'undefined') {
-    window.history.replaceState(null, '', `#catalog-${name}`)
-  }
+  router.replace({ hash: `#catalog-${name}` })
 }
 
 function scrollActiveNavItemIntoView(): void {
@@ -89,8 +87,8 @@ function syncNavHeight(): void {
 }
 
 function syncFromHash(): void {
-  if (typeof window === 'undefined') return
-  const match = window.location.hash.match(/^#catalog-(.+)$/)
+  const hash = route.hash
+  const match = hash.match(/^#catalog-(.+)$/)
   if (!match) return
   const name = decodeURIComponent(match[1])
   if (allComponentNames.value.includes(name)) {
@@ -99,15 +97,18 @@ function syncFromHash(): void {
 }
 
 watch(selectedName, (name) => {
-  if (typeof window === 'undefined') return
   const nextHash = `#catalog-${name}`
-  if (window.location.hash !== nextHash) {
-    window.history.replaceState(null, '', nextHash)
+  if (route.hash !== nextHash) {
+    router.replace({ hash: nextHash })
   }
   nextTick(() => {
     syncNavHeight()
     scrollActiveNavItemIntoView()
   })
+})
+
+watch(() => route.hash, () => {
+  syncFromHash()
 })
 
 function onWindowResize(): void {
@@ -116,7 +117,6 @@ function onWindowResize(): void {
 
 onMounted(() => {
   syncFromHash()
-  window.addEventListener('hashchange', syncFromHash)
   window.addEventListener('resize', onWindowResize)
 
   detailResizeObserver = new ResizeObserver(() => {
@@ -134,7 +134,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('hashchange', syncFromHash)
   window.removeEventListener('resize', onWindowResize)
   detailResizeObserver?.disconnect()
 })
@@ -259,7 +258,7 @@ onUnmounted(() => {
             type="button"
             class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
             style="background: var(--pg-nav-active-bg); color: var(--pg-accent)"
-            @click="emit('openPlayground', isShowcase ? selectedName : playgroundDemoName(selectedName)!)"
+            @click="openDrawer?.(isShowcase ? selectedName : playgroundDemoName(selectedName)!)"
           >
             <Maximize2 :size="12" />
             {{ t('componentCatalog.openPlayground') }}

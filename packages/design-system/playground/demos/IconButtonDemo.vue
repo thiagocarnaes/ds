@@ -21,8 +21,17 @@ const ariaLabel = ref('Settings')
 const disabled = ref(false)
 const loading = ref(false)
 
+const PACKAGE = '@tcarnaes/design-system'
+
 const code = computed(() => {
   const lines = [
+    `<script setup lang="ts">`,
+    `import { IconButton, iconographyComponents } from '${PACKAGE}'`,
+    ``,
+    `const SettingsIcon = iconographyComponents.settings`,
+    `<\/script>`,
+    ``,
+    `<template>`,
     `<IconButton`,
     `  ${playgroundSnippetAttr('aria-label', ariaLabel.value)}`,
     `  ${playgroundSnippetAttr('variant', variant.value)}`,
@@ -32,7 +41,7 @@ const code = computed(() => {
   if (disabled.value) lines.push(`  ${templateBooleanAttr('disabled', true)}`)
   if (loading.value) lines.push(`  ${templateBooleanAttr('loading', true)}`)
 
-  lines.push('>', '  <Settings :size="16" />', '</IconButton>')
+  lines.push('>', '  <SettingsIcon :size="16" />', '</IconButton>', '</template>')
   return lines.join('\n')
 })
 </script>

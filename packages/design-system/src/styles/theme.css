@@ -24,12 +24,11 @@
   --switch-background: #a8bdd4;
   --ring: #0097b8;
   --radius: 0.5rem;
-  --primary-shadow: 0 0 12px rgba(0, 151, 184, 0.22);
-  --primary-shadow-hover: 0 0 24px rgba(0, 151, 184, 0.42), 0 0 48px rgba(0, 151, 184, 0.2);
-  --destructive-shadow: 0 0 12px rgba(217, 45, 68, 0.22);
-  --destructive-shadow-hover: 0 0 24px rgba(217, 45, 68, 0.42), 0 0 48px rgba(217, 45, 68, 0.2);
   --success: #008f6b;
   --warning: #c96a00;
+  --ds-button-shadow: 0 0 16px rgba(11, 21, 38, 0.34);
+  --ds-button-shadow-hover: 0 0 24px rgba(11, 21, 38, 0.42);
+  --ds-button-shadow-pressed: inset 0 2px 4px 0 rgba(11, 21, 38, 0.22);
 }
 
 .dark {
@@ -54,10 +53,6 @@
   --input-background: #122236;
   --switch-background: #1e3a5a;
   --ring: #00d4ff;
-  --primary-shadow: 0 0 12px rgba(0, 212, 255, 0.18);
-  --primary-shadow-hover: 0 0 28px rgba(0, 212, 255, 0.52), 0 0 56px rgba(0, 212, 255, 0.24);
-  --destructive-shadow: 0 0 12px rgba(255, 61, 87, 0.18);
-  --destructive-shadow-hover: 0 0 28px rgba(255, 61, 87, 0.52), 0 0 56px rgba(255, 61, 87, 0.24);
   --success: #00e5b0;
   --warning: #ff8b00;
 }
@@ -103,13 +98,10 @@
   --font-size-xl: var(--ds-font-xl);
   --font-size-2xl: var(--ds-font-2xl);
   --text-display: var(--ds-font-display);
-  --shadow-sm: 0 1px 2px rgba(11, 21, 38, 0.06);
-  --shadow-md: 0 4px 12px rgba(11, 21, 38, 0.08);
-  --shadow-lg: 0 8px 24px rgba(11, 21, 38, 0.1);
-  --shadow-primary: var(--primary-shadow);
-  --shadow-primary-hover: var(--primary-shadow-hover);
-  --shadow-destructive: var(--destructive-shadow);
-  --shadow-destructive-hover: var(--destructive-shadow-hover);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.20), 0 1px 2px -1px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.22);
+  --shadow-lg: 0 20px 48px -8px rgba(0, 0, 0, 0.35);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.12);
   /* spacing */
   --spacing-025: var(--ds-space-025);
   --spacing-050: var(--ds-space-050);
@@ -162,9 +154,13 @@
 }
 
 .dark {
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-sm: 0 2px 8px rgba(255, 255, 255, 0.05);
+  --shadow-md: 0 6px 16px rgba(255, 255, 255, 0.08);
+  --shadow-lg: 0 16px 40px rgba(255, 255, 255, 0.14);
+  --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.50);
+  --ds-button-shadow: 0 0 18px rgba(255, 255, 255, 0.34);
+  --ds-button-shadow-hover: 0 0 28px rgba(255, 255, 255, 0.46);
+  --ds-button-shadow-pressed: inset 0 2px 4px 0 rgba(0, 0, 0, 0.55);
   --ds-gradient-fade-end:    linear-gradient(to right, transparent, var(--background));
   --ds-gradient-fade-bottom: linear-gradient(to bottom, transparent, var(--background));
   /* ── Shadows — Override dark (opacidades aumentadas) ── */
@@ -204,4 +200,14 @@
   .font-mono {
     font-family: 'DM Mono', ui-monospace, monospace;
   }
+}
+
+.ds-button-shadow {
+  box-shadow: var(--ds-button-shadow);
+}
+.ds-button-shadow:hover {
+  box-shadow: var(--ds-button-shadow-hover);
+}
+.ds-button-shadow:active {
+  box-shadow: var(--ds-button-shadow-pressed);
 }

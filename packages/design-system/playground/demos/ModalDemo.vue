@@ -250,7 +250,6 @@ const code = computed(() => {
         <Button
           v-if="showPrimaryButton"
           :variant="primaryButtonVariant"
-          :class="variant !== 'danger' ? 'ds-glow-primary' : undefined"
           @click="modalOpen = false"
         >
           {{ modalActions[variant] }}

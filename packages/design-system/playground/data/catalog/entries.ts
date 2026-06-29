@@ -6,7 +6,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
   Button: {
     usage: usageSnippets.Button!,
     props: [
-      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Visual style of the button.'),
+      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'clean' | 'link'", 'default', 'Visual style of the button.'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'default', 'Button size'),
       p('icon', 'ButtonIconName', undefined, 'Leading icon by registered name'),
       p('type', "'button' | 'submit' | 'reset'", 'button', 'Native button type'),
@@ -22,7 +22,7 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     usage: usageSnippets.IconButton!,
     props: [
       p('aria-label', 'string', undefined, 'Accessible label for icon-only buttons (required via TypeScript — Required<>)'),
-      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'link'", 'default', 'Button variant'),
+      p('variant', "'default' | 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive' | 'clean' | 'link'", 'default', 'Button variant'),
       p('size', "'default' | 'md' | 'sm' | 'lg' | 'icon'", 'icon', 'Button size (defaults to icon)'),
       p('disabled', 'boolean', 'false', 'Disables interaction'),
       p('loading', 'boolean', 'false', 'Shows loading spinner and disables clicks'),

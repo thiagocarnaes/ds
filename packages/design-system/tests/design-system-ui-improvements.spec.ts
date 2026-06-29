@@ -18,6 +18,11 @@ import { mount } from '@vue/test-utils'
 import * as fc from 'fast-check'
 
 import { providePlaygroundLocale } from '../playground/composables/usePlaygroundLocale'
+
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(() => ({ path: '/catalog', hash: '', params: {}, query: {} })),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: vi.fn() })),
+}))
 import FlagGroupDemo from '../playground/demos/FlagGroupDemo.vue'
 import FoundationsPage from '../playground/views/FoundationsPage.vue'
 import ComponentsCatalogPage from '../playground/views/ComponentsCatalogPage.vue'

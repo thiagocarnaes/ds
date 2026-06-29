@@ -46,6 +46,7 @@ const iconQuery = ref('')
 const iconSize = ref(20)
 const iconColor = ref('#00D4FF')
 const iconSizes = [12, 16, 20, 24]
+const PACKAGE = '@tcarnaes/design-system'
 const copy = useCopy('')
 
 const filteredIcons = computed(() =>
@@ -55,8 +56,10 @@ const filteredIcons = computed(() =>
   ),
 )
 
-async function copyIcon(label: string): Promise<void> {
-  await copy.copy(`<${label.replace(/\s+/g, '')} />`)
+async function copyIcon(label: string, name: string): Promise<void> {
+  await copy.copy(
+    `import { iconographyComponents } from '${PACKAGE}'\n\nconst ${label.replace(/\s+/g, '')}Icon = iconographyComponents['${name}']`,
+  )
 }
 
 // ── Color token groups ───────────────────────────────────────────────────────
@@ -561,7 +564,7 @@ const borderWidthTokens: { token: string; px: string }[] = [
             :key="item.name"
             type="button"
             class="flex flex-col items-center gap-1 rounded-lg p-1.5 transition-colors hover:bg-primary/10"
-            @click="copyIcon(item.label)"
+            @click="copyIcon(item.label, item.name)"
           >
             <component :is="item.component" :size="iconSize" :style="{ color: iconColor }" />
             <span class="max-w-full truncate text-[7px] text-[#4D6A87]">{{ item.label }}</span>

@@ -103,4 +103,54 @@ describe('Button', () => {
     })
     expect(wrapper.classes().join(' ')).toContain('bg-[--ds-color-purple-400]')
   })
+
+  // Requirement 1.1 — shadow classes for button states
+  it('applies ds-button-shadow by default', () => {
+    const wrapper = mount(Button, { slots: { default: 'Save' } })
+    expect(wrapper.classes()).toContain('ds-button-shadow')
+  })
+
+  it('applies hover:-translate-y-0.5 class', () => {
+    const wrapper = mount(Button, { slots: { default: 'Save' } })
+    expect(wrapper.classes()).toContain('hover:-translate-y-0.5')
+  })
+
+  it('applies active state classes (translate-y-px, scale-[0.98])', () => {
+    const wrapper = mount(Button, { slots: { default: 'Save' } })
+    const classes = wrapper.classes()
+    expect(classes).toContain('active:translate-y-px')
+    expect(classes).toContain('active:scale-[0.98]')
+  })
+
+  it('applies shadow and hover uplift classes for shadow-enabled variants', () => {
+    const variants = ['default', 'primary', 'secondary', 'outline', 'ghost', 'destructive', 'warning', 'discovery', 'subtle'] as const
+    for (const variant of variants) {
+      const wrapper = mount(Button, { props: { variant }, slots: { default: 'Test' } })
+      const classes = wrapper.classes()
+      expect(classes, `${variant}: missing ds-button-shadow`).toContain('ds-button-shadow')
+      expect(classes, `${variant}: missing hover:-translate-y-0.5`).toContain('hover:-translate-y-0.5')
+    }
+  })
+
+  it('applies no-shadow classes for clean variant', () => {
+    const wrapper = mount(Button, { props: { variant: 'clean' }, slots: { default: 'Clean' } })
+    const classes = wrapper.classes()
+    expect(classes).toContain('!shadow-none')
+    expect(classes).toContain('hover:!shadow-none')
+    expect(classes).toContain('active:!shadow-none')
+    expect(classes).toContain('border-0')
+  })
+
+  it('applies link variant classes with underline only on hover/active and no shadow', () => {
+    const wrapper = mount(Button, { props: { variant: 'link' }, slots: { default: 'Link' } })
+    const classes = wrapper.classes()
+    expect(classes).not.toContain('underline')
+    expect(classes).toContain('hover:underline')
+    expect(classes).toContain('active:underline')
+    expect(classes).toContain('decoration-current')
+    expect(classes).toContain('!shadow-none')
+    expect(classes).toContain('hover:!shadow-none')
+    expect(classes).toContain('active:!shadow-none')
+    expect(classes).toContain('border-0')
+  })
 })

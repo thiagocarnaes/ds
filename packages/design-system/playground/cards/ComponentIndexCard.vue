@@ -6,10 +6,13 @@ import { usePlaygroundLocale } from '../composables/usePlaygroundLocale'
 import { playgroundDemoComponents, showcaseDemoComponents } from '../designSystemMeta'
 import type { CategoryKey } from '../i18n/types'
 
-const props = defineProps<{
-  activeCat: CategoryKey
-  onOpen: (name: string) => void
-}>()
+const props = withDefaults(defineProps<{
+  activeCat?: CategoryKey
+  onOpen?: (name: string) => void
+}>(), {
+  activeCat: 'all' as CategoryKey,
+  onOpen: (_name: string) => {},
+})
 
 const { messages, t } = usePlaygroundLocale()
 

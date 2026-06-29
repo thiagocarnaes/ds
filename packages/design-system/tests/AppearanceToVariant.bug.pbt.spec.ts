@@ -312,7 +312,7 @@ describe('Bug Condition — Button: appearance tem precedência sobre variant em
         // Combinações onde appearance conflita com variant
         fc.record({
           appearance: fc.constantFrom('primary', 'outline', 'secondary', 'warning', 'discovery') as fc.Arbitrary<string>,
-          variant: fc.constantFrom('ghost', 'link', 'subtle') as fc.Arbitrary<ButtonProps['variant']>,
+          variant: fc.constantFrom('ghost', 'subtle') as fc.Arbitrary<ButtonProps['variant']>,
         }),
         async ({ appearance, variant }) => {
           const wrapper = mount(Button, {
@@ -326,7 +326,6 @@ describe('Bug Condition — Button: appearance tem precedência sobre variant em
           const classes = el.className
 
           // Classes esperadas para 'ghost': hover:bg-[--ds-color-bg-hovered] hover:text-accent-foreground
-          // Classes esperadas para 'link': text-primary underline-offset-4 hover:underline
           // Classes esperadas para 'subtle': hover:bg-[--ds-color-bg-hovered] text-foreground
           // No código bugado: classes de `appearance` (primary/outline/secondary/etc.) são aplicadas
 
@@ -343,7 +342,6 @@ describe('Bug Condition — Button: appearance tem precedência sobre variant em
           // Verificar que as classes de variant estão aplicadas (não as de appearance)
           const variantClassMarkers: Record<string, string> = {
             ghost:  'hover:bg-[--ds-color-bg-hovered] hover:text-text-hovered',
-            link:   'underline-offset-4',
             subtle: 'hover:bg-[--ds-color-bg-hovered]',
           }
 

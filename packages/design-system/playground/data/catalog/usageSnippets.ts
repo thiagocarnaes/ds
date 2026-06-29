@@ -33,12 +33,17 @@ export const usageSnippets: Record<string, string> = {
     Save
   </Button>`,
   ),
-  IconButton: usage(
-    'IconButton',
-    `  <IconButton :aria-label="'Settings'" :variant="'outline'" :size="'icon'">
-    <!-- icon slot -->
-  </IconButton>`,
-  ),
+  IconButton: `<script setup lang="ts">
+import { IconButton, iconographyComponents } from '${PACKAGE}'
+
+const SettingsIcon = iconographyComponents.settings
+<\/script>
+
+<template>
+  <IconButton :aria-label="'Settings'" :variant="'outline'" :size="'icon'">
+    <SettingsIcon :size="16" />
+  </IconButton>
+</template>`,
   Link: usage(
     'Link',
     `  <Link :href="'/docs'" :external="true">

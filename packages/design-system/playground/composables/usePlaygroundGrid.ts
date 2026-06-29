@@ -1,13 +1,12 @@
-import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue'
-import type { CategoryKey } from '../i18n/types'
+import { onMounted, onUnmounted, ref } from 'vue'
 
-export function usePlaygroundGrid(activeCat: Ref<CategoryKey>) {
-  const viewportCols = ref(1)
+export function usePlaygroundGrid() {
+  const viewportCols = ref(4)
 
   function syncViewportCols(): void {
     const w = window.innerWidth
     if (w >= 1024) {
-      viewportCols.value = activeCat.value !== 'all' ? 2 : 4
+      viewportCols.value = 4
     } else if (w >= 768) {
       viewportCols.value = 2
     } else {
@@ -23,8 +22,6 @@ export function usePlaygroundGrid(activeCat: Ref<CategoryKey>) {
   onUnmounted(() => {
     window.removeEventListener('resize', syncViewportCols)
   })
-
-  watch(activeCat, syncViewportCols)
 
   return { viewportCols }
 }

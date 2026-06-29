@@ -442,7 +442,7 @@ O slot **default** (conteúdo) ocupa 100% da altura disponível — use `class="
 
 ### Ícones no Button
 
-Variantes: `default` | `primary` | `secondary` | `outline` | `ghost` | `destructive` | `link` · tamanhos: `default` | `sm` | `md` | `lg` | `icon`.
+Variantes: `default` | `primary` | `secondary` | `outline` | `ghost` | `destructive` | `clean` | `link` · tamanhos: `default` | `sm` | `md` | `lg` | `icon`.
 
 `appearance` ainda funciona em runtime como alias legado (`danger` → `destructive`, `primary` → `primary`, etc.), mas prefira `:variant`.
 

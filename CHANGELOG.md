@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.2] - 2026-06-29
+
+### Added
+
+- **vue-router integration** — playground navigation is now URL-driven: 4 routes (`/`, `/foundations`, `/catalog`, `/docs`) with `createWebHistory`; catalog component selection via `$route.hash`.
+- **`HomePage.vue`** — dedicated route component extracted from `App.vue` shell.
+
+### Changed
+
+- **`App.vue`** — shell-only layout with `<router-view>` and `<router-link>` header nav; provides `openDrawer` via `provide`/`inject`.
+- **`PlaygroundCategoryNav.vue`** — self-contained route navigation via `useRouter()`, no props/emits.
+- **`HomeQuickNavSection.vue`** — uses `router.push()` instead of emitting `navigate`.
+- **`ComponentsCatalogPage.vue`** — component selection uses `router.replace()` with hash, reactive via `$route.hash`.
+- **`usePlaygroundGrid.ts`** — removed `activeCat` dependency.
+
 ## [0.5.1] - 2026-06-28
 
 ### Added

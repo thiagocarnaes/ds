@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onUnmounted, ref, watch } from 'vue'
 import {
+  ArrowRight,
   ArrowUpRight,
   Gem,
   Target,
@@ -43,7 +44,7 @@ const selectPlaceholderSingle = ref('')
 const selectPlaceholderMulti = ref('')
 
 const buttonVariant = ref<
-  'default' | 'primary' | 'secondary' | 'ghost' | 'outline' | 'destructive' | 'link'
+  'default' | 'primary' | 'secondary' | 'ghost' | 'outline' | 'destructive' | 'clean' | 'link'
 >('primary')
 const buttonSize = ref<'sm' | 'md' | 'lg'>('md')
 const buttonDisabled = ref(false)
@@ -242,12 +243,20 @@ const codeSnippet = computed(() => {
   if (buttonDisabled.value) buttonAttrs.push(templateBooleanAttr('disabled', true))
   if (buttonLoading.value) buttonAttrs.push(templateBooleanAttr('loading', true))
 
+  const PACKAGE = '@tcarnaes/design-system'
+
   const map: Record<string, string> = {
-    Button: `<Button
+    Button: `<script setup lang="ts">
+import { Button } from '${PACKAGE}'
+<\/script>
+
+<template>
+  <Button
   ${buttonAttrs.join('\n  ')}
->
-  Action
-</Button>`,
+  >
+    Action
+  </Button>
+</template>`,
     Select: selectMultiple.value
       ? `<Select
   v-model="tags"
@@ -304,23 +313,43 @@ function optionStyle(active: boolean) {
     <template v-if="name === 'Button'">
       <p class="mb-4 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('drawer.livePlayground') }}</p>
       <div class="pg-playground-panel mb-6 space-y-5 rounded-xl p-6">
-        <div class="pg-playground-preview flex h-24 items-center justify-center rounded-xl">
-          <Button
-            :variant="buttonVariant"
-            :size="buttonSize"
-            :icon="buttonIcon"
-            :disabled="buttonDisabled"
-            :loading="buttonLoading"
-            :class="buttonVariant === 'primary' ? 'ds-glow-primary' : undefined"
-          >
-            {{ t('buttonPlayground.previewAction') }}
-          </Button>
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <div class="pg-playground-preview flex h-24 items-center justify-center rounded-xl">
+            <Button
+              :variant="buttonVariant"
+              :size="buttonSize"
+              :icon="buttonIcon"
+              :disabled="buttonDisabled"
+              :loading="buttonLoading"
+            >
+              {{ t('buttonPlayground.previewAction') }}
+            </Button>
+          </div>
+          <div>
+            <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">Button States</p>
+            <div class="flex items-center gap-3">
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-[9px] text-[#4D6A87]">default</span>
+                <Button :variant="buttonVariant" size="sm">Btn</Button>
+              </div>
+              <ArrowRight :size="14" class="text-[#4D6A87]" />
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-[9px] text-[#4D6A87]">hover</span>
+                <Button :variant="buttonVariant" size="sm" style="box-shadow: var(--ds-button-shadow-hover); transform: translateY(-2px)">Btn</Button>
+              </div>
+              <ArrowRight :size="14" class="text-[#4D6A87]" />
+              <div class="flex flex-col items-center gap-1">
+                <span class="text-[9px] text-[#4D6A87]">pressed</span>
+                <Button :variant="buttonVariant" size="sm" style="box-shadow: var(--ds-button-shadow-pressed); transform: translateY(1px) scale(0.98)">Btn</Button>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <div class="min-w-0">
             <p class="mb-2 font-mono text-[9px] uppercase tracking-wider text-[#4D6A87]">{{ t('buttonPlayground.variantLabel') }}</p>
             <button
-              v-for="item in ['default', 'primary', 'secondary', 'ghost', 'outline', 'destructive', 'link']"
+              v-for="item in ['default', 'primary', 'secondary', 'ghost', 'outline', 'destructive', 'clean', 'link']"
               :key="item"
               type="button"
               class="mb-1 block w-full rounded px-2 py-1 text-left text-xs"

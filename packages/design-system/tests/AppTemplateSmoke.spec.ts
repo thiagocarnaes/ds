@@ -7,10 +7,15 @@
  *   - pg-header-brand does NOT contain a span with version badge pattern (v0. or versionBadge)
  */
 
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { nextTick } from 'vue'
-import { mount } from '@vue/test-utils'
+import { mount, RouterLinkStub } from '@vue/test-utils'
 import App from '../playground/App.vue'
+
+vi.mock('vue-router', () => ({
+  useRoute: vi.fn(() => ({ path: '/', hash: '', params: {}, query: {} })),
+  useRouter: vi.fn(() => ({ push: vi.fn(), replace: vi.fn() })),
+}))
 
 // ─── Cleanup ──────────────────────────────────────────────────────────────────
 
@@ -21,8 +26,15 @@ afterEach(() => {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 function mountApp() {
-  // App.vue calls providePlaygroundLocale() internally — mount directly (no shell needed)
-  return mount(App, { attachTo: document.body })
+  return mount(App, {
+    attachTo: document.body,
+    global: {
+      stubs: {
+        RouterLink: RouterLinkStub,
+        RouterView: { template: '<div class="router-view-stub"><slot /></div>' },
+      },
+    },
+  })
 }
 
 // ─── Tests: GitHub icon ───────────────────────────────────────────────────────

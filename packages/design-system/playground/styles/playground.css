@@ -666,29 +666,11 @@ body {
     transform: translateX(0);
   }
 }
-@keyframes ds-glow-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 28px rgba(0, 212, 255, 0.28);
-  }
-  50% {
-    box-shadow: 0 0 44px rgba(0, 212, 255, 0.48);
-  }
-}
-
 .ds-fade-in {
   animation: ds-fade-in 0.2s ease-out;
 }
 .ds-slide-in {
   animation: ds-slide-in 0.22s ease-out;
-}
-.ds-glow-primary {
-  animation: ds-glow-pulse 2.5s ease-in-out infinite;
-}
-
-.ds-glow-primary:hover:not(:disabled) {
-  animation: none;
-  box-shadow: var(--primary-shadow-hover);
 }
 
 .ds-bento-grid {

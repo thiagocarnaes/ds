@@ -25,8 +25,12 @@ const copy = useCopy('')
 
 const iconTag = computed(() => `${iconography.length} ${t('cards.icons.tagSuffix')}`)
 
+const PACKAGE = '@tcarnaes/design-system'
+
 async function copyIcon(name: string, label: string): Promise<void> {
-  await copy.copy(`<${label} />`)
+  await copy.copy(
+    `import { iconographyComponents } from '${PACKAGE}'\n\nconst ${label}Icon = iconographyComponents['${name}']`,
+  )
 }
 </script>
 
