@@ -21,6 +21,11 @@ const props = defineProps<{
   icon?: Component
 }>()
 
+const emit = defineEmits<{
+  (e: 'click', id: string): void
+  (e: 'select', id: string): void
+}>()
+
 const injectedMenu = inject(SIDEBAR_MENU_INJECTION_KEY)
 
 if (!injectedMenu) {
@@ -88,7 +93,7 @@ onBeforeMount(() => {
       :class="classes"
       :title="menu.collapsed.value ? label : undefined"
       :aria-current="active ? 'page' : undefined"
-      @click="menu.setActive(id)"
+      @click="menu.setActive(id); emit('click', id); emit('select', id)"
     >
       <span :class="iconClasses">
         <component :is="icon" v-if="icon" :size="16" class="shrink-0" />

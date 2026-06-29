@@ -442,6 +442,10 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
       p('label', 'string', undefined, 'Item label (required)'),
       p('icon', 'Component', undefined, 'Optional Lucide or custom icon component'),
     ],
+    events: {
+      click: { args: 'id: string', description: 'Emitted when the item is clicked, after setActive is called' },
+      select: { args: 'id: string', description: 'Alias for click — emitted when the item is clicked' },
+    },
   },
 
   SidebarMenuGroup: {
