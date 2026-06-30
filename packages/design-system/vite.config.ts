@@ -5,6 +5,7 @@ import dts from 'vite-plugin-dts'
 import { resolve } from 'node:path'
 
 export default defineConfig({
+  base: '/ds/',
   plugins: [
     vue(),
     tailwindcss(),
