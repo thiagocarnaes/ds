@@ -69,6 +69,48 @@ describe('Drawer', () => {
     expect(panel?.className).not.toContain('right-0')
     wrapper.unmount()
   })
+
+  it('hides overlay when backdrop is false', async () => {
+    const wrapper = mount(Drawer, {
+      props: { open: true, backdrop: false },
+      slots: { default: 'Drawer content' },
+      attachTo: document.body,
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
+    const overlay = document.body.querySelector('.bg-black\\/60')
+    expect(overlay).toBeNull()
+    wrapper.unmount()
+  })
+
+  it('renders overlay when backdrop is true (default)', async () => {
+    const wrapper = mount(Drawer, {
+      props: { open: true },
+      slots: { default: 'Drawer content' },
+      attachTo: document.body,
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
+    const overlay = document.body.querySelector('.bg-black\\/60')
+    expect(overlay).not.toBeNull()
+    wrapper.unmount()
+  })
+
+  it('renders drag handle when resizable is true on left/right placement', async () => {
+    const wrapper = mount(Drawer, {
+      props: { open: true, resizable: true, placement: 'right' },
+      slots: { default: 'Drawer content' },
+      attachTo: document.body,
+    })
+    await wrapper.vm.$nextTick()
+    await new Promise((resolve) => requestAnimationFrame(resolve))
+
+    const separator = document.body.querySelector('[role="separator"]')
+    expect(separator).not.toBeNull()
+    wrapper.unmount()
+  })
 })
 
 describe('layout components', () => {

@@ -499,7 +499,7 @@ const toast = useToast()
     ['Button', 'Drawer'],
     `  <Button @click="open = true">Open drawer</Button>
 
-  <Drawer v-model:open="open" :placement="'right'" :close-on-overlay="true">
+  <Drawer v-model:open="open" :placement="'right'" :close-on-overlay="true" :backdrop="true">
     <div class="p-6">
       <h3 class="text-lg font-semibold">Details</h3>
       <p class="text-sm text-muted-foreground">Drawer content</p>

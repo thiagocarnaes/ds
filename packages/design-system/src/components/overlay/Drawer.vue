@@ -8,17 +8,23 @@ const props = withDefaults(
   defineProps<{
     placement?: 'left' | 'right' | 'top' | 'bottom'
     closeOnOverlay?: boolean
+    backdrop?: boolean
+    resizable?: boolean
     class?: string
   }>(),
   {
     placement: 'right',
     closeOnOverlay: true,
+    backdrop: true,
+    resizable: false,
   },
 )
 
 const panelRef = ref<HTMLElement | null>(null)
 const visible = ref(false)
 const animated = ref(false)
+
+const drawerWidth = ref<number | undefined>(undefined)
 
 const panelClasses = computed(() => {
   const base =
@@ -47,6 +53,46 @@ const panelClasses = computed(() => {
       })
   }
 })
+
+const panelStyle = computed(() => {
+  if (drawerWidth.value && (props.placement === 'left' || props.placement === 'right')) {
+    return { width: `${drawerWidth.value}px` }
+  }
+  return undefined
+})
+
+const showResizeHandle = computed(() =>
+  props.resizable && (props.placement === 'left' || props.placement === 'right'),
+)
+
+const resizeHandleClasses = computed(() =>
+  props.placement === 'left' ? '-right-1' : '-left-1',
+)
+
+function onResizePointerDown(event: PointerEvent): void {
+  if (!(props.placement === 'left' || props.placement === 'right')) return
+  event.preventDefault()
+  const handle = event.currentTarget as HTMLElement
+  handle.setPointerCapture(event.pointerId)
+
+  function onPointerMove(e: PointerEvent): void {
+    const maxWidth = window.innerWidth * 0.9
+    if (props.placement === 'left') {
+      drawerWidth.value = Math.max(280, Math.min(e.clientX, maxWidth))
+    } else {
+      drawerWidth.value = Math.max(280, Math.min(window.innerWidth - e.clientX, maxWidth))
+    }
+  }
+
+  function onPointerUp(): void {
+    handle.removeEventListener('pointermove', onPointerMove)
+    handle.removeEventListener('pointerup', onPointerUp)
+    handle.releasePointerCapture(event.pointerId)
+  }
+
+  handle.addEventListener('pointermove', onPointerMove)
+  handle.addEventListener('pointerup', onPointerUp)
+}
 
 function close(): void {
   open.value = false
@@ -119,8 +165,9 @@ onUnmounted(() => {
 
 <template>
   <Teleport to="body">
-    <div v-if="visible" class="fixed inset-0 z-[var(--ds-z-overlay)]">
+    <div v-if="visible" class="relative z-[var(--ds-z-overlay)]">
       <div
+        v-if="backdrop"
         class="fixed inset-0 bg-black/60"
         aria-hidden="true"
         @click="onOverlayClick"
@@ -132,7 +179,17 @@ onUnmounted(() => {
         aria-modal="true"
         tabindex="-1"
         :class="cn(panelClasses, props.class)"
+        :style="panelStyle"
       >
+        <div
+          v-if="showResizeHandle"
+          role="separator"
+          aria-orientation="vertical"
+          :aria-valuenow="drawerWidth"
+          class="absolute inset-y-0 w-1.5 cursor-ew-resize bg-transparent hover:bg-border/50 active:bg-border transition-colors z-10"
+          :class="resizeHandleClasses"
+          @pointerdown="onResizePointerDown"
+        />
         <slot />
       </div>
     </div>

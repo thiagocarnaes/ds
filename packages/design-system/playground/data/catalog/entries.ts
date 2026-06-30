@@ -745,6 +745,8 @@ export const componentCatalogEntries: Record<string, ComponentCatalogEntry> = {
     props: [
       p('placement', "'left' | 'right' | 'top' | 'bottom'", 'right', 'Edge from which the drawer slides in'),
       p('closeOnOverlay', 'boolean', 'true', 'Close when clicking the backdrop'),
+      p('backdrop', 'boolean', 'true', 'Show the semi-transparent overlay behind the panel'),
+      p('resizable', 'boolean', 'false', 'Enable drag-to-resize on left/right placements'),
       cls('Drawer panel width and padding classes'),
     ],
     models: [m('open', 'boolean', 'false', 'Visibility state (v-model:open)')],

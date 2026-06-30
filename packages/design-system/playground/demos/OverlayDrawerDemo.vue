@@ -11,6 +11,8 @@ const { t, messages } = usePlaygroundLocale()
 const open = ref(false)
 const placement = ref<'left' | 'right' | 'top' | 'bottom'>('right')
 const closeOnOverlay = ref(true)
+const backdrop = ref(true)
+const resizable = ref(false)
 
 const placementOptions = ['left', 'right', 'top', 'bottom'] as const
 
@@ -24,6 +26,12 @@ const code = computed(() => {
   const attrs = [`v-model:open="open"`, playgroundSnippetAttr('placement', placement.value)]
   if (!closeOnOverlay.value) {
     attrs.push(templateBooleanAttr('closeOnOverlay', false))
+  }
+  if (!backdrop.value) {
+    attrs.push(templateBooleanAttr('backdrop', false))
+  }
+  if (resizable.value) {
+    attrs.push(templateBooleanAttr('resizable', true))
   }
 
   const headerLines = closeOnOverlay.value
@@ -73,7 +81,15 @@ const code = computed(() => {
         <Switch v-model="closeOnOverlay" size="sm" />
         {{ copy.closeOnOverlay }}
       </label>
-      <Drawer :key="`${placement}-${closeOnOverlay}`" v-model:open="open" :placement="placement" :close-on-overlay="closeOnOverlay">
+      <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+        <Switch v-model="backdrop" size="sm" />
+        backdrop
+      </label>
+      <label class="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-xs text-[#4D6A87]">
+        <Switch v-model="resizable" size="sm" />
+        resizable
+      </label>
+      <Drawer :key="`${placement}-${closeOnOverlay}-${backdrop}-${resizable}`" v-model:open="open" :placement="placement" :close-on-overlay="closeOnOverlay" :backdrop="backdrop" :resizable="resizable">
         <div
           class="flex items-center border-b border-border px-4 py-3"
           :class="closeOnOverlay ? undefined : 'justify-between'"
