@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, provide } from 'vue'
+import { computed, provide } from 'vue'
 import { cn } from '@/lib/utils'
 import {
   SIDEBAR_MENU_INJECTION_KEY,
@@ -92,12 +92,8 @@ function registerMenuItem(id: string, isTopLevel = true): void {
     firstRegisteredItemId = id
   }
 
-  if (firstRegisteredItemId === id) {
-    nextTick(() => {
-      if (!activeId.value) {
-        activeId.value = id
-      }
-    })
+  if (!activeId.value && firstRegisteredItemId === id) {
+    activeId.value = id
   }
 }
 

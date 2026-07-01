@@ -29,13 +29,10 @@ const props = withDefaults(
     defaultOpen?: boolean
     /** Flyout vertical alignment relative to the group trigger. `auto` opens upward when near the viewport bottom. */
     flyoutPlacement?: 'auto' | 'down' | 'up'
-    /** IDs of child menu items — used to mark group as active even when flyout is closed. */
-    childIds?: string[]
   }>(),
   {
     defaultOpen: false,
     flyoutPlacement: 'auto',
-    childIds: () => [],
   },
 )
 
@@ -47,11 +44,6 @@ if (!injectedMenu) {
 
 const sidebarMenu: SidebarMenuContext = injectedMenu
 const layoutMenu = inject(APP_LAYOUT_MENU_INJECTION_KEY, null)
-
-// Register child IDs synchronously so isGroupActive works on first render
-for (const childId of props.childIds) {
-  sidebarMenu.registerGroupItem(props.id, childId)
-}
 
 const isPinnedSettingsGroup = computed(
   () =>
@@ -104,7 +96,6 @@ onMounted(() => {
   if (props.defaultOpen && !sidebarMenu.isOpen(props.id)) {
     sidebarMenu.toggleOpen(props.id)
   }
-
 })
 
 onUnmounted(() => {
